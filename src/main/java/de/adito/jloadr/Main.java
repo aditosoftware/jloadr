@@ -1,9 +1,11 @@
 package de.adito.jloadr;
 
-import de.adito.jloadr.api.IStoreResourcePack;
-import de.adito.jloadr.jnlp.JnlpResourcePack;
+import de.adito.jloadr.api.*;
+import de.adito.jloadr.jnlp.JnlpStartConfig;
 import de.adito.jloadr.local.LocalStore;
 
+import javax.swing.*;
+import java.awt.*;
 import java.io.*;
 import java.net.URL;
 import java.util.Arrays;
@@ -18,12 +20,39 @@ public class Main
 
   public static void main(String[] args) throws IOException, InterruptedException
   {
+    JnlpStartConfig startConfig = new JnlpStartConfig(new URL(args[0]));
+    Splash splash = GraphicsEnvironment.isHeadless() ? null : new Splash(startConfig.getSplashURL());
+
     ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
+
     try {
-      JnlpResourcePack resourcePack = new JnlpResourcePack(new URL(args[0]));
+      IResourcePack resourcePack = startConfig.getResourcePack();
       LocalStore localStore = new LocalStore(executor);
 
-      new Loader().load(localStore, resourcePack);
+      new Loader(executor).load(localStore, resourcePack, new ILoader.IStateCallback()
+      {
+        private int elementCount;
+
+        @Override
+        public void inited(int pElementCount)
+        {
+          elementCount = pElementCount;
+        }
+
+        @Override
+        public void loaded(int pElementNumber)
+        {
+          if (splash != null)
+            splash.setPercentage((double) pElementNumber / (double) elementCount);
+        }
+
+        @Override
+        public void finished()
+        {
+          if (splash != null)
+            splash.setPercentage(1);
+        }
+      });
 
       IStoreResourcePack localResourcePack = localStore.getResourcePack(resourcePack.getId());
       //List<IStoreResource> resources = localResourcePack.getResources();
@@ -31,13 +60,16 @@ public class Main
       //  System.out.println("locally found: " + resource);
       //}
 
-      System.out.println(Arrays.stream(resourcePack.getStartCommand()).collect(Collectors.joining(" ")));
-      Process process = Runtime.getRuntime().exec(resourcePack.getStartCommand(), null, new File("jloadr", localResourcePack.getId()));
+      System.out.println(Arrays.stream(startConfig.getStartCommand()).collect(Collectors.joining(" ")));
+      Process process = Runtime.getRuntime().exec(startConfig.getStartCommand(), null, new File("jloadr", localResourcePack.getId()));
       //System.err.println(process.waitFor());
       //print(process.getInputStream());
+      Thread.sleep(3000);
     }
     finally {
       executor.shutdown();
+      if (splash != null)
+        splash.dispose();
     }
   }
 
@@ -48,6 +80,42 @@ public class Main
       int len;
       while ((len = in.read(buffer)) != -1)
         out.write(buffer, 0, len);
+    }
+  }
+
+
+  private static class Splash extends JWindow
+  {
+    private double loaded;
+
+    public Splash(URL pURL)
+    {
+      getContentPane().add(
+          pURL == null ?
+              new JLabel("loading ...", SwingConstants.CENTER) :
+              new JLabel("", new ImageIcon(pURL), SwingConstants.CENTER));
+
+      pack();
+      setVisible(true);
+    }
+
+    public void setPercentage(double pLoaded)
+    {
+      SwingUtilities.invokeLater(() -> {
+        loaded = pLoaded;
+        revalidate();
+        repaint();
+      });
+    }
+
+    @Override
+    public void paint(Graphics g)
+    {
+      super.paint(g);
+      int w = getContentPane().getWidth();
+      int h = getContentPane().getHeight();
+      g.setColor(SystemColor.GRAY);
+      g.fillRect(4, h - 8, (int) Math.round((w - 8) * loaded), 4);
     }
   }
 

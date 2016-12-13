@@ -2,8 +2,11 @@ package de.adito.jloadr;
 
 import de.adito.jloadr.api.*;
 
+import javax.annotation.*;
 import java.io.*;
 import java.util.*;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.jar.*;
 import java.util.stream.Collectors;
 import java.util.zip.GZIPInputStream;
@@ -14,14 +17,25 @@ import java.util.zip.GZIPInputStream;
 public class Loader implements ILoader
 {
 
+  private ScheduledExecutorService executor;
+
+  public Loader(@Nonnull ScheduledExecutorService pExecutor)
+  {
+    executor = pExecutor;
+  }
+
   @Override
-  public void load(IStore pStore, IResourcePack pSource)
+  public void load(@Nonnull IStore pStore, @Nonnull IResourcePack pSource, @Nullable IStateCallback pStateCallback)
   {
     String sourceId = pSource.getId();
     IStoreResourcePack localResourcePack = pStore.containsResourcePack(sourceId) ?
         pStore.getResourcePack(sourceId) : pStore.addResourcePack(sourceId);
 
     List<? extends IResource> remoteResources = pSource.getResources();
+
+    if (pStateCallback != null)
+      executor.execute(() -> pStateCallback.inited(remoteResources.size()));
+
     // clean up
     Set<String> newLocalIdSet = remoteResources.stream()
         .map(resource -> _getLocalId(resource.getId()))
@@ -29,10 +43,9 @@ public class Loader implements ILoader
     localResourcePack.getResources().stream()
         .map(IResource::getId)
         .filter(id -> !newLocalIdSet.contains(id))
-        .forEach(id -> {
-          localResourcePack.removeResource(id);
-          //System.out.println("removed: " + id);
-        });
+        .forEach(localResourcePack::removeResource);
+
+    AtomicInteger loadCount = new AtomicInteger();
 
     // copy missing
     remoteResources.parallelStream().forEach(resource -> {
@@ -44,16 +57,17 @@ public class Loader implements ILoader
           localResource = localResourcePack.createResource(localId);
 
           _copy(localResource, resource, _isPackGz(resource.getId()));
-
-          //System.out.println("added: " + localResource);
         }
-        //else
-        //  System.out.println("existed: " + localResource);
+        if (pStateCallback != null)
+          executor.execute(() -> pStateCallback.loaded(loadCount.incrementAndGet()));
       }
       catch (Exception pE) {
         pE.printStackTrace();
       }
     });
+
+    if (pStateCallback != null)
+      executor.execute(pStateCallback::finished);
   }
 
   private void _copy(IStoreResource localResource, IResource pRemoteResource, boolean pIsPackGz)

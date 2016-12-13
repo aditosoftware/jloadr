@@ -1,11 +1,24 @@
 package de.adito.jloadr.api;
 
+import javax.annotation.*;
+
 /**
+ * An ILoader is responsible for loading a resource pack to the local store. After loading has completed a copy of the
+ * source can be fetched from the store with the source's id.
+ *
  * @author j.boesl, 05.09.16
  */
 public interface ILoader
 {
 
-  void load(IStore pStore, IResourcePack pSource);
+  void load(@Nonnull IStore pStore, @Nonnull IResourcePack pSource, @Nullable IStateCallback pStateCallback);
+
+
+  interface IStateCallback
+  {
+    void inited(int pElementCount);
+    void loaded(int pElementNumber);
+    void finished();
+  }
 
 }
