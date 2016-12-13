@@ -1,4 +1,4 @@
-package de.adito.jloadr.local;
+package de.adito.jloadr.repository.local;
 
 import de.adito.jloadr.api.IStoreResource;
 import de.adito.jloadr.common.JLoadrUtil;

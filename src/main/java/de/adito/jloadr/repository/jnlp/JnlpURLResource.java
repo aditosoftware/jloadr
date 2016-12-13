@@ -1,4 +1,4 @@
-package de.adito.jloadr.jnlp;
+package de.adito.jloadr.repository.jnlp;
 
 import de.adito.jloadr.api.IResource;
 import de.adito.jloadr.common.URLResource;

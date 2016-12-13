@@ -1,8 +1,8 @@
 package de.adito.jloadr;
 
 import de.adito.jloadr.api.*;
-import de.adito.jloadr.jnlp.JnlpStartConfig;
-import de.adito.jloadr.local.LocalStore;
+import de.adito.jloadr.repository.jnlp.JnlpStartConfig;
+import de.adito.jloadr.repository.local.LocalStore;
 
 import javax.swing.*;
 import java.awt.*;

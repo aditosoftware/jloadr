@@ -1,4 +1,4 @@
-package de.adito.jloadr.jnlp;
+package de.adito.jloadr.repository.jnlp;
 
 import org.w3c.dom.*;
 import org.xml.sax.SAXException;

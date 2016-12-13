@@ -1,4 +1,4 @@
-package de.adito.jloadr.local;
+package de.adito.jloadr.repository.local;
 
 import java.io.IOException;
 import java.nio.file.*;
