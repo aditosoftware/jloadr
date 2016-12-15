@@ -13,10 +13,16 @@ import java.util.Objects;
 public class URLResource implements IResource
 {
   private URL url;
+  private URLConnection urlConnection;
 
   public URLResource(URL pUrl)
   {
     url = pUrl;
+  }
+
+  public void checkAvailable() throws IOException
+  {
+    _getUrlConnection().getInputStream();
   }
 
   @Nonnull
@@ -24,6 +30,18 @@ public class URLResource implements IResource
   public String getId()
   {
     return JLoadrUtil.getIdForUrl(url);
+  }
+
+  @Override
+  public long getSize() throws IOException
+  {
+    return _getUrlConnection().getContentLengthLong();
+  }
+
+  @Override
+  public long getLastModified() throws IOException
+  {
+    return _getUrlConnection().getLastModified();
   }
 
   @Nonnull
@@ -37,9 +55,17 @@ public class URLResource implements IResource
   @Override
   public InputStream getInputStream() throws IOException
   {
-    URLConnection urlConnection = url.openConnection();
-    urlConnection.connect();
-    return urlConnection.getInputStream();
+    return _getUrlConnection().getInputStream();
+  }
+
+  private synchronized URLConnection _getUrlConnection() throws IOException
+  {
+    if (urlConnection == null) {
+      urlConnection = url.openConnection();
+      urlConnection.setUseCaches(true);
+      urlConnection.connect();
+    }
+    return urlConnection;
   }
 
   @Override

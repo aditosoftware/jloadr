@@ -6,7 +6,7 @@ import org.w3c.dom.Element;
 
 import javax.annotation.Nonnull;
 import java.io.*;
-import java.net.*;
+import java.net.URL;
 import java.util.*;
 
 /**
@@ -41,6 +41,18 @@ class JnlpURLResource implements IResource
   public InputStream getInputStream() throws IOException
   {
     return _getResource().getInputStream();
+  }
+
+  @Override
+  public long getSize() throws IOException
+  {
+    return _getResource().getSize();
+  }
+
+  @Override
+  public long getLastModified() throws IOException
+  {
+    return _getResource().getLastModified();
   }
 
   @Override
@@ -83,10 +95,10 @@ class JnlpURLResource implements IResource
       for (String variant : variants) {
         try {
           URL url = new URL(jarJnlpReference.getCodebase(), variant);
-          URLConnection uc = url.openConnection();
-          uc.connect();
-          try (InputStream is = uc.getInputStream()) {
-            resource = new URLResource(url);
+          URLResource urlResource = new URLResource(url);
+          try {
+            urlResource.checkAvailable();
+            resource = urlResource;
             return resource;
           }
           catch (IOException pE) {

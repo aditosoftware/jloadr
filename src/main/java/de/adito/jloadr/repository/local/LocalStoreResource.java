@@ -42,6 +42,18 @@ public class LocalStoreResource implements IStoreResource
     return Files.newInputStream(path);
   }
 
+  @Override
+  public long getSize() throws IOException
+  {
+    return Files.size(path);
+  }
+
+  @Override
+  public long getLastModified() throws IOException
+  {
+    return Files.getLastModifiedTime(path).toMillis();
+  }
+
   @Nonnull
   @Override
   public String getHash()

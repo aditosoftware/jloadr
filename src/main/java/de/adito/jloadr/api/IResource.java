@@ -15,6 +15,10 @@ public interface IResource
   @Nonnull
   InputStream getInputStream() throws IOException;
 
+  long getSize() throws IOException;
+
+  long getLastModified() throws IOException;
+
   @Nonnull
   String getHash();
 
