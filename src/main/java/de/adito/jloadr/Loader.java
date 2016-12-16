@@ -9,7 +9,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.jar.*;
 import java.util.stream.Collectors;
-import java.util.zip.GZIPInputStream;
+import java.util.zip.*;
 
 /**
  * @author j.boesl, 05.09.16
@@ -77,7 +77,14 @@ public class Loader implements ILoader
         try (InputStream inputStream = pRemoteResource.getInputStream();
              GZIPInputStream gzipInputStream = new GZIPInputStream(inputStream);
              OutputStream outputStream = localResource.getOutputStream();
-             JarOutputStream jarOutputStream = new JarOutputStream(outputStream)) {
+             JarOutputStream jarOutputStream = new JarOutputStream(outputStream)
+             {
+               @Override
+               public void putNextEntry(ZipEntry ze) throws IOException
+               {
+                 super.putNextEntry(new ZipEntry(ze.getName()));
+               }
+             }) {
           Pack200.newUnpacker().unpack(gzipInputStream, jarOutputStream);
         }
       }
