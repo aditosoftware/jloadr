@@ -14,7 +14,11 @@ import java.util.*;
 public class XMLUtil
 {
 
-  public static Document loadDocument(URL pConfigURL)
+  private XMLUtil()
+  {
+  }
+
+  public static Document loadDocument(URL pConfigURL) throws RuntimeException
   {
     try (InputStream in = pConfigURL.openStream()) {
       return DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(in);

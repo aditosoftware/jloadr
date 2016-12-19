@@ -1,9 +1,9 @@
 package de.adito.jloadr.repository.jlr.config;
 
-import de.adito.jloadr.common.XMLUtil;
-import org.w3c.dom.*;
+import de.adito.jloadr.common.*;
+import org.w3c.dom.Element;
 
-import java.net.*;
+import java.net.URL;
 
 /**
  * @author j.boesl, 19.12.16
@@ -14,14 +14,10 @@ public class JlrEntry
   private String hash;
 
 
-  public JlrEntry(Element pElement)
+  public JlrEntry(URL pParentUrl, Element pElement)
   {
-    try {
-      url = new URL(XMLUtil.getChildElement(pElement, "url").getTextContent().trim());
-    }
-    catch (MalformedURLException pE) {
-      throw new IllegalStateException(pE);
-    }
+    String urlString = XMLUtil.getChildElement(pElement, "url").getTextContent().trim();
+    url = UrlUtil.getUrl(pParentUrl, urlString);
     hash = XMLUtil.getChildElement(pElement, "hash").getTextContent().trim();
   }
 

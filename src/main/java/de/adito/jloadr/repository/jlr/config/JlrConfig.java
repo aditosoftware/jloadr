@@ -3,7 +3,7 @@ package de.adito.jloadr.repository.jlr.config;
 import de.adito.jloadr.common.*;
 import org.w3c.dom.Document;
 
-import java.net.*;
+import java.net.URL;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -32,10 +32,10 @@ public class JlrConfig
     return XMLUtil.findChildElements(document.getDocumentElement(), "pack").stream()
         .map(element -> {
           try {
-            URL url = new URL(element.getTextContent().trim());
+            URL url = UrlUtil.getUrl(configURL, element.getTextContent().trim());
             return new JlrPack(url);
           }
-          catch (MalformedURLException | IllegalStateException pE) {
+          catch (RuntimeException pE) {
             return null;
           }
         })

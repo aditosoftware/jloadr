@@ -1,7 +1,7 @@
 package de.adito.jloadr.repository.jlr.config;
 
 import de.adito.jloadr.common.XMLUtil;
-import org.w3c.dom.*;
+import org.w3c.dom.Document;
 
 import java.net.URL;
 import java.util.List;
@@ -30,7 +30,7 @@ public class JlrPack
   public List<JlrEntry> getEntries()
   {
     return XMLUtil.findChildElements(document.getDocumentElement(), "entry").stream()
-        .map(JlrEntry::new)
+        .map(element -> new JlrEntry(packUrl, element))
         .collect(Collectors.toList());
   }
 
