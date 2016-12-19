@@ -1,5 +1,6 @@
 package de.adito.jloadr.repository.jnlp;
 
+import de.adito.jloadr.common.XMLUtil;
 import org.w3c.dom.*;
 import org.xml.sax.SAXException;
 
@@ -42,7 +43,7 @@ class JnlpUrl
   private JnlpUrl(URL pJnlpUrl)
   {
     jnlpUrl = pJnlpUrl;
-    document = _loadDocument();
+    document = XMLUtil.loadDocument(pJnlpUrl);
 
     String codebaseString = document.getDocumentElement().getAttribute("codebase");
     if (codebaseString != null && !codebaseString.isEmpty()) {
@@ -93,33 +94,11 @@ class JnlpUrl
     for (String pathElement : pathElements) {
       List<Element> list = new ArrayList<>();
       for (Element element : elements) {
-        list.addAll(_findChildElements(element, pathElement));
+        list.addAll(XMLUtil.findChildElements(element, pathElement));
       }
       elements = list;
     }
     return elements;
-  }
-
-  private List<Element> _findChildElements(Node pNode, String pTagName)
-  {
-    List<Element> list = new ArrayList<>();
-    NodeList childNodes = pNode.getChildNodes();
-    for (int i = 0; i < childNodes.getLength(); i++) {
-      Node item = childNodes.item(i);
-      if (item.getNodeName().equals(pTagName) && item instanceof Element)
-        list.add((Element) item);
-    }
-    return list;
-  }
-
-  private Document _loadDocument()
-  {
-    try (InputStream in = jnlpUrl.openStream()) {
-      return DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(in);
-    }
-    catch (SAXException | IOException | ParserConfigurationException pE) {
-      throw new RuntimeException(pE);
-    }
   }
 
 }
