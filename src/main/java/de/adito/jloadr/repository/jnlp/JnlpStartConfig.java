@@ -27,25 +27,6 @@ public class JnlpStartConfig implements IStartConfig
     return jnlpResourcePack;
   }
 
-  @Nullable
-  @Override
-  public URL getSplashURL()
-  {
-    return jnlpResourcePack.getJnlpUrls().stream()
-        .flatMap(jnlpUrl -> jnlpUrl.findChildElementsByPath("information/icon").stream()
-            .map(element -> new AbstractMap.SimpleImmutableEntry<>(jnlpUrl, element)))
-        .filter(entry -> entry.getValue().getAttribute("kind").equals("splash"))
-        .map(entry -> {
-          try {
-            return new URL(entry.getKey().getCodebase(), entry.getValue().getAttribute("href"));
-          }
-          catch (MalformedURLException pE) {
-            return null;
-          }
-        })
-        .findAny().orElse(null);
-  }
-
   @Nonnull
   @Override
   public String[] getStartCommand()

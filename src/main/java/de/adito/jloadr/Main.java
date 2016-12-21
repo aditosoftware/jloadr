@@ -4,6 +4,7 @@ import de.adito.jloadr.api.*;
 import de.adito.jloadr.repository.jnlp.JnlpStartConfig;
 import de.adito.jloadr.repository.local.LocalStore;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.io.*;
@@ -21,37 +22,14 @@ public class Main
   public static void main(String[] args) throws IOException, InterruptedException
   {
     JnlpStartConfig startConfig = new JnlpStartConfig(new URL(args[0]));
-    Splash splash = GraphicsEnvironment.isHeadless() ? null : new Splash(startConfig.getSplashURL());
+    Splash splash = GraphicsEnvironment.isHeadless() ? null : new Splash();
 
     try {
       IResourcePack resourcePack = startConfig.getResourcePack();
       //Paths.get(System.getProperty("user.home"), "jloadr")
       LocalStore localStore = new LocalStore(Paths.get("jloadr"));
 
-      new Loader().load(localStore, resourcePack, new ILoader.IStateCallback()
-      {
-        private int elementCount;
-
-        @Override
-        public void inited(int pElementCount)
-        {
-          elementCount = pElementCount;
-        }
-
-        @Override
-        public void loaded(int pElementNumber)
-        {
-          if (splash != null)
-            splash.setPercentage((double) pElementNumber / (double) elementCount);
-        }
-
-        @Override
-        public void finished()
-        {
-          if (splash != null)
-            splash.setPercentage(1);
-        }
-      });
+      new Loader().load(localStore, resourcePack, splash);
 
       IStoreResourcePack localResourcePack = localStore.getResourcePack(resourcePack.getId());
       localResourcePack.writeConfig();
@@ -64,6 +42,7 @@ public class Main
       Process process = Runtime.getRuntime().exec(startConfig.getStartCommand(), null, new File("jloadr", localResourcePack.getId()));
       //System.err.println(process.waitFor());
       //print(process.getInputStream());
+
       Thread.sleep(3000);
     }
     finally {
@@ -83,22 +62,48 @@ public class Main
   }
 
 
-  private static class Splash extends JWindow
+  private static class Splash extends JWindow implements ILoader.IStateCallback
   {
+    private int elementCount;
     private double loaded;
 
-    public Splash(URL pURL)
+
+    @Override
+    public void inited(IResource pSplashResource, int pElementCount)
     {
-      getContentPane().add(
-          pURL == null ?
-              new JLabel("loading ...", SwingConstants.CENTER) :
-              new JLabel("", new ImageIcon(pURL), SwingConstants.CENTER));
+      elementCount = pElementCount;
+
+      JLabel label = null;
+      if (pSplashResource != null) {
+        try {
+          label = new JLabel("", new ImageIcon(ImageIO.read(pSplashResource.getInputStream())), SwingConstants.CENTER);
+        }
+        catch (IOException pE) {
+          // no image
+        }
+      }
+      if (label == null)
+        label = new JLabel("loading ...", SwingConstants.CENTER);
+
+      getContentPane().add(label);
 
       pack();
       setVisible(true);
     }
 
-    public void setPercentage(double pLoaded)
+    @Override
+    public void loaded(int pElementNumber)
+    {
+      setPercentage((double) pElementNumber / (double) elementCount);
+    }
+
+    @Override
+    public void finished()
+    {
+      setPercentage(1);
+    }
+
+    private void setPercentage(double pLoaded)
     {
       SwingUtilities.invokeLater(() -> {
         loaded = pLoaded;

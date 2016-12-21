@@ -25,8 +25,23 @@ public class Loader implements ILoader
 
     List<? extends IResource> remoteResources = pSource.getResources();
 
-    if (pStateCallback != null)
-      pStateCallback.inited(remoteResources.size());
+    AtomicInteger loadCount = new AtomicInteger();
+
+
+    // init state callback
+    if (pStateCallback != null) {
+      IStoreResource localSplashResource = null;
+      IResource remoteSplashResource = pSource.getResource("splash");
+      // copy splash
+      if (remoteSplashResource != null) {
+        localSplashResource = localResourcePack.getResource(remoteSplashResource.getId());
+        if (localSplashResource == null) {
+          localSplashResource = localResourcePack.createResource("splash");
+          _copy(localSplashResource, remoteSplashResource);
+        }
+      }
+      pStateCallback.inited(localSplashResource, remoteResources.size());
+    }
 
     // clean up
     Set<String> newLocalIdSet = remoteResources.stream()
@@ -37,8 +52,6 @@ public class Loader implements ILoader
         .filter(id -> !newLocalIdSet.contains(id))
         .forEach(localResourcePack::removeResource);
 
-    AtomicInteger loadCount = new AtomicInteger();
-
     // copy missing
     remoteResources.parallelStream().forEach(resource -> {
       try {
@@ -48,7 +61,7 @@ public class Loader implements ILoader
         if (localResource == null) {
           localResource = localResourcePack.createResource(localId);
 
-          _copy(localResource, resource, _isPackGz(resource.getId()));
+          _copy(localResource, resource);
         }
         if (pStateCallback != null)
           pStateCallback.loaded(loadCount.incrementAndGet());
@@ -62,10 +75,11 @@ public class Loader implements ILoader
       pStateCallback.finished();
   }
 
-  private void _copy(IStoreResource localResource, IResource pRemoteResource, boolean pIsPackGz)
+  private void _copy(IStoreResource localResource, IResource pRemoteResource)
   {
     try {
-      if (pIsPackGz) {
+      boolean isPackGz = _isPackGz(pRemoteResource.getId());
+      if (isPackGz) {
         try (InputStream inputStream = pRemoteResource.getInputStream();
              GZIPInputStream gzipInputStream = new GZIPInputStream(inputStream);
              OutputStream outputStream = localResource.getOutputStream();
