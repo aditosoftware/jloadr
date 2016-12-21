@@ -25,8 +25,6 @@ public class LocalStoreResource implements IStoreResource
     jlrEntry = pJlrEntry;
     id = pId;
     path = pPath;
-
-    jlrEntry.setId(id);
   }
 
   @Override
@@ -98,7 +96,17 @@ public class LocalStoreResource implements IStoreResource
   @Override
   public String getHash()
   {
-    return jlrEntry.getHash();
+    String hash = jlrEntry.getHash();
+    if (hash == null) {
+      try (InputStream inputStream = getInputStream()) {
+        hash = JLoadrUtil.getHash(inputStream);
+        jlrEntry.setHash(hash);
+      }
+      catch (IOException pE) {
+        throw new RuntimeException(pE);
+      }
+    }
+    return hash;
   }
 
   @Override

@@ -41,7 +41,7 @@ public class LocalStoreResourcePack implements IStoreResourcePack
           String id = root.relativize(pPath).toString();
           JlrEntry entry = loadedPack.getEntry(id);
           if (entry == null)
-            entry = new JlrEntry();
+            entry = new JlrEntry(id, null, null);
           jlrPack.addEntry(entry);
           LocalStoreResource resource = new LocalStoreResource(entry, id, pPath);
           resourceMap.put(id, resource);
