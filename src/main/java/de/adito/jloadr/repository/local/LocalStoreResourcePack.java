@@ -2,32 +2,56 @@ package de.adito.jloadr.repository.local;
 
 import de.adito.jloadr.api.*;
 import de.adito.jloadr.common.JLoadrUtil;
+import de.adito.jloadr.repository.jlr.config.*;
 
-import javax.annotation.Nonnull;
+import javax.annotation.*;
 import java.io.IOException;
 import java.nio.file.*;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.util.*;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.stream.Collectors;
 
 /**
  * @author j.boesl, 05.09.16
  */
 public class LocalStoreResourcePack implements IStoreResourcePack
 {
-  private static final String DELIMITER = "; ";
-
   private Path root;
-  private LocalStoreProperties properties;
-  private Set<String> resources;
+  private Map<String, IStoreResource> resourceMap;
+  private JlrPack jlrPack;
 
-  public LocalStoreResourcePack(ScheduledExecutorService pExecutor, Path pRoot)
+  public LocalStoreResourcePack(Path pRoot, Path pConfigPath)
   {
     root = pRoot;
-    properties = new LocalStoreProperties(pExecutor, pRoot);
+    resourceMap = new HashMap<>();
+    try {
+      if (!Files.exists(pConfigPath))
+        Files.createFile(pConfigPath);
+      jlrPack = new JlrPack(pConfigPath.toUri().toURL());
 
-    String r = properties.get("resources");
-    resources = new LinkedHashSet<>(r == null ? Collections.emptyList() : Arrays.asList(properties.get("resources").split(DELIMITER)));
+      Files.walkFileTree(pRoot, new SimpleFileVisitor<Path>()
+      {
+        private JlrPack loadedPack = new JlrPack(pConfigPath.toUri().toURL())
+        {{
+          loadPack();
+        }};
+
+        @Override
+        public FileVisitResult visitFile(Path pPath, BasicFileAttributes pAttrs) throws IOException
+        {
+          String id = root.relativize(pPath).toString();
+          JlrEntry entry = loadedPack.getEntry(id);
+          if (entry == null)
+            entry = new JlrEntry();
+          jlrPack.addEntry(entry);
+          LocalStoreResource resource = new LocalStoreResource(entry, id, pPath);
+          resourceMap.put(id, resource);
+          return FileVisitResult.CONTINUE;
+        }
+      });
+    }
+    catch (IOException pE) {
+      throw new RuntimeException(pE);
+    }
   }
 
   @Nonnull
@@ -41,19 +65,14 @@ public class LocalStoreResourcePack implements IStoreResourcePack
   @Override
   public List<IStoreResource> getResources()
   {
-    return resources.stream()
-        .map(str -> {
-          Path path = root.resolve(str);
-          return new LocalStoreResource(str, path);
-        })
-        .collect(Collectors.toList());
+    return new ArrayList<>(resourceMap.values());
   }
 
+  @Nullable
   @Override
   public IStoreResource getResource(@Nonnull String pId)
   {
-    Path path = root.resolve(pId);
-    return Files.isRegularFile(path) ? new LocalStoreResource(pId, path) : null;
+    return resourceMap.get(pId);
   }
 
   @Nonnull
@@ -65,9 +84,10 @@ public class LocalStoreResourcePack implements IStoreResourcePack
       throw new RuntimeException("Resource already exists: " + path);
     try {
       Files.createDirectories(path.getParent());
-      LocalStoreResource resource = new LocalStoreResource(pId, Files.createFile(path));
-      resources.add(resource.getId());
-      properties.put("resources", resources.stream().collect(Collectors.joining(DELIMITER)));
+      JlrEntry jlrEntry = new JlrEntry();
+      LocalStoreResource resource = new LocalStoreResource(jlrEntry, pId, Files.createFile(path));
+      jlrPack.addEntry(jlrEntry);
+      resourceMap.put(pId, resource);
       return resource;
     }
     catch (IOException pE) {
@@ -82,13 +102,19 @@ public class LocalStoreResourcePack implements IStoreResourcePack
     if (Files.isRegularFile(path)) {
       try {
         Files.delete(path);
-        resources.remove(pId);
-        properties.put("resources", resources.stream().collect(Collectors.joining(DELIMITER)));
+        resourceMap.remove(pId);
+        jlrPack.removeEntry(pId);
       }
       catch (IOException pE) {
         throw new RuntimeException(pE);
       }
     }
+  }
+
+  @Override
+  public void writeConfig()
+  {
+    jlrPack.writePack();
   }
 
   @Override

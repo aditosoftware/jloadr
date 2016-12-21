@@ -2,7 +2,7 @@ package de.adito.jloadr.repository.jlr;
 
 import de.adito.jloadr.api.*;
 import de.adito.jloadr.common.*;
-import de.adito.jloadr.repository.jlr.config.JlrPack;
+import de.adito.jloadr.repository.jlr.config.*;
 
 import javax.annotation.*;
 import java.util.*;
@@ -49,9 +49,28 @@ public class JlrResourcePack implements IResourcePack
     if (resourceMap == null) {
       resourceMap = new HashMap<>();
       return jlrPack.getEntries().stream()
-          .map(entry -> new URLResource(entry.getUrl()))
+          .map(JlrResource::new)
           .collect(Collectors.toMap(URLResource::getId, Function.identity()));
     }
     return resourceMap;
+  }
+
+
+  private class JlrResource extends URLResource
+  {
+    private JlrEntry entry;
+
+    JlrResource(JlrEntry pEntry)
+    {
+      super(UrlUtil.getUrl(jlrPack.getUrl(), pEntry.getId()));
+      entry = pEntry;
+    }
+
+    @Nonnull
+    @Override
+    public String getHash()
+    {
+      return entry.getHash();
+    }
   }
 }

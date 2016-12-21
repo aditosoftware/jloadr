@@ -5,7 +5,7 @@ import org.xml.sax.SAXException;
 
 import javax.xml.parsers.*;
 import java.io.*;
-import java.net.URL;
+import java.net.*;
 import java.util.*;
 
 /**
@@ -20,8 +20,13 @@ public class XMLUtil
 
   public static Document loadDocument(URL pConfigURL) throws RuntimeException
   {
-    try (InputStream in = pConfigURL.openStream()) {
-      return DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(in);
+    try {
+      URLConnection urlConnection = pConfigURL.openConnection();
+      if (urlConnection.getContentLengthLong() == 0)
+        throw new RuntimeException();
+      try (InputStream in = urlConnection.getInputStream()) {
+        return DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(in);
+      }
     }
     catch (SAXException | IOException | ParserConfigurationException pE) {
       throw new RuntimeException(pE);
@@ -47,6 +52,16 @@ public class XMLUtil
     if (childElements.getLength() > 1)
       throw new IllegalStateException("Too many tags with name '" + pTagName + "' were found at '" + getPath(pElement) + "'.");
     return (Element) childElements.item(0);
+  }
+
+  public static String getChildText(Element pElement, String pTagName)
+  {
+    try {
+      return getChildElement(pElement, pTagName).getTextContent().trim();
+    }
+    catch (IllegalStateException pE) {
+      return null;
+    }
   }
 
   public static String getPath(Node pNode)

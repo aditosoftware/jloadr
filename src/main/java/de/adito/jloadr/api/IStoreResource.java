@@ -10,4 +10,6 @@ public interface IStoreResource extends IResource
 
   OutputStream getOutputStream() throws IOException;
 
+  void setLastModified(long pTime);
+
 }

@@ -8,8 +8,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.io.*;
 import java.net.URL;
+import java.nio.file.Paths;
 import java.util.Arrays;
-import java.util.concurrent.*;
 import java.util.stream.Collectors;
 
 /**
@@ -23,13 +23,12 @@ public class Main
     JnlpStartConfig startConfig = new JnlpStartConfig(new URL(args[0]));
     Splash splash = GraphicsEnvironment.isHeadless() ? null : new Splash(startConfig.getSplashURL());
 
-    ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
-
     try {
       IResourcePack resourcePack = startConfig.getResourcePack();
-      LocalStore localStore = new LocalStore(executor);
+      //Paths.get(System.getProperty("user.home"), "jloadr")
+      LocalStore localStore = new LocalStore(Paths.get("jloadr"));
 
-      new Loader(executor).load(localStore, resourcePack, new ILoader.IStateCallback()
+      new Loader().load(localStore, resourcePack, new ILoader.IStateCallback()
       {
         private int elementCount;
 
@@ -55,6 +54,7 @@ public class Main
       });
 
       IStoreResourcePack localResourcePack = localStore.getResourcePack(resourcePack.getId());
+      localResourcePack.writeConfig();
       //List<IStoreResource> resources = localResourcePack.getResources();
       //for (IResource resource : resources) {
       //  System.out.println("locally found: " + resource);
@@ -67,9 +67,8 @@ public class Main
       Thread.sleep(3000);
     }
     finally {
-      executor.shutdown();
       if (splash != null)
-        splash.dispose();
+        SwingUtilities.invokeLater(splash::dispose);
     }
   }
 

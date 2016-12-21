@@ -35,20 +35,21 @@ public class JLoadrUtil
     return host + (port == -1 ? "" : "." + port) + (path.startsWith("/") ? "" : "/") + path;
   }
 
-  public static String hash(String pId)
-  {
-    return Base64.getEncoder().encodeToString(_hashToBytes(pId));
-  }
-
-  private static byte[] _hashToBytes(String pId)
+  public static MessageDigest getMessageDigest()
   {
     try {
-      byte[] idBytes = pId.getBytes(Charset.forName("utf-8"));
-      return MessageDigest.getInstance("sha-1").digest(idBytes);
+      return MessageDigest.getInstance("SHA-1");
     }
     catch (NoSuchAlgorithmException pE) {
-      throw new RuntimeException(pE);
+      throw new RuntimeException();
     }
+  }
+
+  public static String getHash(String pId)
+  {
+    byte[] idBytes = pId.getBytes(Charset.forName("utf-8"));
+    byte[] digest = getMessageDigest().digest(idBytes);
+    return Base64.getEncoder().encodeToString(digest);
   }
 
 }

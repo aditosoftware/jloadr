@@ -7,7 +7,6 @@ import java.io.IOException;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.*;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.function.Function;
 import java.util.stream.*;
 
@@ -16,25 +15,17 @@ import java.util.stream.*;
  */
 public class LocalStore implements IStore
 {
-  private ScheduledExecutorService executor;
   private Path directory;
   private Map<String, LocalStoreResourcePack> resourcePackMap;
 
-  public LocalStore(ScheduledExecutorService pExecutor)
+  public LocalStore(Path pStoreDirectory)
   {
-    executor = pExecutor;
-    //Paths.get(System.getProperty("user.home"), "jloadr")
-    directory = Paths.get("jloadr");
+    directory = pStoreDirectory;
     try {
       Files.createDirectories(directory);
-    }
-    catch (IOException pE) {
-      throw new RuntimeException(pE);
-    }
-    try {
       try (DirectoryStream<Path> dirStream = Files.newDirectoryStream(directory, entry -> Files.isDirectory(entry))) {
         resourcePackMap = StreamSupport.stream(dirStream.spliterator(), false)
-            .map(dir -> new LocalStoreResourcePack(executor, dir))
+            .map(dir -> new LocalStoreResourcePack(dir, getConfigPathForDirectory(dir)))
             .collect(Collectors.toMap(LocalStoreResourcePack::getId, Function.identity()));
       }
     }
@@ -71,7 +62,7 @@ public class LocalStore implements IStore
   {
     try {
       Path created = Files.createDirectories(directory.resolve(pId));
-      LocalStoreResourcePack localStoreResourcePack = new LocalStoreResourcePack(executor, created);
+      LocalStoreResourcePack localStoreResourcePack = new LocalStoreResourcePack(created, getConfigPathForDirectory(created));
       resourcePackMap.put(localStoreResourcePack.getId(), localStoreResourcePack);
       return localStoreResourcePack;
     }
@@ -89,6 +80,7 @@ public class LocalStore implements IStore
 
     Path path = directory.resolve(pId);
     try {
+      Files.deleteIfExists(getConfigPathForDirectory(directory));
       Files.walkFileTree(path, new SimpleFileVisitor<Path>()
       {
         @Override
@@ -110,6 +102,11 @@ public class LocalStore implements IStore
     catch (IOException pE) {
       throw new RuntimeException(pE);
     }
+  }
+
+  private static Path getConfigPathForDirectory(Path pPath)
+  {
+    return pPath.getParent().resolve(pPath.getFileName() + ".jlr.xml");
   }
 
 }

@@ -2,30 +2,59 @@ package de.adito.jloadr.repository.local;
 
 import de.adito.jloadr.api.IStoreResource;
 import de.adito.jloadr.common.JLoadrUtil;
+import de.adito.jloadr.repository.jlr.config.JlrEntry;
 
 import javax.annotation.Nonnull;
 import java.io.*;
 import java.nio.file.*;
-import java.util.Objects;
+import java.nio.file.attribute.FileTime;
+import java.security.MessageDigest;
+import java.util.*;
 
 /**
  * @author j.boesl, 08.09.16
  */
 public class LocalStoreResource implements IStoreResource
 {
+  private JlrEntry jlrEntry;
   private String id;
   private Path path;
 
-  public LocalStoreResource(String pId, Path pPath)
+  public LocalStoreResource(JlrEntry pJlrEntry, String pId, Path pPath)
   {
+    jlrEntry = pJlrEntry;
     id = pId;
     path = pPath;
+
+    jlrEntry.setId(id);
   }
 
   @Override
   public OutputStream getOutputStream() throws IOException
   {
-    return Files.newOutputStream(path);
+    return new BufferedOutputStream(Files.newOutputStream(path))
+    {
+      private MessageDigest md = JLoadrUtil.getMessageDigest();
+
+      @Override
+      public synchronized void flush() throws IOException
+      {
+        if (count > 0) {
+          md.update(buf, 0, count);
+        }
+        super.flush();
+      }
+
+      @Override
+      public void close() throws IOException
+      {
+        super.close();
+        if (md != null) {
+          jlrEntry.setHash(Base64.getEncoder().encodeToString(md.digest()));
+          md = null;
+        }
+      }
+    };
   }
 
   @Nonnull
@@ -54,11 +83,22 @@ public class LocalStoreResource implements IStoreResource
     return Files.getLastModifiedTime(path).toMillis();
   }
 
+  @Override
+  public void setLastModified(long pTime)
+  {
+    try {
+      Files.setLastModifiedTime(path, FileTime.fromMillis(pTime));
+    }
+    catch (IOException pE) {
+      throw new RuntimeException(pE);
+    }
+  }
+
   @Nonnull
   @Override
   public String getHash()
   {
-    return JLoadrUtil.hash(getId());
+    return jlrEntry.getHash();
   }
 
   @Override

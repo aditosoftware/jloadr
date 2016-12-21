@@ -21,4 +21,7 @@ public interface IStoreResourcePack extends IResourcePack
   @Nullable
   @Override
   IStoreResource getResource(@Nonnull String pId);
+
+  void writeConfig();
+
 }

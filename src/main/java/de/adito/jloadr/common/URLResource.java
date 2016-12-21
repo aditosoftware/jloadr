@@ -48,7 +48,7 @@ public class URLResource implements IResource
   @Override
   public String getHash()
   {
-    return JLoadrUtil.hash(getId());
+    return JLoadrUtil.getHash(getId());
   }
 
   @Nonnull
