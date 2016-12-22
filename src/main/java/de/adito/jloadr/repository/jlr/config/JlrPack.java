@@ -3,13 +3,7 @@ package de.adito.jloadr.repository.jlr.config;
 import de.adito.jloadr.common.XMLUtil;
 import org.w3c.dom.*;
 
-import javax.xml.parsers.*;
-import javax.xml.transform.*;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
-import java.io.*;
-import java.net.*;
-import java.nio.file.*;
+import java.net.URL;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -68,29 +62,7 @@ public class JlrPack
 
   public synchronized void writePack()
   {
-    try {
-      DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
-      DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
-
-      Document doc = docBuilder.newDocument();
-      appendToNode(doc);
-
-      TransformerFactory transformerFactory = TransformerFactory.newInstance();
-      Transformer transformer = transformerFactory.newTransformer();
-      transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "no");
-      transformer.setOutputProperty(OutputKeys.METHOD, "xml");
-      transformer.setOutputProperty(OutputKeys.INDENT, "yes");
-      transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
-      transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
-
-      try (OutputStream outputStream = Files.newOutputStream(Paths.get(packUrl.toURI()))) {
-        transformer.transform(new DOMSource(doc),
-                              new StreamResult(new OutputStreamWriter(outputStream, "UTF-8")));
-      }
-    }
-    catch (TransformerException | ParserConfigurationException | IOException | URISyntaxException pE) {
-      throw new RuntimeException(pE);
-    }
+    XMLUtil.saveDocument(packUrl, this::appendToNode);
   }
 
   protected synchronized Map<String, JlrEntry> getEntryMap()

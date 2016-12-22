@@ -4,9 +4,14 @@ import org.w3c.dom.*;
 import org.xml.sax.SAXException;
 
 import javax.xml.parsers.*;
+import javax.xml.transform.*;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 import java.io.*;
 import java.net.*;
+import java.nio.file.*;
 import java.util.*;
+import java.util.function.Consumer;
 
 /**
  * @author j.boesl, 19.12.16
@@ -18,17 +23,62 @@ public class XMLUtil
   {
   }
 
-  public static Document loadDocument(URL pConfigURL) throws RuntimeException
+  public static Document loadDocument(URL pDocumentUrl) throws RuntimeException
   {
     try {
-      URLConnection urlConnection = pConfigURL.openConnection();
+      URLConnection urlConnection = pDocumentUrl.openConnection();
       if (urlConnection.getContentLengthLong() == 0)
         throw new RuntimeException();
       try (InputStream in = urlConnection.getInputStream()) {
-        return DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(in);
+        return loadDocument(in);
       }
     }
+    catch (IOException pE) {
+      throw new RuntimeException(pE);
+    }
+  }
+
+  public static Document loadDocument(InputStream pInputStream) throws RuntimeException
+  {
+    try {
+      return DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(pInputStream);
+    }
     catch (SAXException | IOException | ParserConfigurationException pE) {
+      throw new RuntimeException(pE);
+    }
+  }
+
+  public static void saveDocument(URL pDocumentUrl, Consumer<Document> pAppender)
+  {
+    try (OutputStream outputStream = Files.newOutputStream(Paths.get(pDocumentUrl.toURI()))) {
+      saveDocument(outputStream, pAppender);
+    }
+    catch (URISyntaxException | IOException pE) {
+      throw new RuntimeException(pE);
+    }
+  }
+
+  public static void saveDocument(OutputStream pOutputStream, Consumer<Document> pAppender)
+  {
+    try {
+      DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
+      DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
+
+      Document doc = docBuilder.newDocument();
+      pAppender.accept(doc);
+
+      TransformerFactory transformerFactory = TransformerFactory.newInstance();
+      Transformer transformer = transformerFactory.newTransformer();
+      transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "no");
+      transformer.setOutputProperty(OutputKeys.METHOD, "xml");
+      transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+      transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
+      transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
+
+      transformer.transform(new DOMSource(doc),
+                            new StreamResult(new OutputStreamWriter(pOutputStream, "UTF-8")));
+    }
+    catch (TransformerException | ParserConfigurationException | IOException pE) {
       throw new RuntimeException(pE);
     }
   }
