@@ -1,4 +1,4 @@
-package de.adito.jloadr.repository.jlr.config;
+package de.adito.jloadr.repository.jlr;
 
 import de.adito.jloadr.common.*;
 import org.w3c.dom.Document;

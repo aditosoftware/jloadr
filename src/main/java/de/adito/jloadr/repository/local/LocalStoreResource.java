@@ -2,7 +2,7 @@ package de.adito.jloadr.repository.local;
 
 import de.adito.jloadr.api.IStoreResource;
 import de.adito.jloadr.common.JLoadrUtil;
-import de.adito.jloadr.repository.jlr.config.JlrEntry;
+import de.adito.jloadr.repository.jlr.JlrEntry;
 
 import javax.annotation.Nonnull;
 import java.io.*;
@@ -17,13 +17,11 @@ import java.util.*;
 public class LocalStoreResource implements IStoreResource
 {
   private JlrEntry jlrEntry;
-  private String id;
   private Path path;
 
-  public LocalStoreResource(JlrEntry pJlrEntry, String pId, Path pPath)
+  public LocalStoreResource(JlrEntry pJlrEntry, Path pPath)
   {
     jlrEntry = pJlrEntry;
-    id = pId;
     path = pPath;
   }
 
@@ -59,7 +57,7 @@ public class LocalStoreResource implements IStoreResource
   @Override
   public String getId()
   {
-    return id;
+    return jlrEntry.getId();
   }
 
   @Nonnull
@@ -129,7 +127,7 @@ public class LocalStoreResource implements IStoreResource
   @Override
   public String toString()
   {
-    return JLoadrUtil.toSimpleInfo(this, id);
+    return JLoadrUtil.toSimpleInfo(this, getId());
   }
 
 }

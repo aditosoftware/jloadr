@@ -1,4 +1,4 @@
-package de.adito.jloadr.repository.jlr.config;
+package de.adito.jloadr.repository.jlr;
 
 import de.adito.jloadr.common.XMLUtil;
 import org.w3c.dom.*;
@@ -25,11 +25,6 @@ public class JlrEntry
     id = pId;
     hash = pHash;
     sig = pSig;
-  }
-
-  public JlrEntry()
-  {
-    this(null, null, null);
   }
 
   public String getId()

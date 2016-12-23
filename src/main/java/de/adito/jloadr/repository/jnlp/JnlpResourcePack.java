@@ -1,5 +1,6 @@
 package de.adito.jloadr.repository.jnlp;
 
+import de.adito.jloadr.JLoaderConfig;
 import de.adito.jloadr.api.*;
 import de.adito.jloadr.common.*;
 
@@ -28,7 +29,7 @@ public class JnlpResourcePack implements IResourcePack
   @Override
   public String getId()
   {
-    return JLoadrUtil.getHash(jnlpUrl.toExternalForm()).replaceAll("/", "");
+    return JLoadrUtil.getHash(jnlpUrl.toExternalForm()).replaceAll(File.separator, "");
   }
 
   @Nonnull

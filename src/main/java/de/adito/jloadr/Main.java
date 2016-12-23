@@ -1,7 +1,7 @@
 package de.adito.jloadr;
 
 import de.adito.jloadr.api.*;
-import de.adito.jloadr.common.JLoaderConfig;
+import de.adito.jloadr.repository.jlr.JlrResourcePack;
 import de.adito.jloadr.repository.jnlp.JnlpResourcePack;
 import de.adito.jloadr.repository.local.LocalStore;
 
@@ -22,7 +22,15 @@ public class Main
 
   public static void main(String[] args) throws IOException, InterruptedException
   {
-    JnlpResourcePack remoteResourcePack = new JnlpResourcePack(new URL(args[0]));
+    IResourcePack remoteResourcePack;
+    URL url = new URL(args[0]);
+    if (url.getPath().endsWith("jnlp"))
+      remoteResourcePack = new JnlpResourcePack(url);
+    else if (url.getPath().endsWith("jlr.xml"))
+      remoteResourcePack = new JlrResourcePack(url);
+    else
+      throw new RuntimeException("resource not supported: " + url.toExternalForm());
+
     Splash splash = GraphicsEnvironment.isHeadless() ? null : new Splash();
 
     try {
@@ -44,11 +52,12 @@ public class Main
         try (InputStream inputStream = configResource.getInputStream()) {
           loaderConfig.load(inputStream);
         }
+
+        System.out.println(Arrays.stream(loaderConfig.getStartCommands()).collect(Collectors.joining(" ")));
+
         Process process = Runtime.getRuntime().exec(loaderConfig.getStartCommands(), null,
                                                     new File("jloadr", localResourcePack.getId()));
 
-        //System.out.println(Arrays.stream(loaderConfig.getStartCommands()).collect(Collectors.joining(" ")));
-        //Process process = Runtime.getRuntime().exec(startConfig.getStartCommand(), null, new File("jloadr", localResourcePack.getId()));
         //System.err.println(process.waitFor());
         print(process.getInputStream());
       }

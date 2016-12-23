@@ -2,9 +2,10 @@ package de.adito.jloadr.repository.jlr;
 
 import de.adito.jloadr.api.*;
 import de.adito.jloadr.common.*;
-import de.adito.jloadr.repository.jlr.config.*;
 
 import javax.annotation.*;
+import java.io.File;
+import java.net.*;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -15,19 +16,35 @@ import java.util.stream.Collectors;
 public class JlrResourcePack implements IResourcePack
 {
   private JlrPack jlrPack;
+  private URL resourcesUrl;
   private Map<String, IResource> resourceMap;
 
+
+  public JlrResourcePack(URL pJlrPackUrl)
+  {
+    this(new JlrPack(pJlrPackUrl));
+  }
 
   public JlrResourcePack(JlrPack pJlrPack)
   {
     jlrPack = pJlrPack;
+    try {
+      String urlString = jlrPack.getUrl().toExternalForm();
+      int index = urlString.lastIndexOf(".jlr.xml");
+      if (index != -1)
+        urlString = urlString.substring(0, index);
+      resourcesUrl = new URL(urlString + "/");
+    }
+    catch (MalformedURLException pE) {
+      throw new RuntimeException(pE);
+    }
   }
 
   @Nonnull
   @Override
   public String getId()
   {
-    return JLoadrUtil.getIdForUrl(jlrPack.getUrl());
+    return JLoadrUtil.getHash(jlrPack.getUrl().toExternalForm()).replaceAll(File.separator, "");
   }
 
   @Nonnull
@@ -48,22 +65,38 @@ public class JlrResourcePack implements IResourcePack
   {
     if (resourceMap == null) {
       resourceMap = new HashMap<>();
-      return jlrPack.getEntries().stream()
-          .map(JlrResource::new)
+      jlrPack.loadPack();
+      resourceMap = jlrPack.getEntries().stream()
+          .map(entry -> {
+            try {
+              URL url = new URL(resourcesUrl, entry.getId());
+              return new JlrResource(entry, url);
+            }
+            catch (MalformedURLException pE) {
+              throw new RuntimeException(pE);
+            }
+          })
           .collect(Collectors.toMap(URLResource::getId, Function.identity()));
     }
     return resourceMap;
   }
 
 
-  private class JlrResource extends URLResource
+  private static class JlrResource extends URLResource
   {
     private JlrEntry entry;
 
-    JlrResource(JlrEntry pEntry)
+    private JlrResource(JlrEntry pEntry, URL pUrl)
     {
-      super(UrlUtil.getUrl(jlrPack.getUrl(), pEntry.getId()));
+      super(pUrl);
       entry = pEntry;
+    }
+
+    @Nonnull
+    @Override
+    public String getId()
+    {
+      return entry.getId();
     }
 
     @Nonnull
@@ -73,4 +106,5 @@ public class JlrResourcePack implements IResourcePack
       return entry.getHash();
     }
   }
+
 }

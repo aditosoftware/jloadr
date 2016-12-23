@@ -2,7 +2,7 @@ package de.adito.jloadr.repository.local;
 
 import de.adito.jloadr.api.*;
 import de.adito.jloadr.common.JLoadrUtil;
-import de.adito.jloadr.repository.jlr.config.*;
+import de.adito.jloadr.repository.jlr.*;
 
 import javax.annotation.*;
 import java.io.IOException;
@@ -43,7 +43,7 @@ public class LocalStoreResourcePack implements IStoreResourcePack
           if (entry == null)
             entry = new JlrEntry(id, null, null);
           jlrPack.addEntry(entry);
-          LocalStoreResource resource = new LocalStoreResource(entry, id, pPath);
+          LocalStoreResource resource = new LocalStoreResource(entry, pPath);
           resourceMap.put(id, resource);
           return FileVisitResult.CONTINUE;
         }
@@ -84,8 +84,8 @@ public class LocalStoreResourcePack implements IStoreResourcePack
       throw new RuntimeException("Resource already exists: " + path);
     try {
       Files.createDirectories(path.getParent());
-      JlrEntry jlrEntry = new JlrEntry();
-      LocalStoreResource resource = new LocalStoreResource(jlrEntry, pId, Files.createFile(path));
+      JlrEntry jlrEntry = new JlrEntry(pId, null, null);
+      LocalStoreResource resource = new LocalStoreResource(jlrEntry, Files.createFile(path));
       jlrPack.addEntry(jlrEntry);
       resourceMap.put(pId, resource);
       return resource;

@@ -1,5 +1,6 @@
-package de.adito.jloadr.common;
+package de.adito.jloadr;
 
+import de.adito.jloadr.common.XMLUtil;
 import org.w3c.dom.*;
 
 import java.io.*;
@@ -65,7 +66,7 @@ public class JLoaderConfig
   public String[] getStartCommands()
   {
     List<String> parameters = new ArrayList<>();
-    parameters.add(getJavaCmd());
+    parameters.add(getJavaCmd().replaceAll("/", File.separator));
     String vmParams = getVmParameters().stream()
         .map(param -> "-D" + param)
         .collect(Collectors.joining(" "));
@@ -77,7 +78,7 @@ public class JLoaderConfig
         .collect(Collectors.joining(File.pathSeparator));
     if (!cp.isEmpty()) {
       parameters.add("-cp");
-      parameters.add("\"" + cp + "\"");
+      parameters.add(cp);
     }
     parameters.add(getMainCls());
     getArguments().forEach(parameters::add);
