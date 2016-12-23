@@ -3,7 +3,7 @@ package de.adito.jloadr.common;
 import org.w3c.dom.*;
 
 import java.io.*;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -11,11 +11,13 @@ import java.util.stream.Collectors;
  */
 public class JLoaderConfig
 {
-  public static final String JAVA = "java";
-  public static final String VM_PARAMETER = "vmParameter";
-  public static final String CLASSPATH = "classpath";
-  public static final String MAIN = "main";
-  public static final String ARGUMENT = "argument";
+  public static final String CONFIG_NAME = "jloadrConfig.xml";
+
+  public static final String TAG_JAVA = "java";
+  public static final String TAG_VM_PARAMETER = "vmParameter";
+  public static final String TAG_CLASSPATH = "classpath";
+  public static final String TAG_MAIN = "main";
+  public static final String TAG_ARGUMENT = "argument";
 
   private String javaCmd;
   private List<String> vmParameters;
@@ -27,22 +29,22 @@ public class JLoaderConfig
   public void load(InputStream pInputStream)
   {
     Document document = XMLUtil.loadDocument(pInputStream);
-    Element root = XMLUtil.getChildElement(document.getDocumentElement(), "jloadr");
+    Element root = document.getDocumentElement();
 
-    javaCmd = XMLUtil.getChildText(root, JAVA);
+    javaCmd = XMLUtil.getChildText(root, TAG_JAVA);
 
-    vmParameters = XMLUtil.findChildElements(root, VM_PARAMETER).stream()
+    vmParameters = XMLUtil.findChildElements(root, TAG_VM_PARAMETER).stream()
         .map(element -> element.getTextContent().trim())
         .collect(Collectors.toList());
 
-    classpath = XMLUtil.findChildElements(root, CLASSPATH).stream()
+    classpath = XMLUtil.findChildElements(root, TAG_CLASSPATH).stream()
         .map(element -> element.getTextContent().trim())
         .collect(Collectors.toList());
 
-    mainCls = XMLUtil.getChildText(root, MAIN);
+    mainCls = XMLUtil.getChildText(root, TAG_MAIN);
     assert mainCls != null;
 
-    arguments = XMLUtil.findChildElements(root, ARGUMENT).stream()
+    arguments = XMLUtil.findChildElements(root, TAG_ARGUMENT).stream()
         .map(element -> element.getTextContent().trim())
         .collect(Collectors.toList());
   }
@@ -51,13 +53,36 @@ public class JLoaderConfig
   {
     XMLUtil.saveDocument(pOutputStream, pDocument -> {
       Element root = pDocument.createElement("jloadr");
-      pDocument.getDocumentElement().appendChild(root);
-      _append(pDocument, root, JAVA, javaCmd);
-      _append(pDocument, root, VM_PARAMETER, vmParameters);
-      _append(pDocument, root, CLASSPATH, classpath);
-      _append(pDocument, root, MAIN, mainCls);
-      _append(pDocument, root, ARGUMENT, arguments);
+      pDocument.appendChild(root);
+      _append(pDocument, root, TAG_JAVA, javaCmd);
+      _append(pDocument, root, TAG_VM_PARAMETER, vmParameters);
+      _append(pDocument, root, TAG_CLASSPATH, classpath);
+      _append(pDocument, root, TAG_MAIN, mainCls);
+      _append(pDocument, root, TAG_ARGUMENT, arguments);
     });
+  }
+
+  public String[] getStartCommands()
+  {
+    List<String> parameters = new ArrayList<>();
+    parameters.add(getJavaCmd());
+    String vmParams = getVmParameters().stream()
+        .map(param -> "-D" + param)
+        .collect(Collectors.joining(" "));
+    if (!vmParams.isEmpty()) {
+      parameters.add(vmParams);
+    }
+    String cp = getClasspath().stream()
+        .map(str -> str.replaceAll("/", File.separator))
+        .collect(Collectors.joining(File.pathSeparator));
+    if (!cp.isEmpty()) {
+      parameters.add("-cp");
+      parameters.add("\"" + cp + "\"");
+    }
+    parameters.add(getMainCls());
+    getArguments().forEach(parameters::add);
+
+    return parameters.toArray(new String[parameters.size()]);
   }
 
   public String getJavaCmd()

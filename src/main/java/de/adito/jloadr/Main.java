@@ -1,7 +1,8 @@
 package de.adito.jloadr;
 
 import de.adito.jloadr.api.*;
-import de.adito.jloadr.repository.jnlp.JnlpStartConfig;
+import de.adito.jloadr.common.JLoaderConfig;
+import de.adito.jloadr.repository.jnlp.JnlpResourcePack;
 import de.adito.jloadr.repository.local.LocalStore;
 
 import javax.imageio.ImageIO;
@@ -21,27 +22,36 @@ public class Main
 
   public static void main(String[] args) throws IOException, InterruptedException
   {
-    JnlpStartConfig startConfig = new JnlpStartConfig(new URL(args[0]));
+    JnlpResourcePack remoteResourcePack = new JnlpResourcePack(new URL(args[0]));
     Splash splash = GraphicsEnvironment.isHeadless() ? null : new Splash();
 
     try {
-      IResourcePack resourcePack = startConfig.getResourcePack();
       //Paths.get(System.getProperty("user.home"), "jloadr")
       LocalStore localStore = new LocalStore(Paths.get("jloadr"));
 
-      new Loader().load(localStore, resourcePack, splash);
+      new Loader().load(localStore, remoteResourcePack, splash);
 
-      IStoreResourcePack localResourcePack = localStore.getResourcePack(resourcePack.getId());
+      IStoreResourcePack localResourcePack = localStore.getResourcePack(remoteResourcePack.getId());
       localResourcePack.writeConfig();
       //List<IStoreResource> resources = localResourcePack.getResources();
       //for (IResource resource : resources) {
       //  System.out.println("locally found: " + resource);
       //}
 
-      System.out.println(Arrays.stream(startConfig.getStartCommand()).collect(Collectors.joining(" ")));
-      Process process = Runtime.getRuntime().exec(startConfig.getStartCommand(), null, new File("jloadr", localResourcePack.getId()));
-      //System.err.println(process.waitFor());
-      //print(process.getInputStream());
+      IStoreResource configResource = localResourcePack.getResource(JLoaderConfig.CONFIG_NAME);
+      if (configResource != null) {
+        JLoaderConfig loaderConfig = new JLoaderConfig();
+        try (InputStream inputStream = configResource.getInputStream()) {
+          loaderConfig.load(inputStream);
+        }
+        Process process = Runtime.getRuntime().exec(loaderConfig.getStartCommands(), null,
+                                                    new File("jloadr", localResourcePack.getId()));
+
+        //System.out.println(Arrays.stream(loaderConfig.getStartCommands()).collect(Collectors.joining(" ")));
+        //Process process = Runtime.getRuntime().exec(startConfig.getStartCommand(), null, new File("jloadr", localResourcePack.getId()));
+        //System.err.println(process.waitFor());
+        print(process.getInputStream());
+      }
 
       Thread.sleep(3000);
     }

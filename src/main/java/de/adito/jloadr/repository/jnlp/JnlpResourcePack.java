@@ -4,6 +4,7 @@ import de.adito.jloadr.api.*;
 import de.adito.jloadr.common.*;
 
 import javax.annotation.*;
+import java.io.*;
 import java.net.*;
 import java.util.*;
 import java.util.function.Function;
@@ -12,13 +13,13 @@ import java.util.stream.*;
 /**
  * @author j.boesl, 05.09.16
  */
-class JnlpResourcePack implements IResourcePack
+public class JnlpResourcePack implements IResourcePack
 {
   private URL jnlpUrl;
   private Collection<JnlpUrl> jnlpUrls;
   private Map<String, IResource> resources;
 
-  JnlpResourcePack(URL pJnlpUrl)
+  public JnlpResourcePack(URL pJnlpUrl)
   {
     jnlpUrl = pJnlpUrl;
   }
@@ -68,7 +69,7 @@ class JnlpResourcePack implements IResourcePack
                   return false;
                 }
               }),
-          Stream.of(_getSplashResource()))
+          Stream.of(_getSplashResource(), new _ConfigResource()))
           .collect(Collectors.toMap(IResource::getId, Function.identity(), (r1, r2) -> r1, LinkedHashMap::new));
     return resources;
   }
@@ -97,5 +98,99 @@ class JnlpResourcePack implements IResourcePack
         })
         .findAny().orElse(null);
   }
+
+
+  private class _ConfigResource implements IResource
+  {
+    private byte[] config;
+
+    @Nonnull
+    @Override
+    public String getId()
+    {
+      return JLoaderConfig.CONFIG_NAME;
+    }
+
+    @Nonnull
+    @Override
+    public InputStream getInputStream() throws IOException
+    {
+      return new ByteArrayInputStream(_getBinaryConfig());
+    }
+
+    @Override
+    public long getSize() throws IOException
+    {
+      return _getBinaryConfig().length;
+    }
+
+    @Override
+    public long getLastModified() throws IOException
+    {
+      URLConnection urlConnection = jnlpUrl.openConnection();
+      return urlConnection.getLastModified();
+    }
+
+    @Nonnull
+    @Override
+    public String getHash()
+    {
+      return null;
+    }
+
+    private synchronized byte[] _getBinaryConfig()
+    {
+      if (config == null)
+      {
+        try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
+          _createConfig().save(outputStream);
+          config = outputStream.toByteArray();
+        }
+        catch (IOException pE) {
+          throw new RuntimeException(pE);
+        }
+      }
+      return config;
+    }
+
+    private JLoaderConfig _createConfig()
+    {
+      Collection<JnlpUrl> jnlpUrls = getJnlpUrls();
+
+      List<String> vmProperties = jnlpUrls.stream()
+          .flatMap(jnlpUrl -> jnlpUrl.findChildElementsByPath("resources/property").stream())
+          .map(element -> {
+            String name = element.getAttribute("name").replace("jnlp.adito.", "");
+            String value = element.getAttribute("value");
+            return name.isEmpty() ? null : name + (value.isEmpty() ? "" : "=" + value);
+          })
+          .filter(Objects::nonNull)
+          .collect(Collectors.toList());
+
+      List<String> classpath = getResourcesMap().keySet().stream()
+          .map(id -> id.replaceAll("\\.pack\\.gz", ""))
+          .collect(Collectors.toList());
+
+      String mainClass = jnlpUrls.stream()
+          .flatMap(jnlpUrl -> jnlpUrl.findChildElementsByPath("application-desc").stream())
+          .map(element -> element.getAttribute("main-class"))
+          .filter(str -> str != null && !str.isEmpty())
+          .findAny().orElseThrow(() -> new RuntimeException("no main class defined"));
+
+      List<String> arguments = jnlpUrls.stream()
+          .flatMap(jnlpUrl -> jnlpUrl.findChildElementsByPath("application-desc/argument").stream())
+          .map(element -> element.getTextContent().trim())
+          .collect(Collectors.toList());
+
+      JLoaderConfig jLoaderConfig = new JLoaderConfig();
+      jLoaderConfig.setVmParameters(vmProperties);
+      jLoaderConfig.setClasspath(classpath);
+      jLoaderConfig.setMainCls(mainClass);
+      jLoaderConfig.setArguments(arguments);
+
+      return jLoaderConfig;
+    }
+  }
+
 
 }
