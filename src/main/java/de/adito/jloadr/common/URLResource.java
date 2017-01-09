@@ -2,7 +2,7 @@ package de.adito.jloadr.common;
 
 import de.adito.jloadr.api.IResource;
 
-import javax.annotation.Nonnull;
+import javax.annotation.*;
 import java.io.*;
 import java.net.*;
 import java.util.Objects;
@@ -44,11 +44,11 @@ public class URLResource implements IResource
     return _getUrlConnection().getLastModified();
   }
 
-  @Nonnull
+  @Nullable
   @Override
   public String getHash()
   {
-    return JLoadrUtil.getHash(getId());
+    return null;
   }
 
   @Nonnull

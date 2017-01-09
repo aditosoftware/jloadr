@@ -71,6 +71,7 @@ public class JnlpResourcePack implements IResourcePack
                 }
               }),
           Stream.of(_getSplashResource(), new _ConfigResource()))
+          .filter(Objects::nonNull)
           .collect(Collectors.toMap(IResource::getId, Function.identity(), (r1, r2) -> r1, LinkedHashMap::new));
     return resources;
   }
@@ -132,17 +133,21 @@ public class JnlpResourcePack implements IResourcePack
       return urlConnection.getLastModified();
     }
 
-    @Nonnull
+    @Nullable
     @Override
     public String getHash()
     {
-      return null;
+      try (ByteArrayInputStream inputStream = new ByteArrayInputStream(_getBinaryConfig())) {
+        return JLoadrUtil.getHash(inputStream);
+      }
+      catch (IOException pE) {
+        throw new RuntimeException(pE);
+      }
     }
 
     private synchronized byte[] _getBinaryConfig()
     {
-      if (config == null)
-      {
+      if (config == null) {
         try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
           _createConfig().save(outputStream);
           config = outputStream.toByteArray();

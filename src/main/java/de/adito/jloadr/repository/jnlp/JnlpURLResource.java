@@ -4,7 +4,7 @@ import de.adito.jloadr.api.IResource;
 import de.adito.jloadr.common.URLResource;
 import org.w3c.dom.Element;
 
-import javax.annotation.Nonnull;
+import javax.annotation.*;
 import java.io.*;
 import java.net.URL;
 import java.util.*;
@@ -26,10 +26,16 @@ class JnlpURLResource implements IResource
   @Override
   public String getId()
   {
-    return _getResource().getId();
+    String id = _getResource().getId();
+    String codebase = jarJnlpReference.getCodebase().getPath();
+    if (id.startsWith(codebase))
+      return id.substring(codebase.length());
+    if (id.startsWith("/"))
+      return id.substring(1);
+    return id;
   }
 
-  @Nonnull
+  @Nullable
   @Override
   public String getHash()
   {

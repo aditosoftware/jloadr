@@ -11,7 +11,8 @@ import javax.annotation.*;
 public interface ILoader
 {
 
-  void load(@Nonnull IStore pStore, @Nonnull IResourcePack pSource, @Nullable IStateCallback pStateCallback);
+  @Nonnull
+  IStoreResourcePack load(@Nonnull IStore pStore, @Nonnull IResourcePack pSource, @Nullable IStateCallback pStateCallback);
 
 
   interface IStateCallback

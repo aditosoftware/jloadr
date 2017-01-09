@@ -16,8 +16,9 @@ import java.util.zip.*;
 public class Loader implements ILoader
 {
 
+  @Nonnull
   @Override
-  public void load(@Nonnull IStore pStore, @Nonnull IResourcePack pSource, @Nullable IStateCallback pStateCallback)
+  public IStoreResourcePack load(@Nonnull IStore pStore, @Nonnull IResourcePack pSource, @Nullable IStateCallback pStateCallback)
   {
     String sourceId = pSource.getId();
     IStoreResourcePack localResourcePack = pStore.containsResourcePack(sourceId) ?
@@ -62,6 +63,7 @@ public class Loader implements ILoader
           localResource = localResourcePack.createResource(localId);
 
           _copy(localResource, resource);
+          localResource.setLastModified(resource.getLastModified());
         }
         if (pStateCallback != null)
           pStateCallback.loaded(loadCount.incrementAndGet());
@@ -73,6 +75,9 @@ public class Loader implements ILoader
 
     if (pStateCallback != null)
       pStateCallback.finished();
+
+    localResourcePack.writeConfig();
+    return localResourcePack;
   }
 
   private void _copy(IStoreResource localResource, IResource pRemoteResource)

@@ -1,6 +1,6 @@
 package de.adito.jloadr.api;
 
-import javax.annotation.Nonnull;
+import javax.annotation.*;
 import java.io.*;
 
 /**
@@ -19,7 +19,7 @@ public interface IResource
 
   long getLastModified() throws IOException;
 
-  @Nonnull
+  @Nullable
   String getHash();
 
 }

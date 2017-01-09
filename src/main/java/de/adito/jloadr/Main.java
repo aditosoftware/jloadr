@@ -37,10 +37,8 @@ public class Main
       //Paths.get(System.getProperty("user.home"), "jloadr")
       LocalStore localStore = new LocalStore(Paths.get("jloadr"));
 
-      new Loader().load(localStore, remoteResourcePack, splash);
+      IStoreResourcePack localResourcePack = new Loader().load(localStore, remoteResourcePack, splash);
 
-      IStoreResourcePack localResourcePack = localStore.getResourcePack(remoteResourcePack.getId());
-      localResourcePack.writeConfig();
       //List<IStoreResource> resources = localResourcePack.getResources();
       //for (IResource resource : resources) {
       //  System.out.println("locally found: " + resource);

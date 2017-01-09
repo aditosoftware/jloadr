@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<jnlp
+        spec="6.0.18+"
+        codebase="{0}"
+        href="test.jnlp">
+
+    <application-desc main-class="Start">
+        <argument>arg1</argument>
+        <argument>arg2</argument>
+        <argument>arg3</argument>
+        <argument>arg4</argument>
+    </application-desc>
+
+
+    <information>
+        <title>Test</title>
+        <vendor>Test corp</vendor>
+        <description>test app</description>
+        <!--icon href="splash.png" kind="splash"/-->
+        <!--icon href="shortcut.ico" kind="shortcut"/-->
+        <offline-allowed/>
+        <shortcut>
+            <desktop/>
+            <menu submenu="testApp"/>
+        </shortcut>
+    </information>
+
+    <information os="Mac OS X">
+        <!--icon href="shortcut.icns" kind="shortcut"/-->
+    </information>
+
+    <security>
+        <all-permissions/>
+    </security>
+    <resources>
+        <j2se version="1.8" max-heap-size="256M"/>
+        {1}
+        <extension name="libs" href="libs.jnlp"/>
+        <property name="test" value="true"/>
+    </resources>
+
+</jnlp>
