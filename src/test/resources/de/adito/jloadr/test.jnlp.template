@@ -4,7 +4,7 @@
         codebase="{0}"
         href="test.jnlp">
 
-    <application-desc main-class="Start">
+    <application-desc main-class="de.adito.jloadr.ExecTest">
         <argument>arg1</argument>
         <argument>arg2</argument>
         <argument>arg3</argument>
@@ -34,6 +34,7 @@
     </security>
     <resources>
         <j2se version="1.8" max-heap-size="256M"/>
+        <jar href="jloadr-tests.jar"/>
         {1}
         <extension name="libs" href="libs.jnlp"/>
         <property name="test" value="true"/>
