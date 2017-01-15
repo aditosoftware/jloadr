@@ -73,6 +73,7 @@
         </configuration>
         <executions>
           <execution>
+            <phase>process-test-classes</phase>
             <goals>
               <goal>test-jar</goal>
             </goals>
