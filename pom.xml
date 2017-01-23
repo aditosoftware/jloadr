@@ -63,6 +63,7 @@
         <configuration>
           <archive>
             <manifest>
+              <mainClass>de.adito.jloadr.Main</mainClass>
               <useUniqueVersions>true</useUniqueVersions>
               <addClasspath>true</addClasspath>
               <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
