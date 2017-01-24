@@ -1,6 +1,8 @@
 package de.adito.jloadr.repository.jlr;
 
+import de.adito.jloadr.api.IResourceId;
 import de.adito.jloadr.common.XMLUtil;
+import de.adito.jloadr.repository.ResourceId;
 import org.w3c.dom.*;
 
 /**
@@ -8,31 +10,29 @@ import org.w3c.dom.*;
  */
 public class JlrEntry
 {
-  private String id;
+  private IResourceId id;
   private String hash;
   private String sig;
 
 
   public JlrEntry(Element pElement)
   {
-    this(XMLUtil.getChildText(pElement, "id"),
-         XMLUtil.getChildText(pElement, "hash"),
-         XMLUtil.getChildText(pElement, "sig"));
+    id = new ResourceId(XMLUtil.getChildText(pElement, "id"));
+    hash = XMLUtil.getChildText(pElement, "hash");
+    sig = XMLUtil.getChildText(pElement, "sig");
   }
 
-  public JlrEntry(String pId, String pHash, String pSig)
+  public JlrEntry(IResourceId pId)
   {
     id = pId;
-    hash = pHash;
-    sig = pSig;
   }
 
-  public String getId()
+  public IResourceId getId()
   {
     return id;
   }
 
-  public void setId(String pId)
+  public void setId(IResourceId pId)
   {
     id = pId;
   }
@@ -66,7 +66,7 @@ public class JlrEntry
     pNode.appendChild(entry);
 
     Element id = doc.createElement("id");
-    id.setTextContent(getId());
+    id.setTextContent(getId().toString());
     entry.appendChild(id);
 
     if (getHash() != null) {

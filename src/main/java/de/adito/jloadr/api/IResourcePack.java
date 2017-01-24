@@ -16,6 +16,6 @@ public interface IResourcePack
   List<? extends IResource> getResources();
 
   @Nullable
-  IResource getResource(@Nonnull String pId);
+  IResource getResource(@Nonnull IResourceId pId);
 
 }

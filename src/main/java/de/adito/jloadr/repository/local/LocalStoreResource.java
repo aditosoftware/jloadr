@@ -1,6 +1,6 @@
 package de.adito.jloadr.repository.local;
 
-import de.adito.jloadr.api.IStoreResource;
+import de.adito.jloadr.api.*;
 import de.adito.jloadr.common.JLoadrUtil;
 import de.adito.jloadr.repository.jlr.JlrEntry;
 
@@ -55,7 +55,7 @@ public class LocalStoreResource implements IStoreResource
 
   @Nonnull
   @Override
-  public String getId()
+  public IResourceId getId()
   {
     return jlrEntry.getId();
   }
@@ -127,7 +127,7 @@ public class LocalStoreResource implements IStoreResource
   @Override
   public String toString()
   {
-    return JLoadrUtil.toSimpleInfo(this, getId());
+    return JLoadrUtil.toSimpleInfo(this, getId().toPath().toString());
   }
 
 }

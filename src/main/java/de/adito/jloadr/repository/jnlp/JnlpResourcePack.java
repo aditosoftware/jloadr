@@ -2,7 +2,8 @@ package de.adito.jloadr.repository.jnlp;
 
 import de.adito.jloadr.JLoaderConfig;
 import de.adito.jloadr.api.*;
-import de.adito.jloadr.common.*;
+import de.adito.jloadr.common.JLoadrUtil;
+import de.adito.jloadr.repository.*;
 
 import javax.annotation.*;
 import java.io.*;
@@ -18,7 +19,7 @@ public class JnlpResourcePack implements IResourcePack
 {
   private URL jnlpUrl;
   private Collection<JnlpUrl> jnlpUrls;
-  private Map<String, IResource> resources;
+  private Map<IResourceId, IResource> resources;
 
   public JnlpResourcePack(URL pJnlpUrl)
   {
@@ -29,7 +30,7 @@ public class JnlpResourcePack implements IResourcePack
   @Override
   public String getId()
   {
-    return JLoadrUtil.normalizeId(JLoadrUtil.getHash(jnlpUrl.toExternalForm()));
+    return JLoadrUtil.getHash(jnlpUrl.toExternalForm());
   }
 
   @Nonnull
@@ -41,7 +42,7 @@ public class JnlpResourcePack implements IResourcePack
 
   @Nullable
   @Override
-  public IResource getResource(@Nonnull String pId)
+  public IResource getResource(@Nonnull IResourceId pId)
   {
     return getResourcesMap().get(pId);
   }
@@ -53,7 +54,7 @@ public class JnlpResourcePack implements IResourcePack
     return jnlpUrls;
   }
 
-  synchronized Map<String, IResource> getResourcesMap()
+  synchronized Map<IResourceId, IResource> getResourcesMap()
   {
     if (resources == null)
       resources = Stream.concat(
@@ -88,9 +89,9 @@ public class JnlpResourcePack implements IResourcePack
             {
               @Nonnull
               @Override
-              public String getId()
+              public IResourceId getId()
               {
-                return "splash";
+                return new ResourceId("splash");
               }
             };
           }
@@ -108,9 +109,9 @@ public class JnlpResourcePack implements IResourcePack
 
     @Nonnull
     @Override
-    public String getId()
+    public IResourceId getId()
     {
-      return JLoaderConfig.CONFIG_NAME;
+      return JLoaderConfig.CONFIG_ID;
     }
 
     @Nonnull
@@ -174,7 +175,7 @@ public class JnlpResourcePack implements IResourcePack
           .collect(Collectors.toList());
 
       List<String> classpath = getResourcesMap().keySet().stream()
-          .map(id -> id.replace(".pack.gz", ""))
+          .map(id -> id.toString().replace(".pack.gz", ""))
           .collect(Collectors.toList());
 
       String mainClass = jnlpUrls.stream()

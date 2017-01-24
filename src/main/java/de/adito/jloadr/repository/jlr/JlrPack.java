@@ -1,5 +1,6 @@
 package de.adito.jloadr.repository.jlr;
 
+import de.adito.jloadr.api.IResourceId;
 import de.adito.jloadr.common.XMLUtil;
 import org.w3c.dom.*;
 
@@ -14,7 +15,7 @@ import java.util.stream.Collectors;
 public class JlrPack
 {
   private URL packUrl;
-  private Map<String, JlrEntry> entryMap;
+  private Map<IResourceId, JlrEntry> entryMap;
 
 
   public JlrPack(URL pPackUrl)
@@ -32,7 +33,7 @@ public class JlrPack
     return new ArrayList<>(getEntryMap().values());
   }
 
-  public synchronized JlrEntry getEntry(String pId)
+  public synchronized JlrEntry getEntry(IResourceId pId)
   {
     return getEntryMap().get(pId);
   }
@@ -42,7 +43,7 @@ public class JlrPack
     getEntryMap().put(pEntry.getId(), pEntry);
   }
 
-  public synchronized void removeEntry(String pId)
+  public synchronized void removeEntry(IResourceId pId)
   {
     getEntryMap().remove(pId);
   }
@@ -65,7 +66,7 @@ public class JlrPack
     XMLUtil.saveDocument(packUrl, this::appendToNode);
   }
 
-  protected synchronized Map<String, JlrEntry> getEntryMap()
+  protected synchronized Map<IResourceId, JlrEntry> getEntryMap()
   {
     if (entryMap == null)
       entryMap = new HashMap<>();

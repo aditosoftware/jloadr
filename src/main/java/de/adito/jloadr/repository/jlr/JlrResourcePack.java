@@ -2,9 +2,9 @@ package de.adito.jloadr.repository.jlr;
 
 import de.adito.jloadr.api.*;
 import de.adito.jloadr.common.*;
+import de.adito.jloadr.repository.URLResource;
 
 import javax.annotation.*;
-import java.io.File;
 import java.net.*;
 import java.util.*;
 import java.util.function.Function;
@@ -17,7 +17,7 @@ public class JlrResourcePack implements IResourcePack
 {
   private JlrPack jlrPack;
   private URL resourcesUrl;
-  private Map<String, IResource> resourceMap;
+  private Map<IResourceId, IResource> resourceMap;
 
 
   public JlrResourcePack(URL pJlrPackUrl)
@@ -44,7 +44,7 @@ public class JlrResourcePack implements IResourcePack
   @Override
   public String getId()
   {
-    return JLoadrUtil.normalizeId(JLoadrUtil.getHash(jlrPack.getUrl().toExternalForm()));
+    return JLoadrUtil.getHash(jlrPack.getUrl().toExternalForm());
   }
 
   @Nonnull
@@ -56,12 +56,12 @@ public class JlrResourcePack implements IResourcePack
 
   @Nullable
   @Override
-  public IResource getResource(@Nonnull String pId)
+  public IResource getResource(@Nonnull IResourceId pId)
   {
     return _getResourceMap().get(pId);
   }
 
-  private synchronized Map<String, IResource> _getResourceMap()
+  private synchronized Map<IResourceId, IResource> _getResourceMap()
   {
     if (resourceMap == null) {
       resourceMap = new HashMap<>();
@@ -69,7 +69,7 @@ public class JlrResourcePack implements IResourcePack
       resourceMap = jlrPack.getEntries().stream()
           .map(entry -> {
             try {
-              URL url = new URL(resourcesUrl, entry.getId());
+              URL url = new URL(resourcesUrl, entry.getId().toString());
               return new JlrResource(entry, url);
             }
             catch (MalformedURLException pE) {
@@ -94,7 +94,7 @@ public class JlrResourcePack implements IResourcePack
 
     @Nonnull
     @Override
-    public String getId()
+    public IResourceId getId()
     {
       return entry.getId();
     }

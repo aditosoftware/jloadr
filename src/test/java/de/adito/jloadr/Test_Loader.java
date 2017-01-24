@@ -4,18 +4,13 @@ import de.adito.jloadr.api.*;
 import de.adito.jloadr.repository.jlr.JlrResourcePack;
 import de.adito.jloadr.repository.jnlp.JnlpResourcePack;
 import de.adito.jloadr.repository.local.LocalStore;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.*;
 
 import java.io.*;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -77,10 +72,9 @@ public class Test_Loader
 
 
     JLoaderConfig loaderConfig = new JLoaderConfig();
-    IStoreResource configResource = localResourcePack.getResource(JLoaderConfig.CONFIG_NAME);
+    IStoreResource configResource = localResourcePack.getResource(JLoaderConfig.CONFIG_ID);
     Assert.assertNotNull(configResource);
-    try (InputStream inputStream = configResource.getInputStream())
-    {
+    try (InputStream inputStream = configResource.getInputStream()) {
       loaderConfig.load(inputStream);
     }
 
@@ -100,9 +94,8 @@ public class Test_Loader
 
   private void _check(IResourcePack pRemoteResourcePack, IResourcePack pLocalResourcePack) throws IOException
   {
-    for (IResource rResource : pRemoteResourcePack.getResources())
-    {
-      String id = rResource.getId();
+    for (IResource rResource : pRemoteResourcePack.getResources()) {
+      IResourceId id = rResource.getId();
       IResource lResource = pLocalResourcePack.getResource(id);
       Assert.assertNotNull("no local resource for '" + rResource.getId() + "'.", lResource);
       Assert.assertEquals("id mismatch for '" + id + "'.", id, lResource.getId());
@@ -115,12 +108,10 @@ public class Test_Loader
 
   private void _createTestFiles(File pDir, List<String> pNames) throws IOException
   {
-    for (String fileName : pNames)
-    {
+    for (String fileName : pNames) {
       File file = new File(pDir, fileName);
       file.createNewFile();
-      try (FileOutputStream outputStream = new FileOutputStream(file))
-      {
+      try (FileOutputStream outputStream = new FileOutputStream(file)) {
         for (int j = 0; j < 1024; j++)
           outputStream.write((int) (200 * Math.random()) + 1);
       }
@@ -132,8 +123,7 @@ public class Test_Loader
   private List<String> _createFileNames()
   {
     List<String> fileNames = new ArrayList<>();
-    for (int i = 0; i < 20; i++)
-    {
+    for (int i = 0; i < 20; i++) {
       int number = (int) (Math.random() * i) + 1;
       String fileName = "testFile_" + number + ".txt";
       if (!fileNames.contains(fileName))
@@ -148,8 +138,7 @@ public class Test_Loader
     String res1 = "";
     String res2 = "";
     String refFormat = "<jar href=\"{0}\"/>";
-    for (int i = 0; i < pResources.size(); i++)
-    {
+    for (int i = 0; i < pResources.size(); i++) {
       String format = MessageFormat.format(refFormat, pResources.get(i));
       if (i < splitIndex)
         res1 += (res1.isEmpty() ? "" : "\n") + format;
@@ -163,13 +152,11 @@ public class Test_Loader
   private File _createJnlp(File pDir, String pName, String... pArgs) throws IOException
   {
     String content;
-    try (InputStream inputStream = Test_Loader.class.getResourceAsStream(pName + ".template"))
-    {
+    try (InputStream inputStream = Test_Loader.class.getResourceAsStream(pName + ".template")) {
       content = MessageFormat.format(_readString(inputStream), (Object[]) pArgs);
     }
     File file = new File(pDir, pName);
-    try (PrintStream printStream = new PrintStream(new FileOutputStream(file)))
-    {
+    try (PrintStream printStream = new PrintStream(new FileOutputStream(file))) {
       printStream.write(content.getBytes("utf-8"));
     }
     return file;

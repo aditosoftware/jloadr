@@ -10,7 +10,7 @@ public interface IResource
 {
 
   @Nonnull
-  String getId();
+  IResourceId getId();
 
   @Nonnull
   InputStream getInputStream() throws IOException;

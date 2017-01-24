@@ -2,10 +2,11 @@ package de.adito.jloadr.repository.local;
 
 import de.adito.jloadr.api.*;
 import de.adito.jloadr.common.JLoadrUtil;
+import de.adito.jloadr.repository.ResourceId;
 import de.adito.jloadr.repository.jlr.*;
 
 import javax.annotation.*;
-import java.io.IOException;
+import java.io.*;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.*;
@@ -16,7 +17,7 @@ import java.util.*;
 public class LocalStoreResourcePack implements IStoreResourcePack
 {
   private Path root;
-  private Map<String, IStoreResource> resourceMap;
+  private Map<IResourceId, IStoreResource> resourceMap;
   private JlrPack jlrPack;
 
   public LocalStoreResourcePack(Path pRoot, Path pConfigPath)
@@ -38,10 +39,10 @@ public class LocalStoreResourcePack implements IStoreResourcePack
         @Override
         public FileVisitResult visitFile(Path pPath, BasicFileAttributes pAttrs) throws IOException
         {
-          String id = root.relativize(pPath).toString();
+          IResourceId id = new ResourceId(root.relativize(pPath));
           JlrEntry entry = loadedPack.getEntry(id);
           if (entry == null)
-            entry = new JlrEntry(id, null, null);
+            entry = new JlrEntry(id);
           jlrPack.addEntry(entry);
           LocalStoreResource resource = new LocalStoreResource(entry, pPath);
           resourceMap.put(id, resource);
@@ -70,21 +71,21 @@ public class LocalStoreResourcePack implements IStoreResourcePack
 
   @Nullable
   @Override
-  public IStoreResource getResource(@Nonnull String pId)
+  public IStoreResource getResource(@Nonnull IResourceId pId)
   {
     return resourceMap.get(pId);
   }
 
   @Nonnull
   @Override
-  public synchronized IStoreResource createResource(@Nonnull String pId)
+  public synchronized IStoreResource createResource(@Nonnull IResourceId pId)
   {
-    Path path = root.resolve(pId);
+    Path path = root.resolve(pId.toPath());
     if (Files.exists(path))
       throw new RuntimeException("Resource already exists: " + path);
     try {
       Files.createDirectories(path.getParent());
-      JlrEntry jlrEntry = new JlrEntry(pId, null, null);
+      JlrEntry jlrEntry = new JlrEntry(pId);
       LocalStoreResource resource = new LocalStoreResource(jlrEntry, Files.createFile(path));
       jlrPack.addEntry(jlrEntry);
       resourceMap.put(pId, resource);
@@ -96,9 +97,9 @@ public class LocalStoreResourcePack implements IStoreResourcePack
   }
 
   @Override
-  public synchronized void removeResource(@Nonnull String pId)
+  public synchronized void removeResource(@Nonnull IResourceId pId)
   {
-    Path path = root.resolve(pId);
+    Path path = root.resolve(pId.toPath());
     if (Files.isRegularFile(path)) {
       try {
         Files.delete(path);

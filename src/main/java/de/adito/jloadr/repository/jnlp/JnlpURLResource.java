@@ -1,7 +1,7 @@
 package de.adito.jloadr.repository.jnlp;
 
-import de.adito.jloadr.api.IResource;
-import de.adito.jloadr.common.URLResource;
+import de.adito.jloadr.api.*;
+import de.adito.jloadr.repository.*;
 import org.w3c.dom.Element;
 
 import javax.annotation.*;
@@ -24,14 +24,15 @@ class JnlpURLResource implements IResource
 
   @Nonnull
   @Override
-  public String getId()
+  public IResourceId getId()
   {
-    String id = _getResource().getId();
+    IResourceId id = _getResource().getId();
+    String idStr = id.toString();
     String codebase = jarJnlpReference.getCodebase().getPath();
-    if (id.startsWith(codebase))
-      return id.substring(codebase.length());
-    if (id.startsWith("/"))
-      return id.substring(1);
+    if (idStr.startsWith(codebase))
+      return new ResourceId(idStr.substring(codebase.length()));
+    if (idStr.startsWith("/"))
+      return new ResourceId(idStr.substring(1));
     return id;
   }
 

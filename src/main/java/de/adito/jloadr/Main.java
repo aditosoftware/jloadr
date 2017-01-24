@@ -37,7 +37,7 @@ public class Main
 
       IStoreResourcePack localResourcePack = new Loader().load(localStore, remoteResourcePack, splash);
 
-      IStoreResource configResource = localResourcePack.getResource(JLoaderConfig.CONFIG_NAME);
+      IStoreResource configResource = localResourcePack.getResource(JLoaderConfig.CONFIG_ID);
       if (configResource != null) {
         JLoaderConfig loaderConfig = new JLoaderConfig();
         try (InputStream inputStream = configResource.getInputStream()) {

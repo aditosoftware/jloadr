@@ -10,9 +10,9 @@ public interface IStoreResourcePack extends IResourcePack
 {
 
   @Nonnull
-  IStoreResource createResource(@Nonnull String pId);
+  IStoreResource createResource(@Nonnull IResourceId pId);
 
-  void removeResource(@Nonnull String pId);
+  void removeResource(@Nonnull IResourceId pId);
 
   @Nonnull
   @Override
@@ -20,7 +20,7 @@ public interface IStoreResourcePack extends IResourcePack
 
   @Nullable
   @Override
-  IStoreResource getResource(@Nonnull String pId);
+  IStoreResource getResource(@Nonnull IResourceId pId);
 
   void writeConfig();
 

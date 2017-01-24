@@ -1,6 +1,7 @@
-package de.adito.jloadr.common;
+package de.adito.jloadr.repository;
 
-import de.adito.jloadr.api.IResource;
+import de.adito.jloadr.api.*;
+import de.adito.jloadr.common.JLoadrUtil;
 
 import javax.annotation.*;
 import java.io.*;
@@ -27,9 +28,12 @@ public class URLResource implements IResource
 
   @Nonnull
   @Override
-  public String getId()
+  public IResourceId getId()
   {
-    return JLoadrUtil.getIdForUrl(url);
+    String host = url.getHost();
+    int port = url.getPort();
+    String path = url.getPath();
+    return new ResourceId(host + (port == -1 ? "" : "." + port) + (path.startsWith("/") ? "" : "/") + path);
   }
 
   @Override

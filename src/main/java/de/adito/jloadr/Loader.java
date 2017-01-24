@@ -1,6 +1,7 @@
 package de.adito.jloadr;
 
 import de.adito.jloadr.api.*;
+import de.adito.jloadr.repository.ResourceId;
 
 import javax.annotation.*;
 import java.io.*;
@@ -32,12 +33,13 @@ public class Loader implements ILoader
     // init state callback
     if (pStateCallback != null) {
       IStoreResource localSplashResource = null;
-      IResource remoteSplashResource = pSource.getResource("splash");
+      ResourceId splashId = new ResourceId("splash");
+      IResource remoteSplashResource = pSource.getResource(splashId);
       // copy splash
       if (remoteSplashResource != null) {
         localSplashResource = localResourcePack.getResource(remoteSplashResource.getId());
         if (localSplashResource == null) {
-          localSplashResource = localResourcePack.createResource("splash");
+          localSplashResource = localResourcePack.createResource(splashId);
           _copy(localSplashResource, remoteSplashResource);
         }
       }
@@ -45,7 +47,7 @@ public class Loader implements ILoader
     }
 
     // clean up
-    Set<String> newLocalIdSet = remoteResources.stream()
+    Set<IResourceId> newLocalIdSet = remoteResources.stream()
         .map(resource -> _getLocalId(resource.getId()))
         .collect(Collectors.toSet());
     localResourcePack.getResources().stream()
@@ -56,7 +58,7 @@ public class Loader implements ILoader
     // copy missing
     remoteResources.parallelStream().forEach(resource -> {
       try {
-        String localId = _getLocalId(resource.getId());
+        IResourceId localId = _getLocalId(resource.getId());
 
         IStoreResource localResource = localResourcePack.getResource(localId);
         if (localResource == null) {
@@ -113,14 +115,15 @@ public class Loader implements ILoader
     }
   }
 
-  private String _getLocalId(String pRemoteId)
+  private IResourceId _getLocalId(IResourceId pRemoteId)
   {
-    return _isPackGz(pRemoteId) ? pRemoteId.substring(0, pRemoteId.lastIndexOf(".pack.gz")) : pRemoteId;
+    String idStr = pRemoteId.toString();
+    return _isPackGz(pRemoteId) ? new ResourceId(idStr.substring(0, idStr.lastIndexOf(".pack.gz"))) : pRemoteId;
   }
 
-  private boolean _isPackGz(String pRemoteId)
+  private boolean _isPackGz(IResourceId pRemoteId)
   {
-    return pRemoteId.endsWith(".pack.gz");
+    return pRemoteId.toString().endsWith(".pack.gz");
   }
 
 }

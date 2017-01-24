@@ -23,19 +23,6 @@ public class JLoadrUtil
     return identity + (pDetail == null || pDetail.isEmpty() ? "" : "(" + pDetail + ")");
   }
 
-  public static String normalizeId(String pId)
-  {
-    return pId.replaceAll("[^\\w_\\-\\.]", "");
-  }
-
-  public static String getIdForUrl(URL pURL)
-  {
-    String host = pURL.getHost();
-    int port = pURL.getPort();
-    String path = pURL.getPath();
-    return host + (port == -1 ? "" : "." + port) + (path.startsWith("/") ? "" : "/") + path;
-  }
-
   public static MessageDigest getMessageDigest()
   {
     try {
@@ -69,7 +56,7 @@ public class JLoadrUtil
   {
     byte[] idBytes = pId.getBytes(Charset.forName("utf-8"));
     byte[] digest = getMessageDigest().digest(idBytes);
-    return Base64.getEncoder().encodeToString(digest);
+    return Base64.getEncoder().encodeToString(digest).replaceAll("[^\\w_\\-\\.]", "");
   }
 
 }
