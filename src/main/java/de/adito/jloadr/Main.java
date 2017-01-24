@@ -11,6 +11,7 @@ import java.awt.*;
 import java.io.*;
 import java.net.URL;
 import java.nio.file.Paths;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author j.boesl, 05.09.16
@@ -32,15 +33,9 @@ public class Main
     Splash splash = GraphicsEnvironment.isHeadless() ? null : new Splash();
 
     try {
-      //Paths.get(System.getProperty("user.home"), "jloadr")
       LocalStore localStore = new LocalStore(Paths.get("jloadr"));
 
       IStoreResourcePack localResourcePack = new Loader().load(localStore, remoteResourcePack, splash);
-
-      //List<IStoreResource> resources = localResourcePack.getResources();
-      //for (IResource resource : resources) {
-      //  System.out.println("locally found: " + resource);
-      //}
 
       IStoreResource configResource = localResourcePack.getResource(JLoaderConfig.CONFIG_NAME);
       if (configResource != null) {
@@ -49,16 +44,13 @@ public class Main
           loaderConfig.load(inputStream);
         }
 
-        //System.out.println(Arrays.stream(loaderConfig.getStartCommands()).collect(Collectors.joining(" ")));
+        Process process = new ProcessBuilder(loaderConfig.getStartCommands())
+            .directory(new File("jloadr", localResourcePack.getId()))
+            .inheritIO()
+            .start();
 
-        Process process = Runtime.getRuntime().exec(loaderConfig.getStartCommands(), null,
-                                                    new File("jloadr", localResourcePack.getId()));
-
-        //System.err.println(process.waitFor());
-        //print(process.getInputStream());
+        process.waitFor(4, TimeUnit.SECONDS);
       }
-
-      Thread.sleep(3000);
     }
     finally {
       if (splash != null)
@@ -66,18 +58,8 @@ public class Main
     }
   }
 
-  public static void print(InputStream pIn) throws IOException
-  {
-    try (OutputStream out = System.out; InputStream in = pIn) {
-      byte[] buffer = new byte[256 * 1024];
-      int len;
-      while ((len = in.read(buffer)) != -1)
-        out.write(buffer, 0, len);
-    }
-  }
 
-
-  private static class Splash extends JWindow implements ILoader.IStateCallback
+  private static class Splash extends JFrame implements ILoader.IStateCallback
   {
     private int elementCount;
     private double loaded;
@@ -102,6 +84,7 @@ public class Main
 
       getContentPane().add(label);
 
+      setUndecorated(true);
       pack();
       setLocationRelativeTo(null);
       setVisible(true);
