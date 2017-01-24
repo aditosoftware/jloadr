@@ -44,7 +44,7 @@ public class JlrResourcePack implements IResourcePack
   @Override
   public String getId()
   {
-    return JLoadrUtil.getHash(jlrPack.getUrl().toExternalForm()).replaceAll(File.separator, "");
+    return JLoadrUtil.normalizeId(JLoadrUtil.getHash(jlrPack.getUrl().toExternalForm()));
   }
 
   @Nonnull

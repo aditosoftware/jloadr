@@ -25,7 +25,7 @@ public class JLoadrUtil
 
   public static String normalizeId(String pId)
   {
-    return pId.replaceAll("/", "&frasl;");
+    return pId.replaceAll("[^\\w_\\-\\.]", "");
   }
 
   public static String getIdForUrl(URL pURL)

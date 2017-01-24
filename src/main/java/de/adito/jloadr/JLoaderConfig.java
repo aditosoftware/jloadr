@@ -66,7 +66,7 @@ public class JLoaderConfig
   public String[] getStartCommands()
   {
     List<String> parameters = new ArrayList<>();
-    parameters.add(getJavaCmd().replaceAll("/", File.separator));
+    parameters.add(getJavaCmd().replace("/", File.separator));
     String vmParams = getVmParameters().stream()
         .map(param -> "-D" + param)
         .collect(Collectors.joining(" "));
@@ -74,7 +74,7 @@ public class JLoaderConfig
       parameters.add(vmParams);
     }
     String cp = getClasspath().stream()
-        .map(str -> str.replaceAll("/", File.separator))
+        .map(str -> str.replace("/", File.separator))
         .collect(Collectors.joining(File.pathSeparator));
     if (!cp.isEmpty()) {
       parameters.add("-cp");

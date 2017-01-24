@@ -11,8 +11,6 @@ import java.awt.*;
 import java.io.*;
 import java.net.URL;
 import java.nio.file.Paths;
-import java.util.Arrays;
-import java.util.stream.Collectors;
 
 /**
  * @author j.boesl, 05.09.16
@@ -51,13 +49,13 @@ public class Main
           loaderConfig.load(inputStream);
         }
 
-        System.out.println(Arrays.stream(loaderConfig.getStartCommands()).collect(Collectors.joining(" ")));
+        //System.out.println(Arrays.stream(loaderConfig.getStartCommands()).collect(Collectors.joining(" ")));
 
         Process process = Runtime.getRuntime().exec(loaderConfig.getStartCommands(), null,
                                                     new File("jloadr", localResourcePack.getId()));
 
         //System.err.println(process.waitFor());
-        print(process.getInputStream());
+        //print(process.getInputStream());
       }
 
       Thread.sleep(3000);
@@ -105,6 +103,7 @@ public class Main
       getContentPane().add(label);
 
       pack();
+      setLocationRelativeTo(null);
       setVisible(true);
     }
 

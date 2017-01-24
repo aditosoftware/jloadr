@@ -29,7 +29,7 @@ public class JnlpResourcePack implements IResourcePack
   @Override
   public String getId()
   {
-    return JLoadrUtil.getHash(jnlpUrl.toExternalForm()).replaceAll(File.separator, "");
+    return JLoadrUtil.normalizeId(JLoadrUtil.getHash(jnlpUrl.toExternalForm()));
   }
 
   @Nonnull
@@ -174,7 +174,7 @@ public class JnlpResourcePack implements IResourcePack
           .collect(Collectors.toList());
 
       List<String> classpath = getResourcesMap().keySet().stream()
-          .map(id -> id.replaceAll("\\.pack\\.gz", ""))
+          .map(id -> id.replace(".pack.gz", ""))
           .collect(Collectors.toList());
 
       String mainClass = jnlpUrls.stream()
