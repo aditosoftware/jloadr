@@ -15,31 +15,15 @@ import java.util.stream.Collectors;
  */
 public class JlrResourcePack implements IResourcePack
 {
-  public static final String CONFIG_FILE_SUFIX = ".jlr.xml";
-
   private JlrPack jlrPack;
   private URL resourcesUrl;
   private Map<IResourceId, IResource> resourceMap;
 
 
-  protected JlrResourcePack(URL pJlrPackUrl)
+  protected JlrResourcePack(URL pJlrPackUrl, URL pResourcesUrl)
   {
-    this(new JlrPack(pJlrPackUrl));
-  }
-
-  protected JlrResourcePack(JlrPack pJlrPack)
-  {
-    jlrPack = pJlrPack;
-    try {
-      String urlString = jlrPack.getUrl().toExternalForm();
-      int index = urlString.lastIndexOf(CONFIG_FILE_SUFIX);
-      if (index != -1)
-        urlString = urlString.substring(0, index);
-      resourcesUrl = new URL(urlString + "/");
-    }
-    catch (MalformedURLException pE) {
-      throw new RuntimeException(pE);
-    }
+    jlrPack = new JlrPack(pJlrPackUrl);
+    resourcesUrl = pResourcesUrl;
   }
 
   @Nonnull

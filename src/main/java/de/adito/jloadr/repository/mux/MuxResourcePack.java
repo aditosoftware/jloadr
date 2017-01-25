@@ -15,8 +15,6 @@ import java.util.stream.Collectors;
  */
 public class MuxResourcePack implements IResourcePack
 {
-  public static final String CONFIG_FILE_SUFIX = ".mux.xml";
-
   private URL packUrl;
   private List<IResourcePack> packs;
 
@@ -27,7 +25,7 @@ public class MuxResourcePack implements IResourcePack
     packs = XMLUtil.findChildElements(document.getDocumentElement(), "pack").stream()
         .map(element -> {
           try {
-            return ResourcePackFactory.get(UrlUtil.getUrl(packUrl, element.getTextContent().trim()));
+            return ResourcePackFactory.get(UrlUtil.getRelative(packUrl, element.getTextContent().trim()));
           }
           catch (RuntimeException pE) {
             return null;

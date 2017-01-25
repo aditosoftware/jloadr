@@ -32,7 +32,7 @@ public class JlrConfig
     return XMLUtil.findChildElements(document.getDocumentElement(), "pack").stream()
         .map(element -> {
           try {
-            URL url = UrlUtil.getUrl(configURL, element.getTextContent().trim());
+            URL url = UrlUtil.getRelative(configURL, element.getTextContent().trim());
             return new JlrPack(url);
           }
           catch (RuntimeException pE) {

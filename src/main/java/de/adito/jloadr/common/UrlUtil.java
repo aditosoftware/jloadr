@@ -14,7 +14,7 @@ public class UrlUtil
   }
 
   @Nonnull
-  public static URL getUrl(@Nullable URL pParentUrl, @Nonnull String pUrlString) throws IllegalArgumentException
+  public static URL getRelative(@Nullable URL pParentUrl, @Nonnull String pUrlString) throws IllegalArgumentException
   {
     try {
       URI uri = new URI(pUrlString);
@@ -31,6 +31,17 @@ public class UrlUtil
       return parentUri.resolve(parentUri.getPath().endsWith("/") ? pUrlString : ".." + pUrlString).toURL();
     }
     catch (URISyntaxException | MalformedURLException pE) {
+      throw new IllegalArgumentException(pE);
+    }
+  }
+
+  @Nonnull
+  public static URL getAtHost(@Nonnull URL pParentUrl, @Nonnull String pUrlString)
+  {
+    try {
+      return new URL(pParentUrl.getProtocol(), pParentUrl.getHost(), pParentUrl.getPort(), pUrlString);
+    }
+    catch (MalformedURLException pE) {
       throw new IllegalArgumentException(pE);
     }
   }
