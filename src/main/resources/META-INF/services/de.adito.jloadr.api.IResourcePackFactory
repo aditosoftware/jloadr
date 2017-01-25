@@ -1,2 +1,3 @@
 de.adito.jloadr.repository.jlr.JlrResourcePackFactory
 de.adito.jloadr.repository.jnlp.JnlpResourcePackFactory
+de.adito.jloadr.repository.mux.MuxResourcePackFactory
