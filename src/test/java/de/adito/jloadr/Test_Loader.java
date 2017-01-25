@@ -1,8 +1,6 @@
 package de.adito.jloadr;
 
 import de.adito.jloadr.api.*;
-import de.adito.jloadr.repository.jlr.JlrResourcePack;
-import de.adito.jloadr.repository.jnlp.JnlpResourcePack;
 import de.adito.jloadr.repository.local.LocalStore;
 import org.junit.*;
 
@@ -57,14 +55,14 @@ public class Test_Loader
     Path store1Path = dir.toPath().resolve("store1");
     Path store2Path = dir.toPath().resolve("store2");
 
-    IResourcePack remoteResourcePack = new JnlpResourcePack(mainJnlp.toURI().toURL());
+    IResourcePack remoteResourcePack = ResourcePackFactory.get(mainJnlp.toURI().toURL());
     IStore localStore = new LocalStore(store1Path);
     Thread.sleep(1000);
     IStoreResourcePack localResourcePack = new Loader().load(localStore, remoteResourcePack, null);
     _check(remoteResourcePack, localResourcePack);
 
     Path localResourcePackPath = store1Path.resolve(localResourcePack.getId() + ".jlr.xml");
-    remoteResourcePack = new JlrResourcePack(localResourcePackPath.toUri().toURL());
+    remoteResourcePack = ResourcePackFactory.get(localResourcePackPath.toUri().toURL());
     localStore = new LocalStore(store2Path);
     Thread.sleep(1000);
     localResourcePack = new Loader().load(localStore, remoteResourcePack, null);

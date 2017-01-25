@@ -21,7 +21,7 @@ public class JnlpResourcePack implements IResourcePack
   private Collection<JnlpUrl> jnlpUrls;
   private Map<IResourceId, IResource> resources;
 
-  public JnlpResourcePack(URL pJnlpUrl)
+  protected JnlpResourcePack(URL pJnlpUrl)
   {
     jnlpUrl = pJnlpUrl;
   }

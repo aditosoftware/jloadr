@@ -1,7 +1,7 @@
 package de.adito.jloadr.repository.jlr;
 
 import de.adito.jloadr.api.*;
-import de.adito.jloadr.common.*;
+import de.adito.jloadr.common.JLoadrUtil;
 import de.adito.jloadr.repository.URLResource;
 
 import javax.annotation.*;
@@ -15,22 +15,24 @@ import java.util.stream.Collectors;
  */
 public class JlrResourcePack implements IResourcePack
 {
+  public static final String CONFIG_FILE_SUFIX = ".jlr.xml";
+
   private JlrPack jlrPack;
   private URL resourcesUrl;
   private Map<IResourceId, IResource> resourceMap;
 
 
-  public JlrResourcePack(URL pJlrPackUrl)
+  protected JlrResourcePack(URL pJlrPackUrl)
   {
     this(new JlrPack(pJlrPackUrl));
   }
 
-  public JlrResourcePack(JlrPack pJlrPack)
+  protected JlrResourcePack(JlrPack pJlrPack)
   {
     jlrPack = pJlrPack;
     try {
       String urlString = jlrPack.getUrl().toExternalForm();
-      int index = urlString.lastIndexOf(".jlr.xml");
+      int index = urlString.lastIndexOf(CONFIG_FILE_SUFIX);
       if (index != -1)
         urlString = urlString.substring(0, index);
       resourcesUrl = new URL(urlString + "/");

@@ -1,8 +1,6 @@
 package de.adito.jloadr;
 
 import de.adito.jloadr.api.*;
-import de.adito.jloadr.repository.jlr.JlrResourcePack;
-import de.adito.jloadr.repository.jnlp.JnlpResourcePack;
 import de.adito.jloadr.repository.local.LocalStore;
 
 import javax.imageio.ImageIO;
@@ -21,14 +19,9 @@ public class Main
 
   public static void main(String[] args) throws IOException, InterruptedException
   {
-    IResourcePack remoteResourcePack;
+
     URL url = new URL(args[0]);
-    if (url.getPath().endsWith("jnlp"))
-      remoteResourcePack = new JnlpResourcePack(url);
-    else if (url.getPath().endsWith("jlr.xml"))
-      remoteResourcePack = new JlrResourcePack(url);
-    else
-      throw new RuntimeException("resource not supported: " + url.toExternalForm());
+    IResourcePack remoteResourcePack = ResourcePackFactory.get(url);
 
     Splash splash = GraphicsEnvironment.isHeadless() ? null : new Splash();
 
