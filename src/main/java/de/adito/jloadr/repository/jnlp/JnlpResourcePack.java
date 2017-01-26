@@ -1,12 +1,11 @@
 package de.adito.jloadr.repository.jnlp;
 
-import de.adito.jloadr.JLoaderConfig;
 import de.adito.jloadr.api.*;
 import de.adito.jloadr.common.JLoadrUtil;
 import de.adito.jloadr.repository.*;
 
 import javax.annotation.*;
-import java.io.*;
+import java.io.IOException;
 import java.net.*;
 import java.util.*;
 import java.util.function.Function;
@@ -103,30 +102,8 @@ public class JnlpResourcePack implements IResourcePack
   }
 
 
-  private class _ConfigResource implements IResource
+  private class _ConfigResource extends AbstractJLoaderConfigResource
   {
-    private byte[] config;
-
-    @Nonnull
-    @Override
-    public IResourceId getId()
-    {
-      return JLoaderConfig.CONFIG_ID;
-    }
-
-    @Nonnull
-    @Override
-    public InputStream getInputStream() throws IOException
-    {
-      return new ByteArrayInputStream(_getBinaryConfig());
-    }
-
-    @Override
-    public long getSize() throws IOException
-    {
-      return _getBinaryConfig().length;
-    }
-
     @Override
     public long getLastModified() throws IOException
     {
@@ -134,33 +111,8 @@ public class JnlpResourcePack implements IResourcePack
       return urlConnection.getLastModified();
     }
 
-    @Nullable
     @Override
-    public String getHash()
-    {
-      try (ByteArrayInputStream inputStream = new ByteArrayInputStream(_getBinaryConfig())) {
-        return JLoadrUtil.getHash(inputStream);
-      }
-      catch (IOException pE) {
-        throw new RuntimeException(pE);
-      }
-    }
-
-    private synchronized byte[] _getBinaryConfig()
-    {
-      if (config == null) {
-        try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
-          _createConfig().save(outputStream);
-          config = outputStream.toByteArray();
-        }
-        catch (IOException pE) {
-          throw new RuntimeException(pE);
-        }
-      }
-      return config;
-    }
-
-    private JLoaderConfig _createConfig()
+    protected JLoaderConfig createConfig()
     {
       Collection<JnlpUrl> jnlpUrls = getJnlpUrls();
 

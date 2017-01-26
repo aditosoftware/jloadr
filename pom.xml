@@ -98,7 +98,8 @@
             <Bundle-Name>${project.artifactId}</Bundle-Name>
             <Bundle-Version>${project.version}</Bundle-Version>
             <Export-Package>
-              de.adito.jloadr
+              de.adito.jloadr,
+              de.adito.jloadr.api
             </Export-Package>
           </instructions>
         </configuration>

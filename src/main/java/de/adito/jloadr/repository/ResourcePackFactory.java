@@ -1,4 +1,4 @@
-package de.adito.jloadr;
+package de.adito.jloadr.repository;
 
 import de.adito.jloadr.api.*;
 

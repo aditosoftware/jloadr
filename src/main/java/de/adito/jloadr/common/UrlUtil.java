@@ -24,11 +24,7 @@ public class UrlUtil
         throw new IllegalArgumentException();
 
       URI parentUri = pParentUrl.toURI();
-
-      if (!pUrlString.startsWith("/"))
-        pUrlString = "/" + pUrlString;
-
-      return parentUri.resolve(parentUri.getPath().endsWith("/") ? pUrlString : ".." + pUrlString).toURL();
+      return parentUri.resolve(parentUri.getPath().endsWith("/") ? pUrlString : pUrlString).toURL();
     }
     catch (URISyntaxException | MalformedURLException pE) {
       throw new IllegalArgumentException(pE);

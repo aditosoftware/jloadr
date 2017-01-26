@@ -1,5 +1,6 @@
 package de.adito.jloadr.common;
 
+import java.io.IOException;
 import java.util.Objects;
 
 /**
@@ -24,6 +25,20 @@ public class OsUtil
 
   public static EBitness getBitness()
   {
+    if (getOsType() == EType.WINDOWS && System.getenv("ProgramFiles(x86)") != null)
+      return EBitness.X64;
+    if (getOsType() == EType.LINUX)
+    {
+      try {
+        String s = ProcessUtil.runCmd("uname", "-a");
+        if (s.contains("x86_64"))
+          return EBitness.X64;
+      }
+      catch (IOException pE) {
+        // ignore
+      }
+    }
+
     String arch = Objects.toString(System.getProperty("sun.arch.data.model"), "");
     if (arch.contains("64"))
       return EBitness.X64;

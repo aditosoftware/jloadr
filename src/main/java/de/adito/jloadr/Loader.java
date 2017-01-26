@@ -1,6 +1,7 @@
 package de.adito.jloadr;
 
 import de.adito.jloadr.api.*;
+import de.adito.jloadr.common.JLoadrUtil;
 import de.adito.jloadr.repository.ResourceId;
 
 import javax.annotation.*;
@@ -101,14 +102,8 @@ public class Loader implements ILoader
           Pack200.newUnpacker().unpack(gzipInputStream, jarOutputStream);
         }
       }
-      else {
-        try (OutputStream out = localResource.getOutputStream(); InputStream in = pRemoteResource.getInputStream()) {
-          byte[] buffer = new byte[256 * 1024];
-          int len;
-          while ((len = in.read(buffer)) != -1)
-            out.write(buffer, 0, len);
-        }
-      }
+      else
+        JLoadrUtil.copy(pRemoteResource.getInputStream(), localResource.getOutputStream());
     }
     catch (IOException pE) {
       throw new RuntimeException(pE);

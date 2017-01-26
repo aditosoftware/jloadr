@@ -2,8 +2,8 @@ package de.adito.jloadr.common;
 
 import javax.annotation.*;
 import java.io.*;
-import java.net.URL;
 import java.nio.charset.Charset;
+import java.nio.file.*;
 import java.security.*;
 import java.util.Base64;
 
@@ -57,6 +57,24 @@ public class JLoadrUtil
     byte[] idBytes = pId.getBytes(Charset.forName("utf-8"));
     byte[] digest = getMessageDigest().digest(idBytes);
     return Base64.getEncoder().encodeToString(digest).replaceAll("[^\\w_\\-\\.]", "");
+  }
+
+  public static void copy(InputStream pInputStream, OutputStream pOutputStream) throws IOException
+  {
+    try (OutputStream out = pOutputStream; InputStream in = pInputStream) {
+      byte[] buffer = new byte[256 * 1024];
+      int len;
+      while ((len = in.read(buffer)) != -1)
+        out.write(buffer, 0, len);
+    }
+  }
+
+  public static void deleteEmptyDirectories(Path pPath) throws IOException
+  {
+    if (Files.isDirectory(pPath) && !Files.list(pPath).findAny().isPresent()) {
+      Files.delete(pPath);
+      deleteEmptyDirectories(pPath.getParent());
+    }
   }
 
 }

@@ -8,7 +8,7 @@ import java.nio.file.*;
 /**
  * @author j.boesl, 21.12.16
  */
-public class JlrConfigCreator
+public class JlrListingCreator
 {
 
   public static void main(String[] args)

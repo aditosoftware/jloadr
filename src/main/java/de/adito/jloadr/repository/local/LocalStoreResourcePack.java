@@ -105,6 +105,7 @@ public class LocalStoreResourcePack implements IStoreResourcePack
         Files.delete(path);
         resourceMap.remove(pId);
         jlrPack.removeEntry(pId);
+        JLoadrUtil.deleteEmptyDirectories(path.getParent());
       }
       catch (IOException pE) {
         throw new RuntimeException(pE);
