@@ -60,14 +60,16 @@ public class Loader implements ILoader
     remoteResources.parallelStream().forEach(resource -> {
       try {
         IResourceId localId = _getLocalId(resource.getId());
-
         IStoreResource localResource = localResourcePack.getResource(localId);
-        if (localResource == null) {
+
+        if (localResource == null)
           localResource = localResourcePack.createResource(localId);
 
+        if (localResource.getLastModified() != resource.getLastModified()) {
           _copy(localResource, resource);
           localResource.setLastModified(resource.getLastModified());
         }
+
         if (pStateCallback != null)
           pStateCallback.loaded(loadCount.incrementAndGet());
       }
