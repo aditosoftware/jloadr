@@ -23,6 +23,17 @@ public class MuxResourcePack implements IResourcePack
     packUrl = pUrl;
     Document document = XMLUtil.loadDocument(packUrl);
     packs = XMLUtil.findChildElements(document.getDocumentElement(), "pack").stream()
+        .filter(element -> {
+          String os = element.getAttribute("os");
+          if (os == null)
+            return true;
+
+          if (OsUtil.getOsType().toString().equalsIgnoreCase("os")) {
+            String bitness = element.getAttribute("bitness");
+            return bitness == null || OsUtil.getBitness().toString().equalsIgnoreCase(bitness);
+          }
+          return false;
+        })
         .map(element -> {
           try {
             return ResourcePackFactory.get(UrlUtil.getRelative(packUrl, element.getTextContent().trim()));
