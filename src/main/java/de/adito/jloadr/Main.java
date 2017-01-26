@@ -1,6 +1,7 @@
 package de.adito.jloadr;
 
 import de.adito.jloadr.api.*;
+import de.adito.jloadr.common.OsUtil;
 import de.adito.jloadr.repository.*;
 import de.adito.jloadr.repository.local.LocalStore;
 
@@ -10,6 +11,7 @@ import java.awt.*;
 import java.io.*;
 import java.net.URL;
 import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -38,12 +40,20 @@ public class Main
           loaderConfig.load(inputStream);
         }
 
-        Process process = new ProcessBuilder(loaderConfig.getStartCommands())
-            .directory(new File("jloadr", localResourcePack.getId()))
+        File workingDirectory = new File("jloadr", localResourcePack.getId());
+        if (Arrays.asList(OsUtil.EType.LINUX, OsUtil.EType.OSX).contains(OsUtil.getOsType()))
+        {
+          Process chmodProcess = new ProcessBuilder("chmod", "+x", loaderConfig.getJavaCmd())
+              .directory(workingDirectory)
+              .inheritIO()
+              .start();
+          chmodProcess.waitFor(1, TimeUnit.SECONDS);
+        }
+        Process javaProcess = new ProcessBuilder(loaderConfig.getStartCommands())
+            .directory(workingDirectory)
             .inheritIO()
             .start();
-
-        process.waitFor(4, TimeUnit.SECONDS);
+        javaProcess.waitFor(4, TimeUnit.SECONDS);
       }
     }
     finally {
