@@ -10,7 +10,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.io.*;
 import java.net.URL;
-import java.nio.file.Paths;
+import java.nio.file.*;
 import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 
@@ -43,11 +43,13 @@ public class Main
         File workingDirectory = new File("jloadr", localResourcePack.getId());
         if (Arrays.asList(OsUtil.EType.LINUX, OsUtil.EType.OSX).contains(OsUtil.getOsType()))
         {
-          Process chmodProcess = new ProcessBuilder("chmod", "+x", loaderConfig.getJavaCmd())
-              .directory(workingDirectory)
-              .inheritIO()
-              .start();
-          chmodProcess.waitFor(1, TimeUnit.SECONDS);
+          String javaCmd = loaderConfig.getJavaCmd();
+          if (javaCmd != null && Files.exists(workingDirectory.toPath().resolve(javaCmd))) {
+            Process chmodProcess = new ProcessBuilder("chmod", "+x", javaCmd)
+                .directory(workingDirectory)
+                .start();
+            chmodProcess.waitFor(1, TimeUnit.SECONDS);
+          }
         }
         Process javaProcess = new ProcessBuilder(loaderConfig.getStartCommands())
             .directory(workingDirectory)
