@@ -67,13 +67,13 @@ public class Loader implements ILoader
 
         if (localResource.getLastModified() != resource.getLastModified()) {
           _copy(localResource, resource);
-          localResource.setLastModified(resource.getLastModified());
         }
 
         if (pStateCallback != null)
           pStateCallback.loaded(loadCount.incrementAndGet());
       }
       catch (Exception pE) {
+        System.err.println("error loading: " + resource.getId());
         pE.printStackTrace();
       }
     });
@@ -106,6 +106,8 @@ public class Loader implements ILoader
       }
       else
         JLoadrUtil.copy(pRemoteResource.getInputStream(), localResource.getOutputStream());
+
+      localResource.setLastModified(pRemoteResource.getLastModified());
     }
     catch (IOException pE) {
       throw new RuntimeException(pE);

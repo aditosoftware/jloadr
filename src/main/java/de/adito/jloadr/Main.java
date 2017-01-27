@@ -8,6 +8,7 @@ import de.adito.jloadr.repository.local.LocalStore;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.io.*;
 import java.net.URL;
 import java.nio.file.*;
@@ -79,7 +80,8 @@ public class Main
       JLabel label = null;
       if (pSplashResource != null) {
         try {
-          label = new JLabel("", new ImageIcon(ImageIO.read(pSplashResource.getInputStream())), SwingConstants.CENTER);
+          BufferedImage image = ImageIO.read(pSplashResource.getInputStream());
+          label = new JLabel("", new ImageIcon(image), SwingConstants.CENTER);
         }
         catch (IOException pE) {
           // no image
