@@ -1,9 +1,10 @@
 package de.adito.jloadr;
 
 import de.adito.jloadr.api.*;
-import de.adito.jloadr.common.OsUtil;
+import de.adito.jloadr.common.*;
 import de.adito.jloadr.repository.*;
 import de.adito.jloadr.repository.local.LocalStore;
+import org.w3c.dom.Document;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -24,8 +25,20 @@ public class Main
   public static void main(String[] args) throws IOException, InterruptedException
   {
 
-    URL url = new URL(args[0]);
-    IResourcePack remoteResourcePack = ResourcePackFactory.get(url);
+    String url = null;
+    if (args.length > 0)
+      url = args[0];
+    else {
+      Path configPath = Paths.get("config.xml");
+      if (Files.exists(configPath)) {
+        Document document = XMLUtil.loadDocument(configPath.toUri().toURL());
+        url = XMLUtil.getChildText(document.getDocumentElement(), "url");
+      }
+    }
+    if (url == null)
+      throw new RuntimeException("a repository url must be specified.");
+
+    IResourcePack remoteResourcePack = ResourcePackFactory.get(new URL(url));
 
     Splash splash = GraphicsEnvironment.isHeadless() ? null : new Splash();
 
