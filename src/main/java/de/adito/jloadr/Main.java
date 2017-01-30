@@ -41,19 +41,18 @@ public class Main
           loaderConfig.load(inputStream);
         }
 
-        File workingDirectory = new File("jloadr", localResourcePack.getId());
-        if (Arrays.asList(OsUtil.EType.LINUX, OsUtil.EType.OSX).contains(OsUtil.getOsType()))
-        {
+        Path workingDirectory = Paths.get("jloadr").resolve(localResourcePack.getId()).toAbsolutePath();
+        if (Arrays.asList(OsUtil.EType.LINUX, OsUtil.EType.OSX).contains(OsUtil.getOsType())) {
           String javaCmd = loaderConfig.getJavaCmd();
-          if (javaCmd != null && Files.exists(workingDirectory.toPath().resolve(javaCmd))) {
+          if (javaCmd != null && Files.exists(workingDirectory.resolve(javaCmd))) {
             Process chmodProcess = new ProcessBuilder("chmod", "+x", javaCmd)
-                .directory(workingDirectory)
+                .directory(workingDirectory.toFile())
                 .start();
             chmodProcess.waitFor(1, TimeUnit.SECONDS);
           }
         }
-        Process javaProcess = new ProcessBuilder(loaderConfig.getStartCommands())
-            .directory(workingDirectory)
+        Process javaProcess = new ProcessBuilder(loaderConfig.getStartCommands(workingDirectory))
+            .directory(workingDirectory.toFile())
             .inheritIO()
             .start();
         javaProcess.waitFor(4, TimeUnit.SECONDS);

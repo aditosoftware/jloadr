@@ -77,8 +77,9 @@ public class Test_Loader
       loaderConfig.load(inputStream);
     }
 
-    Process process = new ProcessBuilder(loaderConfig.getStartCommands())
-        .directory(store2Path.resolve(localResourcePack.getId()).toAbsolutePath().toFile())
+    Path workingDirectory = store2Path.resolve(localResourcePack.getId()).toAbsolutePath();
+    Process process = new ProcessBuilder(loaderConfig.getStartCommands(workingDirectory))
+        .directory(workingDirectory.toFile())
         .start();
 
     process.waitFor(10, TimeUnit.SECONDS);

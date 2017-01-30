@@ -4,7 +4,9 @@ import de.adito.jloadr.api.IResourceId;
 import de.adito.jloadr.common.XMLUtil;
 import org.w3c.dom.*;
 
+import javax.annotation.Nullable;
 import java.io.*;
+import java.nio.file.Path;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -64,11 +66,10 @@ public class JLoaderConfig
     });
   }
 
-  public String[] getStartCommands()
+  public String[] getStartCommands(@Nullable Path pWorkingDirectory)
   {
     List<String> parameters = new ArrayList<>();
-    String javaCmd = getJavaCmd();
-    parameters.add(javaCmd == null ? "java" : javaCmd.replace('/', File.separatorChar));
+    parameters.add(_getStartJavaCommand(pWorkingDirectory));
     String vmParams = getVmParameters().stream()
         .map(param -> "-D" + param)
         .collect(Collectors.joining(" "));
@@ -86,6 +87,19 @@ public class JLoaderConfig
     getArguments().forEach(parameters::add);
 
     return parameters.toArray(new String[parameters.size()]);
+  }
+
+  private String _getStartJavaCommand(@Nullable Path pWorkingDirectory)
+  {
+    String javaCmd = getJavaCmd();
+    if (javaCmd == null)
+      javaCmd = "java";
+    else {
+      javaCmd = javaCmd.replace('/', File.separatorChar);
+      if (pWorkingDirectory != null)
+        javaCmd = pWorkingDirectory.resolve(javaCmd).toAbsolutePath().toString();
+    }
+    return javaCmd;
   }
 
   public String getJavaCmd()

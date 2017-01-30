@@ -8,8 +8,17 @@ import java.util.Objects;
  */
 public class OsUtil
 {
+  private static EType type;
+  private static EBitness bitness;
 
-  public static EType getOsType()
+  public synchronized static EType getOsType()
+  {
+    if (type == null)
+      type = _getOsType();
+    return type;
+  }
+
+  private static EType _getOsType()
   {
     String osName = Objects.toString(getOsName(), "").toLowerCase();
     if (osName.contains("win"))
@@ -23,7 +32,14 @@ public class OsUtil
     return EType.UNKNWON;
   }
 
-  public static EBitness getBitness()
+  public synchronized static EBitness getBitness()
+  {
+    if (bitness == null)
+      bitness = _getBitness();
+    return bitness;
+  }
+
+  private static EBitness _getBitness()
   {
     if (getOsType() == EType.WINDOWS && System.getenv("ProgramFiles(x86)") != null)
       return EBitness.X64;
