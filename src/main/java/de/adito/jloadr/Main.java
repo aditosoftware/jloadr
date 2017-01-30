@@ -4,7 +4,7 @@ import de.adito.jloadr.api.*;
 import de.adito.jloadr.common.*;
 import de.adito.jloadr.repository.*;
 import de.adito.jloadr.repository.local.LocalStore;
-import org.w3c.dom.Document;
+import org.w3c.dom.*;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -26,13 +26,18 @@ public class Main
   {
 
     String url = null;
+    String iconPath = null;
+    String startName = null;
     if (args.length > 0)
       url = args[0];
     else {
       Path configPath = Paths.get("config.xml");
       if (Files.exists(configPath)) {
         Document document = XMLUtil.loadDocument(configPath.toUri().toURL());
-        url = XMLUtil.getChildText(document.getDocumentElement(), "url");
+        Element documentElement = document.getDocumentElement();
+        url = XMLUtil.getChildText(documentElement, "url");
+        iconPath = XMLUtil.getChildText(documentElement, "icon");
+        startName = XMLUtil.getChildText(documentElement, "name");
       }
     }
     if (url == null)
@@ -40,7 +45,7 @@ public class Main
 
     IResourcePack remoteResourcePack = ResourcePackFactory.get(new URL(url));
 
-    Splash splash = GraphicsEnvironment.isHeadless() ? null : new Splash();
+    Splash splash = GraphicsEnvironment.isHeadless() ? null : new Splash(iconPath, startName);
 
     try {
       LocalStore localStore = new LocalStore(Paths.get("jloadr"));
@@ -83,6 +88,16 @@ public class Main
     private int elementCount;
     private double loaded;
 
+    public Splash(String pIconPath, String pStartName) throws HeadlessException
+    {
+      if (pIconPath != null) {
+        Path path = Paths.get(pIconPath);
+        if (Files.exists(path))
+          setIconImage(new ImageIcon(path.toString()).getImage());
+      }
+      if (pStartName != null)
+        setTitle(pStartName);
+    }
 
     @Override
     public void inited(IResource pSplashResource, int pElementCount)
