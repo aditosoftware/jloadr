@@ -70,12 +70,10 @@ public class JLoaderConfig
   {
     List<String> parameters = new ArrayList<>();
     parameters.add(_getStartJavaCommand(pWorkingDirectory));
-    String vmParams = getVmParameters().stream()
+    getVmParameters().stream()
         .map(param -> "-D" + param)
-        .collect(Collectors.joining(" "));
-    if (!vmParams.isEmpty()) {
-      parameters.add(vmParams);
-    }
+        .forEach(parameters::add);
+
     String cp = getClasspath().stream()
         .map(str -> str.replace('/', File.separatorChar))
         .collect(Collectors.joining(File.pathSeparator));
