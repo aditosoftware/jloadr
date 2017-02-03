@@ -119,7 +119,7 @@ public class JnlpResourcePack implements IResourcePack
       List<String> vmProperties = jnlpUrls.stream()
           .flatMap(jnlpUrl -> jnlpUrl.findChildElementsByPath("resources/property").stream())
           .map(element -> {
-            String name = element.getAttribute("name").replace("jnlp.adito.", "");
+            String name = element.getAttribute("name").replace("jnlp.adito.", "adito.");
             String value = element.getAttribute("value");
             return name.isEmpty() ? null : name + (value.isEmpty() ? "" : "=" + value);
           })
