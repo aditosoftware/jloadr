@@ -20,7 +20,7 @@ public class JnlpResourcePack implements IResourcePack
   private Collection<JnlpUrl> jnlpUrls;
   private Map<IResourceId, IResource> resources;
 
-  protected JnlpResourcePack(URL pJnlpUrl)
+  JnlpResourcePack(URL pJnlpUrl)
   {
     jnlpUrl = pJnlpUrl;
   }
@@ -36,28 +36,28 @@ public class JnlpResourcePack implements IResourcePack
   @Override
   public List<IResource> getResources()
   {
-    return new ArrayList<>(getResourcesMap().values());
+    return new ArrayList<>(_getResourcesMap().values());
   }
 
   @Nullable
   @Override
   public IResource getResource(@Nonnull IResourceId pId)
   {
-    return getResourcesMap().get(pId);
+    return _getResourcesMap().get(pId);
   }
 
-  synchronized Collection<JnlpUrl> getJnlpUrls()
+  private synchronized Collection<JnlpUrl> _getJnlpUrls()
   {
     if (jnlpUrls == null)
       jnlpUrls = JnlpUrl.load(jnlpUrl);
     return jnlpUrls;
   }
 
-  synchronized Map<IResourceId, IResource> getResourcesMap()
+  private synchronized Map<IResourceId, IResource> _getResourcesMap()
   {
     if (resources == null)
       resources = Stream.concat(
-          getJnlpUrls().stream()
+          _getJnlpUrls().stream()
               .flatMap(JnlpUrl::streamJarJnlpReferences)
               .map(JnlpURLResource::new)
               .filter(jnlpURLResource -> {
@@ -78,7 +78,7 @@ public class JnlpResourcePack implements IResourcePack
 
   private IResource _getSplashResource()
   {
-    return getJnlpUrls().stream()
+    return _getJnlpUrls().stream()
         .flatMap(jnlpUrl -> jnlpUrl.findChildElementsByPath("information/icon").stream()
             .map(element -> new AbstractMap.SimpleImmutableEntry<>(jnlpUrl, element)))
         .filter(entry -> entry.getValue().getAttribute("kind").equals("splash"))
@@ -107,14 +107,15 @@ public class JnlpResourcePack implements IResourcePack
     @Override
     public long getLastModified() throws IOException
     {
-      URLConnection urlConnection = jnlpUrl.openConnection();
-      return urlConnection.getLastModified();
+      return jnlpUrls.stream()
+          .map(JnlpUrl::getLastModified)
+          .reduce(0L, Math::max);
     }
 
     @Override
     protected JLoaderConfig createConfig()
     {
-      Collection<JnlpUrl> jnlpUrls = getJnlpUrls();
+      Collection<JnlpUrl> jnlpUrls = _getJnlpUrls();
 
       List<String> vmProperties = jnlpUrls.stream()
           .flatMap(jnlpUrl -> jnlpUrl.findChildElementsByPath("resources/property").stream())
@@ -126,7 +127,7 @@ public class JnlpResourcePack implements IResourcePack
           .filter(Objects::nonNull)
           .collect(Collectors.toList());
 
-      List<String> classpath = getResourcesMap().keySet().stream()
+      List<String> classpath = _getResourcesMap().keySet().stream()
           .map(id -> id.toString().replace(".pack.gz", ""))
           .collect(Collectors.toList());
 

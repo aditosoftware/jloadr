@@ -2,10 +2,8 @@ package de.adito.jloadr.repository.jnlp;
 
 import de.adito.jloadr.common.XMLUtil;
 import org.w3c.dom.*;
-import org.xml.sax.SAXException;
 
-import javax.xml.parsers.*;
-import java.io.*;
+import java.io.IOException;
 import java.net.*;
 import java.util.*;
 import java.util.stream.Stream;
@@ -36,7 +34,7 @@ class JnlpUrl
       return;
     JnlpUrl jnlpUrl = new JnlpUrl(pJnlpUrl);
     pMap.put(pJnlpUrl.toExternalForm(), jnlpUrl);
-    jnlpUrl.streamExtensionJnlpReferences().forEach(jnlpRef -> _load(pMap, jnlpRef.getUrl()));
+    jnlpUrl._streamExtensionJnlpReferences().forEach(jnlpRef -> _load(pMap, jnlpRef.getUrl()));
   }
 
 
@@ -67,9 +65,14 @@ class JnlpUrl
     extensions = findChildElementsByPath("resources/extension");
   }
 
-  public URL getJnlpUrl()
+  long getLastModified()
   {
-    return jnlpUrl;
+    try {
+      return jnlpUrl.openConnection().getLastModified();
+    }
+    catch (IOException pE) {
+      return 0;
+    }
   }
 
   URL getCodebase()
@@ -82,7 +85,7 @@ class JnlpUrl
     return jars.stream().map(element -> new JnlpReference(getCodebase(), element));
   }
 
-  Stream<JnlpReference> streamExtensionJnlpReferences()
+  private Stream<JnlpReference> _streamExtensionJnlpReferences()
   {
     return extensions.stream().map(element -> new JnlpReference(getCodebase(), element));
   }
