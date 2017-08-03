@@ -60,7 +60,8 @@ public class URLResource implements IResource
 
   private synchronized URLConnection _getUrlConnection() throws IOException
   {
-    if (urlConnection == null) {
+    if (urlConnection == null)
+    {
       urlConnection = url.openConnection();
       urlConnection.setUseCaches(true);
       urlConnection.connect();

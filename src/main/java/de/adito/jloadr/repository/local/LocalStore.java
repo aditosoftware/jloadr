@@ -20,15 +20,18 @@ public class LocalStore implements IStore
   public LocalStore(Path pStoreDirectory)
   {
     directory = pStoreDirectory;
-    try {
+    try
+    {
       Files.createDirectories(directory);
-      try (DirectoryStream<Path> dirStream = Files.newDirectoryStream(directory, entry -> Files.isDirectory(entry))) {
+      try (DirectoryStream<Path> dirStream = Files.newDirectoryStream(directory, entry -> Files.isDirectory(entry)))
+      {
         resourcePackMap = StreamSupport.stream(dirStream.spliterator(), false)
             .map(dir -> new LocalStoreResourcePack(dir, getConfigPathForDirectory(dir)))
             .collect(Collectors.toMap(LocalStoreResourcePack::getId, Function.identity()));
       }
     }
-    catch (IOException pE) {
+    catch (IOException pE)
+    {
       throw new RuntimeException(pE);
     }
   }
@@ -57,13 +60,15 @@ public class LocalStore implements IStore
   @Override
   public IStoreResourcePack addResourcePack(String pId)
   {
-    try {
+    try
+    {
       Path created = Files.createDirectories(directory.resolve(pId));
       LocalStoreResourcePack localStoreResourcePack = new LocalStoreResourcePack(created, getConfigPathForDirectory(created));
       resourcePackMap.put(localStoreResourcePack.getId(), localStoreResourcePack);
       return localStoreResourcePack;
     }
-    catch (IOException pE) {
+    catch (IOException pE)
+    {
       throw new RuntimeException(pE);
     }
   }
@@ -76,7 +81,8 @@ public class LocalStore implements IStore
       return;
 
     Path path = directory.resolve(pId);
-    try {
+    try
+    {
       Files.deleteIfExists(getConfigPathForDirectory(directory));
       Files.walkFileTree(path, new SimpleFileVisitor<Path>()
       {
@@ -96,7 +102,8 @@ public class LocalStore implements IStore
 
       });
     }
-    catch (IOException pE) {
+    catch (IOException pE)
+    {
       throw new RuntimeException(pE);
     }
   }

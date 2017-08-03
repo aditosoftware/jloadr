@@ -22,10 +22,12 @@ class JnlpReference
 
   URL getUrl()
   {
-    try {
+    try
+    {
       return new URL(codebase, jarElement.getAttribute("href"));
     }
-    catch (MalformedURLException pE) {
+    catch (MalformedURLException pE)
+    {
       throw new RuntimeException(pE);
     }
   }

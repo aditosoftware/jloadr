@@ -29,17 +29,20 @@ public class MuxResourcePack implements IResourcePack
           if (os == null || os.isEmpty())
             return true;
 
-          if (OsUtil.getOsType().toString().equalsIgnoreCase(os)) {
+          if (OsUtil.getOsType().toString().equalsIgnoreCase(os))
+          {
             String bitness = element.getAttribute("bitness");
             return bitness == null || bitness.isEmpty() || OsUtil.getBitness().toString().equalsIgnoreCase(bitness);
           }
           return false;
         })
         .map(element -> {
-          try {
+          try
+          {
             return ResourcePackFactory.get(UrlUtil.getRelative(packUrl, element.getTextContent().trim()));
           }
-          catch (RuntimeException pE) {
+          catch (RuntimeException pE)
+          {
             return null;
           }
         })
@@ -67,7 +70,8 @@ public class MuxResourcePack implements IResourcePack
 
   private Map<IResourceId, IResource> _getResourceMap()
   {
-    if (resourceMap == null) {
+    if (resourceMap == null)
+    {
       resourceMap = new HashMap<>();
       _MuxedConfig muxedConfig = new _MuxedConfig(packs);
       resourceMap.put(muxedConfig.getId(), muxedConfig);
@@ -99,10 +103,12 @@ public class MuxResourcePack implements IResourcePack
     {
       return configResources.stream()
           .map(resource -> {
-            try {
+            try
+            {
               return resource.getLastModified();
             }
-            catch (IOException pE) {
+            catch (IOException pE)
+            {
               throw new RuntimeException(pE);
             }
           })
@@ -115,11 +121,13 @@ public class MuxResourcePack implements IResourcePack
       return configResources.stream()
           .map(resource -> {
             JLoaderConfig config = new JLoaderConfig();
-            try (InputStream inputStream = resource.getInputStream()) {
+            try (InputStream inputStream = resource.getInputStream())
+            {
               config.load(inputStream);
               return config;
             }
-            catch (IOException pE) {
+            catch (IOException pE)
+            {
               throw new RuntimeException(pE);
             }
           })

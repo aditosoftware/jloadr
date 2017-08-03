@@ -30,14 +30,17 @@ public class Loader implements ILoader
 
 
     // init state callback
-    if (pStateCallback != null) {
+    if (pStateCallback != null)
+    {
       IStoreResource localSplashResource = null;
       ResourceId splashId = new ResourceId("splash");
       IResource remoteSplashResource = pSource.getResource(splashId);
       // copy splash
-      if (remoteSplashResource != null) {
+      if (remoteSplashResource != null)
+      {
         localSplashResource = localResourcePack.getResource(remoteSplashResource.getId());
-        if (localSplashResource == null) {
+        if (localSplashResource == null)
+        {
           localSplashResource = localResourcePack.createResource(splashId);
           _copy(localSplashResource, remoteSplashResource);
         }
@@ -56,21 +59,24 @@ public class Loader implements ILoader
 
     // copy missing
     remoteResources.parallelStream().forEach(resource -> {
-      try {
+      try
+      {
         IResourceId localId = _getLocalId(resource.getId());
         IStoreResource localResource = localResourcePack.getResource(localId);
 
         if (localResource == null)
           localResource = localResourcePack.createResource(localId);
 
-        if (localResource.getLastModified() != resource.getLastModified()) {
+        if (localResource.getLastModified() != resource.getLastModified())
+        {
           _copy(localResource, resource);
         }
 
         if (pStateCallback != null)
           pStateCallback.loaded(loadCount.incrementAndGet());
       }
-      catch (Exception pE) {
+      catch (Exception pE)
+      {
         System.err.println("error loading: " + resource.getId());
         pE.printStackTrace();
       }
@@ -85,9 +91,11 @@ public class Loader implements ILoader
 
   private void _copy(IStoreResource localResource, IResource pRemoteResource)
   {
-    try {
+    try
+    {
       boolean isPackGz = _isPackGz(pRemoteResource.getId());
-      if (isPackGz) {
+      if (isPackGz)
+      {
         try (InputStream inputStream = pRemoteResource.getInputStream();
              GZIPInputStream gzipInputStream = new GZIPInputStream(inputStream);
              OutputStream outputStream = localResource.getOutputStream();
@@ -98,7 +106,8 @@ public class Loader implements ILoader
                {
                  super.putNextEntry(new ZipEntry(ze.getName()));
                }
-             }) {
+             })
+        {
           Pack200.newUnpacker().unpack(gzipInputStream, jarOutputStream);
         }
       }
@@ -107,7 +116,8 @@ public class Loader implements ILoader
 
       localResource.setLastModified(pRemoteResource.getLastModified());
     }
-    catch (IOException pE) {
+    catch (IOException pE)
+    {
       throw new RuntimeException(pE);
     }
   }

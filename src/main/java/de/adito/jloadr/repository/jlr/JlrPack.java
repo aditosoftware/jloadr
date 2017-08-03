@@ -50,13 +50,15 @@ public class JlrPack
 
   public synchronized void loadPack()
   {
-    try {
+    try
+    {
       Document document = XMLUtil.loadDocument(packUrl);
       entryMap = XMLUtil.findChildElements(document.getDocumentElement(), "entry").stream()
           .map(JlrEntry::new)
           .collect(Collectors.toMap(JlrEntry::getId, Function.identity()));
     }
-    catch (RuntimeException pE) {
+    catch (RuntimeException pE)
+    {
       entryMap = new HashMap<>();
     }
   }

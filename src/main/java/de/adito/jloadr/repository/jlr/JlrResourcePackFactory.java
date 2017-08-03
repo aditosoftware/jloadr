@@ -17,7 +17,8 @@ public class JlrResourcePackFactory implements IResourcePackFactory
   public IResourcePack load(URL pUrl)
   {
     String path = pUrl.getPath();
-    if (path.endsWith(CONFIG_FILE_SUFIX)) {
+    if (path.endsWith(CONFIG_FILE_SUFIX))
+    {
       URL resourcesUrl = UrlUtil.getAtHost(pUrl, path.substring(0, path.lastIndexOf(CONFIG_FILE_SUFIX)) + "/");
       return new JlrResourcePack(pUrl, resourcesUrl);
     }
@@ -25,12 +26,14 @@ public class JlrResourcePackFactory implements IResourcePackFactory
     if (path.endsWith("/"))
       path = path.substring(0, path.length() - 1);
     path += CONFIG_FILE_SUFIX;
-    try {
+    try
+    {
       URL packUrl = UrlUtil.getAtHost(pUrl, path);
       packUrl.openStream().close(); // check existence
       return new JlrResourcePack(packUrl, pUrl);
     }
-    catch (IOException pE) {
+    catch (IOException pE)
+    {
       // ignore
     }
     return null;

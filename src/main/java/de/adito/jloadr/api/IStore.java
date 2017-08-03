@@ -12,10 +12,10 @@ public interface IStore
 
   boolean containsResourcePack(String pId);
 
-  IStoreResourcePack getResourcePack( String pId);
+  IStoreResourcePack getResourcePack(String pId);
 
-  IStoreResourcePack addResourcePack( String pId);
+  IStoreResourcePack addResourcePack(String pId);
 
-  void removeResourcePack( String pId);
+  void removeResourcePack(String pId);
 
 }

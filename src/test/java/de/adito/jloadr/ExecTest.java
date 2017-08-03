@@ -2,8 +2,8 @@ package de.adito.jloadr;
 
 /**
  * @author bo
- *         Date: 14.01.17
- *         Time: 19:32
+ * Date: 14.01.17
+ * Time: 19:32
  */
 public class ExecTest
 {

@@ -76,7 +76,8 @@ public class JLoaderConfig
     String cp = getClasspath().stream()
         .map(str -> str.replace('/', File.separatorChar))
         .collect(Collectors.joining(File.pathSeparator));
-    if (!cp.isEmpty()) {
+    if (!cp.isEmpty())
+    {
       parameters.add("-cp");
       parameters.add(cp);
     }
@@ -91,7 +92,8 @@ public class JLoaderConfig
     String javaCmd = getJavaCmd();
     if (javaCmd == null)
       javaCmd = "java";
-    else {
+    else
+    {
       javaCmd = javaCmd.replace('/', File.separatorChar);
       if (pWorkingDirectory != null)
         javaCmd = pWorkingDirectory.resolve(javaCmd).toAbsolutePath().toString();
@@ -151,7 +153,8 @@ public class JLoaderConfig
 
   private void _append(Document pDocument, Element pAppendTo, String pTag, String pValue)
   {
-    if (pValue != null) {
+    if (pValue != null)
+    {
       Element element = pDocument.createElement(pTag);
       element.setTextContent(pValue);
       pAppendTo.appendChild(element);
@@ -160,8 +163,10 @@ public class JLoaderConfig
 
   private void _append(Document pDocument, Element pAppendTo, String pTag, List<String> pValues)
   {
-    if (pValues != null) {
-      for (String value : pValues) {
+    if (pValues != null)
+    {
+      for (String value : pValues)
+      {
         Element element = pDocument.createElement(pTag);
         element.setTextContent(value);
         pAppendTo.appendChild(element);

@@ -25,42 +25,50 @@ public class XMLUtil
 
   public static Document loadDocument(URL pDocumentUrl) throws RuntimeException
   {
-    try {
+    try
+    {
       URLConnection urlConnection = pDocumentUrl.openConnection();
       if (urlConnection.getContentLengthLong() == 0)
         throw new RuntimeException();
-      try (InputStream in = urlConnection.getInputStream()) {
+      try (InputStream in = urlConnection.getInputStream())
+      {
         return loadDocument(in);
       }
     }
-    catch (IOException pE) {
+    catch (IOException pE)
+    {
       throw new RuntimeException(pE);
     }
   }
 
   public static Document loadDocument(InputStream pInputStream) throws RuntimeException
   {
-    try {
+    try
+    {
       return DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(pInputStream);
     }
-    catch (SAXException | IOException | ParserConfigurationException pE) {
+    catch (SAXException | IOException | ParserConfigurationException pE)
+    {
       throw new RuntimeException(pE);
     }
   }
 
   public static void saveDocument(URL pDocumentUrl, Consumer<Document> pAppender)
   {
-    try (OutputStream outputStream = Files.newOutputStream(Paths.get(pDocumentUrl.toURI()))) {
+    try (OutputStream outputStream = Files.newOutputStream(Paths.get(pDocumentUrl.toURI())))
+    {
       saveDocument(outputStream, pAppender);
     }
-    catch (URISyntaxException | IOException pE) {
+    catch (URISyntaxException | IOException pE)
+    {
       throw new RuntimeException(pE);
     }
   }
 
   public static void saveDocument(OutputStream pOutputStream, Consumer<Document> pAppender)
   {
-    try {
+    try
+    {
       DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
       DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
 
@@ -78,7 +86,8 @@ public class XMLUtil
       transformer.transform(new DOMSource(doc),
                             new StreamResult(new OutputStreamWriter(pOutputStream, "UTF-8")));
     }
-    catch (TransformerException | ParserConfigurationException | IOException pE) {
+    catch (TransformerException | ParserConfigurationException | IOException pE)
+    {
       throw new RuntimeException(pE);
     }
   }
@@ -87,7 +96,8 @@ public class XMLUtil
   {
     List<Element> list = new ArrayList<>();
     NodeList childElements = pElement.getElementsByTagName(pTagName);
-    for (int i = 0; i < childElements.getLength(); i++) {
+    for (int i = 0; i < childElements.getLength(); i++)
+    {
       Node item = childElements.item(i);
       list.add((Element) item);
     }
@@ -106,10 +116,12 @@ public class XMLUtil
 
   public static String getChildText(Element pElement, String pTagName)
   {
-    try {
+    try
+    {
       return getChildElement(pElement, pTagName).getTextContent().trim();
     }
-    catch (IllegalStateException pE) {
+    catch (IllegalStateException pE)
+    {
       return null;
     }
   }

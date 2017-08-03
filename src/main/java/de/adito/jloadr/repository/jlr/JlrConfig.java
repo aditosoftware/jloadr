@@ -31,11 +31,13 @@ public class JlrConfig
   {
     return XMLUtil.findChildElements(document.getDocumentElement(), "pack").stream()
         .map(element -> {
-          try {
+          try
+          {
             URL url = UrlUtil.getRelative(configURL, element.getTextContent().trim());
             return new JlrPack(url);
           }
-          catch (RuntimeException pE) {
+          catch (RuntimeException pE)
+          {
             return null;
           }
         })

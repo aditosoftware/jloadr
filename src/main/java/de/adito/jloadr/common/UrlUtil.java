@@ -14,7 +14,8 @@ public class UrlUtil
 
   public static URL getRelative(URL pParentUrl, String pUrlString) throws IllegalArgumentException
   {
-    try {
+    try
+    {
       URI uri = new URI(pUrlString);
       if (uri.isAbsolute())
         return uri.toURL();
@@ -24,17 +25,20 @@ public class UrlUtil
       URI parentUri = pParentUrl.toURI();
       return parentUri.resolve(parentUri.getPath().endsWith("/") ? pUrlString : pUrlString).toURL();
     }
-    catch (URISyntaxException | MalformedURLException pE) {
+    catch (URISyntaxException | MalformedURLException pE)
+    {
       throw new IllegalArgumentException(pE);
     }
   }
 
   public static URL getAtHost(URL pParentUrl, String pUrlString)
   {
-    try {
+    try
+    {
       return new URL(pParentUrl.getProtocol(), pParentUrl.getHost(), pParentUrl.getPort(), pUrlString);
     }
-    catch (MalformedURLException pE) {
+    catch (MalformedURLException pE)
+    {
       throw new IllegalArgumentException(pE);
     }
   }

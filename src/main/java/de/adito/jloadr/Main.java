@@ -30,9 +30,11 @@ public class Main
     String startName = null;
     if (args.length > 0)
       url = args[0];
-    else {
+    else
+    {
       Path configPath = Paths.get("config.xml");
-      if (Files.exists(configPath)) {
+      if (Files.exists(configPath))
+      {
         Document document = XMLUtil.loadDocument(configPath.toUri().toURL());
         Element documentElement = document.getDocumentElement();
         url = XMLUtil.getChildText(documentElement, "url");
@@ -47,22 +49,27 @@ public class Main
 
     Splash splash = GraphicsEnvironment.isHeadless() ? null : new Splash(iconPath, startName);
 
-    try {
+    try
+    {
       LocalStore localStore = new LocalStore(Paths.get("jloadr"));
 
       IStoreResourcePack localResourcePack = new Loader().load(localStore, remoteResourcePack, splash);
 
       IStoreResource configResource = localResourcePack.getResource(JLoaderConfig.CONFIG_ID);
-      if (configResource != null) {
+      if (configResource != null)
+      {
         JLoaderConfig loaderConfig = new JLoaderConfig();
-        try (InputStream inputStream = configResource.getInputStream()) {
+        try (InputStream inputStream = configResource.getInputStream())
+        {
           loaderConfig.load(inputStream);
         }
 
         Path workingDirectory = Paths.get("jloadr").resolve(localResourcePack.getId()).toAbsolutePath();
-        if (Arrays.asList(OsUtil.EType.LINUX, OsUtil.EType.OSX).contains(OsUtil.getOsType())) {
+        if (Arrays.asList(OsUtil.EType.LINUX, OsUtil.EType.OSX).contains(OsUtil.getOsType()))
+        {
           String javaCmd = loaderConfig.getJavaCmd();
-          if (javaCmd != null && Files.exists(workingDirectory.resolve(javaCmd))) {
+          if (javaCmd != null && Files.exists(workingDirectory.resolve(javaCmd)))
+          {
             Process chmodProcess = new ProcessBuilder("chmod", "+x", javaCmd)
                 .directory(workingDirectory.toFile())
                 .start();
@@ -76,7 +83,8 @@ public class Main
         javaProcess.waitFor(4, TimeUnit.SECONDS);
       }
     }
-    finally {
+    finally
+    {
       if (splash != null)
         SwingUtilities.invokeLater(splash::dispose);
     }
@@ -90,7 +98,8 @@ public class Main
 
     public Splash(String pIconPath, String pStartName) throws HeadlessException
     {
-      if (pIconPath != null) {
+      if (pIconPath != null)
+      {
         Path path = Paths.get(pIconPath);
         if (Files.exists(path))
           setIconImage(new ImageIcon(path.toString()).getImage());
@@ -105,12 +114,15 @@ public class Main
       elementCount = pElementCount;
 
       JLabel label = null;
-      if (pSplashResource != null) {
-        try {
+      if (pSplashResource != null)
+      {
+        try
+        {
           BufferedImage image = ImageIO.read(pSplashResource.getInputStream());
           label = new JLabel("", new ImageIcon(image), SwingConstants.CENTER);
         }
-        catch (IOException pE) {
+        catch (IOException pE)
+        {
           // no image
         }
       }

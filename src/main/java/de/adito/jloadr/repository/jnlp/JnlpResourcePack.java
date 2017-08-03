@@ -57,11 +57,13 @@ public class JnlpResourcePack implements IResourcePack
               .flatMap(JnlpUrl::streamJarJnlpReferences)
               .map(JnlpURLResource::new)
               .filter(jnlpURLResource -> {
-                try {
+                try
+                {
                   jnlpURLResource.getId();
                   return true;
                 }
-                catch (Exception pE) {
+                catch (Exception pE)
+                {
                   System.err.println(pE.getMessage());
                   return false;
                 }
@@ -79,7 +81,8 @@ public class JnlpResourcePack implements IResourcePack
             .map(element -> new AbstractMap.SimpleImmutableEntry<>(jnlpUrl, element)))
         .filter(entry -> entry.getValue().getAttribute("kind").equals("splash"))
         .map(entry -> {
-          try {
+          try
+          {
             return new URLResource(new URL(entry.getKey().getCodebase(), entry.getValue().getAttribute("href")))
             {
               @Override
@@ -89,7 +92,8 @@ public class JnlpResourcePack implements IResourcePack
               }
             };
           }
-          catch (MalformedURLException pE) {
+          catch (MalformedURLException pE)
+          {
             return null;
           }
         })

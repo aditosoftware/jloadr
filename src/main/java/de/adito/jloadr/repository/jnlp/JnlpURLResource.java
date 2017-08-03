@@ -77,15 +77,18 @@ class JnlpURLResource implements IResource
 
   private URLResource _getResource()
   {
-    if (resource == null) {
+    if (resource == null)
+    {
       Element jarElement = jarJnlpReference.getJarElement();
       String href = jarElement.getAttribute("href");
       String version = jarElement.getAttribute("version");
 
       List<String> variants = new ArrayList<>();
-      if (version != null && !version.isEmpty()) {
+      if (version != null && !version.isEmpty())
+      {
         int index = href.lastIndexOf(".jar");
-        if (index != -1) {
+        if (index != -1)
+        {
           String name = href.substring(0, index);
           String versionedJar = name + "__V" + version + ".jar";
           variants.add(versionedJar);
@@ -95,20 +98,25 @@ class JnlpURLResource implements IResource
       variants.add(href);
       variants.add(href + ".pack.gz");
 
-      for (String variant : variants) {
-        try {
+      for (String variant : variants)
+      {
+        try
+        {
           URL url = new URL(jarJnlpReference.getCodebase(), variant);
           URLResource urlResource = new URLResource(url);
-          try {
+          try
+          {
             urlResource.checkAvailable();
             resource = urlResource;
             return resource;
           }
-          catch (IOException pE) {
+          catch (IOException pE)
+          {
             // ignore
           }
         }
-        catch (IOException pE) {
+        catch (IOException pE)
+        {
           throw new RuntimeException(pE);
         }
       }

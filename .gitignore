@@ -1,4 +1,6 @@
-/.idea
+/.idea/*
+!/.idea/codeStyleSettings.xml
+!/.idea/projectCodeStyle.xml
 /jloadr
 /target
 *.iml

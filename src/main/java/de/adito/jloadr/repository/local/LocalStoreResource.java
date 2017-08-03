@@ -34,7 +34,8 @@ public class LocalStoreResource implements IStoreResource
       @Override
       public synchronized void flush() throws IOException
       {
-        if (count > 0) {
+        if (count > 0)
+        {
           md.update(buf, 0, count);
         }
         super.flush();
@@ -44,7 +45,8 @@ public class LocalStoreResource implements IStoreResource
       public void close() throws IOException
       {
         super.close();
-        if (md != null) {
+        if (md != null)
+        {
           jlrEntry.setHash(Base64.getEncoder().encodeToString(md.digest()));
           md = null;
         }
@@ -79,10 +81,12 @@ public class LocalStoreResource implements IStoreResource
   @Override
   public void setLastModified(long pTime)
   {
-    try {
+    try
+    {
       Files.setLastModifiedTime(path, FileTime.fromMillis(pTime));
     }
-    catch (IOException pE) {
+    catch (IOException pE)
+    {
       throw new RuntimeException(pE);
     }
   }
@@ -91,12 +95,15 @@ public class LocalStoreResource implements IStoreResource
   public String getHash()
   {
     String hash = jlrEntry.getHash();
-    if (hash == null) {
-      try (InputStream inputStream = getInputStream()) {
+    if (hash == null)
+    {
+      try (InputStream inputStream = getInputStream())
+      {
         hash = JLoadrUtil.getHash(inputStream);
         jlrEntry.setHash(hash);
       }
-      catch (IOException pE) {
+      catch (IOException pE)
+      {
         throw new RuntimeException(pE);
       }
     }

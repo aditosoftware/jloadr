@@ -23,7 +23,8 @@ public class LocalStoreResourcePack implements IStoreResourcePack
   {
     root = pRoot;
     resourceMap = new HashMap<>();
-    try {
+    try
+    {
       if (!Files.exists(pConfigPath))
         Files.createFile(pConfigPath);
       jlrPack = new JlrPack(pConfigPath.toUri().toURL());
@@ -49,7 +50,8 @@ public class LocalStoreResourcePack implements IStoreResourcePack
         }
       });
     }
-    catch (IOException pE) {
+    catch (IOException pE)
+    {
       throw new RuntimeException(pE);
     }
   }
@@ -78,7 +80,8 @@ public class LocalStoreResourcePack implements IStoreResourcePack
     Path path = root.resolve(pId.toPath());
     if (Files.exists(path))
       throw new RuntimeException("Resource already exists: " + path);
-    try {
+    try
+    {
       Files.createDirectories(path.getParent());
       JlrEntry jlrEntry = new JlrEntry(pId);
       LocalStoreResource resource = new LocalStoreResource(jlrEntry, Files.createFile(path));
@@ -86,7 +89,8 @@ public class LocalStoreResourcePack implements IStoreResourcePack
       resourceMap.put(pId, resource);
       return resource;
     }
-    catch (IOException pE) {
+    catch (IOException pE)
+    {
       throw new RuntimeException(pE);
     }
   }
@@ -95,14 +99,17 @@ public class LocalStoreResourcePack implements IStoreResourcePack
   public synchronized void removeResource(IResourceId pId)
   {
     Path path = root.resolve(pId.toPath());
-    if (Files.isRegularFile(path)) {
-      try {
+    if (Files.isRegularFile(path))
+    {
+      try
+      {
         Files.delete(path);
         resourceMap.remove(pId);
         jlrPack.removeEntry(pId);
         JLoadrUtil.deleteEmptyDirectories(path.getParent());
       }
-      catch (IOException pE) {
+      catch (IOException pE)
+      {
         throw new RuntimeException(pE);
       }
     }

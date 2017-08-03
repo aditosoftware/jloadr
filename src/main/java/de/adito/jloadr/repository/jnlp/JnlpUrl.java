@@ -44,19 +44,25 @@ class JnlpUrl
     document = XMLUtil.loadDocument(pJnlpUrl);
 
     String codebaseString = document.getDocumentElement().getAttribute("codebase");
-    if (codebaseString != null && !codebaseString.isEmpty()) {
-      try {
+    if (codebaseString != null && !codebaseString.isEmpty())
+    {
+      try
+      {
         codebase = new URL(codebaseString);
       }
-      catch (MalformedURLException pE) {
+      catch (MalformedURLException pE)
+      {
         // alternativ wird codebase aus 'jnlpUrl' bestimmt.
       }
     }
-    else {
-      try {
+    else
+    {
+      try
+      {
         codebase = new URL(jnlpUrl, ".");
       }
-      catch (MalformedURLException pE) {
+      catch (MalformedURLException pE)
+      {
         throw new RuntimeException(pE);
       }
     }
@@ -67,10 +73,12 @@ class JnlpUrl
 
   long getLastModified()
   {
-    try {
+    try
+    {
       return jnlpUrl.openConnection().getLastModified();
     }
-    catch (IOException pE) {
+    catch (IOException pE)
+    {
       return 0;
     }
   }
@@ -94,9 +102,11 @@ class JnlpUrl
   {
     List<Element> elements = Collections.singletonList(document.getDocumentElement());
     String[] pathElements = pPath.split("/");
-    for (String pathElement : pathElements) {
+    for (String pathElement : pathElements)
+    {
       List<Element> list = new ArrayList<>();
-      for (Element element : elements) {
+      for (Element element : elements)
+      {
         list.addAll(XMLUtil.findChildElements(element, pathElement));
       }
       elements = list;

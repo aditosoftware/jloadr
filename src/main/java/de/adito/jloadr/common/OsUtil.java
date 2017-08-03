@@ -45,12 +45,14 @@ public class OsUtil
       return EBitness.X64;
     if (getOsType() == EType.LINUX)
     {
-      try {
+      try
+      {
         String s = ProcessUtil.runCmd("uname", "-a");
         if (s.contains("x86_64"))
           return EBitness.X64;
       }
-      catch (IOException pE) {
+      catch (IOException pE)
+      {
         // ignore
       }
     }

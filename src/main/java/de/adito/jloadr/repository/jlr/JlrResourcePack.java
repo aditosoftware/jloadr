@@ -45,16 +45,19 @@ public class JlrResourcePack implements IResourcePack
 
   private synchronized Map<IResourceId, IResource> _getResourceMap()
   {
-    if (resourceMap == null) {
+    if (resourceMap == null)
+    {
       resourceMap = new HashMap<>();
       jlrPack.loadPack();
       resourceMap = jlrPack.getEntries().stream()
           .map(entry -> {
-            try {
+            try
+            {
               URL url = new URL(resourcesUrl, entry.getId().toString());
               return new JlrResource(entry, url);
             }
-            catch (MalformedURLException pE) {
+            catch (MalformedURLException pE)
+            {
               throw new RuntimeException(pE);
             }
           })

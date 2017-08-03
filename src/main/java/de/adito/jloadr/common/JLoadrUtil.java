@@ -24,29 +24,35 @@ public class JLoadrUtil
 
   public static MessageDigest getMessageDigest()
   {
-    try {
+    try
+    {
       return MessageDigest.getInstance("SHA-1");
     }
-    catch (NoSuchAlgorithmException pE) {
+    catch (NoSuchAlgorithmException pE)
+    {
       throw new RuntimeException();
     }
   }
 
   public static String getHash(InputStream pInputStream)
   {
-    try {
+    try
+    {
       MessageDigest digest = getMessageDigest();
       int n = 0;
       byte[] buffer = new byte[8192];
-      while (n != -1) {
+      while (n != -1)
+      {
         n = pInputStream.read(buffer);
-        if (n > 0) {
+        if (n > 0)
+        {
           digest.update(buffer, 0, n);
         }
       }
       return Base64.getEncoder().encodeToString(digest.digest());
     }
-    catch (IOException pE) {
+    catch (IOException pE)
+    {
       throw new RuntimeException(pE);
     }
   }
@@ -60,7 +66,8 @@ public class JLoadrUtil
 
   public static void copy(InputStream pInputStream, OutputStream pOutputStream) throws IOException
   {
-    try (OutputStream out = pOutputStream; InputStream in = pInputStream) {
+    try (OutputStream out = pOutputStream; InputStream in = pInputStream)
+    {
       byte[] buffer = new byte[256 * 1024];
       int len;
       while ((len = in.read(buffer)) != -1)
@@ -70,7 +77,8 @@ public class JLoadrUtil
 
   public static void deleteEmptyDirectories(Path pPath) throws IOException
   {
-    if (Files.isDirectory(pPath) && !Files.list(pPath).findAny().isPresent()) {
+    if (Files.isDirectory(pPath) && !Files.list(pPath).findAny().isPresent())
+    {
       Files.delete(pPath);
       deleteEmptyDirectories(pPath.getParent());
     }

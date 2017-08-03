@@ -35,7 +35,8 @@ public class ResourcePackFactory implements IResourcePackFactory
   @Override
   public IResourcePack load(URL pUrl)
   {
-    for (IResourcePackFactory factory : factories) {
+    for (IResourcePackFactory factory : factories)
+    {
       IResourcePack pack = factory.load(pUrl);
       if (pack != null)
         return pack;

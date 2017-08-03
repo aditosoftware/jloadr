@@ -69,13 +69,15 @@ public class JlrEntry
     id.setTextContent(getId().toString());
     entry.appendChild(id);
 
-    if (getHash() != null) {
+    if (getHash() != null)
+    {
       Element hash = doc.createElement("hash");
       hash.setTextContent(getHash());
       entry.appendChild(hash);
     }
 
-    if (getSig() != null) {
+    if (getSig() != null)
+    {
       Element sig = doc.createElement("sig");
       sig.setTextContent(getSig());
       entry.appendChild(sig);

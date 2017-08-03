@@ -33,22 +33,27 @@ public abstract class AbstractJLoaderConfigResource implements IResource
   @Override
   public String getHash()
   {
-    try (ByteArrayInputStream inputStream = new ByteArrayInputStream(getBinaryConfig())) {
+    try (ByteArrayInputStream inputStream = new ByteArrayInputStream(getBinaryConfig()))
+    {
       return JLoadrUtil.getHash(inputStream);
     }
-    catch (IOException pE) {
+    catch (IOException pE)
+    {
       throw new RuntimeException(pE);
     }
   }
 
   protected synchronized byte[] getBinaryConfig()
   {
-    if (config == null) {
-      try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
+    if (config == null)
+    {
+      try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream())
+      {
         createConfig().save(outputStream);
         config = outputStream.toByteArray();
       }
-      catch (IOException pE) {
+      catch (IOException pE)
+      {
         throw new RuntimeException(pE);
       }
     }
