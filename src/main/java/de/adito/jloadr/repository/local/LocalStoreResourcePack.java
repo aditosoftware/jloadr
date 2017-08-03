@@ -5,7 +5,6 @@ import de.adito.jloadr.common.JLoadrUtil;
 import de.adito.jloadr.repository.ResourceId;
 import de.adito.jloadr.repository.jlr.*;
 
-import javax.annotation.*;
 import java.io.*;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
@@ -55,30 +54,26 @@ public class LocalStoreResourcePack implements IStoreResourcePack
     }
   }
 
-  @Nonnull
   @Override
   public String getId()
   {
     return root.getFileName().toString();
   }
 
-  @Nonnull
   @Override
   public List<IStoreResource> getResources()
   {
     return new ArrayList<>(resourceMap.values());
   }
 
-  @Nullable
   @Override
-  public IStoreResource getResource(@Nonnull IResourceId pId)
+  public IStoreResource getResource(IResourceId pId)
   {
     return resourceMap.get(pId);
   }
 
-  @Nonnull
   @Override
-  public synchronized IStoreResource createResource(@Nonnull IResourceId pId)
+  public synchronized IStoreResource createResource(IResourceId pId)
   {
     Path path = root.resolve(pId.toPath());
     if (Files.exists(path))
@@ -97,7 +92,7 @@ public class LocalStoreResourcePack implements IStoreResourcePack
   }
 
   @Override
-  public synchronized void removeResource(@Nonnull IResourceId pId)
+  public synchronized void removeResource(IResourceId pId)
   {
     Path path = root.resolve(pId.toPath());
     if (Files.isRegularFile(path)) {

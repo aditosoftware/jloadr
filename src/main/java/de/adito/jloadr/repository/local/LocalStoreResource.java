@@ -4,7 +4,6 @@ import de.adito.jloadr.api.*;
 import de.adito.jloadr.common.JLoadrUtil;
 import de.adito.jloadr.repository.jlr.JlrEntry;
 
-import javax.annotation.Nonnull;
 import java.io.*;
 import java.nio.file.*;
 import java.nio.file.attribute.FileTime;
@@ -53,14 +52,12 @@ public class LocalStoreResource implements IStoreResource
     };
   }
 
-  @Nonnull
   @Override
   public IResourceId getId()
   {
     return jlrEntry.getId();
   }
 
-  @Nonnull
   @Override
   public InputStream getInputStream() throws IOException
   {
@@ -90,7 +87,6 @@ public class LocalStoreResource implements IStoreResource
     }
   }
 
-  @Nonnull
   @Override
   public String getHash()
   {

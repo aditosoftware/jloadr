@@ -4,7 +4,6 @@ import de.adito.jloadr.api.IResourceId;
 import de.adito.jloadr.common.XMLUtil;
 import org.w3c.dom.*;
 
-import javax.annotation.Nullable;
 import java.io.*;
 import java.nio.file.Path;
 import java.util.*;
@@ -66,7 +65,7 @@ public class JLoaderConfig
     });
   }
 
-  public String[] getStartCommands(@Nullable Path pWorkingDirectory)
+  public String[] getStartCommands(Path pWorkingDirectory)
   {
     List<String> parameters = new ArrayList<>();
     parameters.add(_getStartJavaCommand(pWorkingDirectory));
@@ -87,7 +86,7 @@ public class JLoaderConfig
     return parameters.toArray(new String[parameters.size()]);
   }
 
-  private String _getStartJavaCommand(@Nullable Path pWorkingDirectory)
+  private String _getStartJavaCommand(Path pWorkingDirectory)
   {
     String javaCmd = getJavaCmd();
     if (javaCmd == null)

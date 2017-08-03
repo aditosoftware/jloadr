@@ -2,7 +2,6 @@ package de.adito.jloadr.repository.jnlp;
 
 import de.adito.jloadr.api.*;
 
-import javax.annotation.*;
 import java.net.URL;
 
 /**
@@ -11,9 +10,8 @@ import java.net.URL;
 public class JnlpResourcePackFactory implements IResourcePackFactory
 {
 
-  @Nullable
   @Override
-  public IResourcePack load(@Nonnull URL pUrl)
+  public IResourcePack load(URL pUrl)
   {
     return pUrl.getPath().endsWith(".jnlp") ? new JnlpResourcePack(pUrl) : null;
   }

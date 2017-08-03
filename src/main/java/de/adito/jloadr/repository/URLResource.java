@@ -3,7 +3,6 @@ package de.adito.jloadr.repository;
 import de.adito.jloadr.api.*;
 import de.adito.jloadr.common.JLoadrUtil;
 
-import javax.annotation.*;
 import java.io.*;
 import java.net.*;
 import java.util.Objects;
@@ -26,7 +25,6 @@ public class URLResource implements IResource
     _getUrlConnection().getInputStream();
   }
 
-  @Nonnull
   @Override
   public IResourceId getId()
   {
@@ -48,14 +46,12 @@ public class URLResource implements IResource
     return _getUrlConnection().getLastModified();
   }
 
-  @Nullable
   @Override
   public String getHash()
   {
     return null;
   }
 
-  @Nonnull
   @Override
   public InputStream getInputStream() throws IOException
   {

@@ -1,6 +1,5 @@
 package de.adito.jloadr.api;
 
-import javax.annotation.*;
 import java.util.List;
 
 /**
@@ -9,18 +8,15 @@ import java.util.List;
 public interface IStoreResourcePack extends IResourcePack
 {
 
-  @Nonnull
-  IStoreResource createResource(@Nonnull IResourceId pId);
+  IStoreResource createResource(IResourceId pId);
 
-  void removeResource(@Nonnull IResourceId pId);
+  void removeResource(IResourceId pId);
 
-  @Nonnull
   @Override
   List<IStoreResource> getResources();
 
-  @Nullable
   @Override
-  IStoreResource getResource(@Nonnull IResourceId pId);
+  IStoreResource getResource(IResourceId pId);
 
   void writeConfig();
 

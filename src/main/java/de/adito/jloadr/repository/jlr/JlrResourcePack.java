@@ -4,7 +4,6 @@ import de.adito.jloadr.api.*;
 import de.adito.jloadr.common.JLoadrUtil;
 import de.adito.jloadr.repository.URLResource;
 
-import javax.annotation.*;
 import java.net.*;
 import java.util.*;
 import java.util.function.Function;
@@ -26,23 +25,20 @@ public class JlrResourcePack implements IResourcePack
     resourcesUrl = pResourcesUrl;
   }
 
-  @Nonnull
   @Override
   public String getId()
   {
     return JLoadrUtil.getHash(jlrPack.getUrl().toExternalForm());
   }
 
-  @Nonnull
   @Override
   public List<? extends IResource> getResources()
   {
     return new ArrayList<>(_getResourceMap().values());
   }
 
-  @Nullable
   @Override
-  public IResource getResource(@Nonnull IResourceId pId)
+  public IResource getResource(IResourceId pId)
   {
     return _getResourceMap().get(pId);
   }
@@ -78,14 +74,12 @@ public class JlrResourcePack implements IResourcePack
       entry = pEntry;
     }
 
-    @Nonnull
     @Override
     public IResourceId getId()
     {
       return entry.getId();
     }
 
-    @Nonnull
     @Override
     public String getHash()
     {

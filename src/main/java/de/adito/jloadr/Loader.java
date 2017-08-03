@@ -4,7 +4,6 @@ import de.adito.jloadr.api.*;
 import de.adito.jloadr.common.JLoadrUtil;
 import de.adito.jloadr.repository.ResourceId;
 
-import javax.annotation.*;
 import java.io.*;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -18,9 +17,8 @@ import java.util.zip.*;
 public class Loader implements ILoader
 {
 
-  @Nonnull
   @Override
-  public IStoreResourcePack load(@Nonnull IStore pStore, @Nonnull IResourcePack pSource, @Nullable IStateCallback pStateCallback)
+  public IStoreResourcePack load(IStore pStore, IResourcePack pSource, IStateCallback pStateCallback)
   {
     String sourceId = pSource.getId();
     IStoreResourcePack localResourcePack = pStore.containsResourcePack(sourceId) ?

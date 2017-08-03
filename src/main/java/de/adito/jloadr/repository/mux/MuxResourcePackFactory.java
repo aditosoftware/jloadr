@@ -3,7 +3,6 @@ package de.adito.jloadr.repository.mux;
 import de.adito.jloadr.api.*;
 import de.adito.jloadr.common.UrlUtil;
 
-import javax.annotation.*;
 import java.io.IOException;
 import java.net.URL;
 
@@ -15,9 +14,8 @@ public class MuxResourcePackFactory implements IResourcePackFactory
   public static final String CONFIG_FILE_SUFIX = ".mux.xml";
   public static final String DEFAULT_CONFIG_FILE = "default" + CONFIG_FILE_SUFIX;
 
-  @Nullable
   @Override
-  public IResourcePack load(@Nonnull URL pUrl)
+  public IResourcePack load(URL pUrl)
   {
     URL url = _getConfigFileUrl(pUrl);
     return url == null ? null : new MuxResourcePack(url);

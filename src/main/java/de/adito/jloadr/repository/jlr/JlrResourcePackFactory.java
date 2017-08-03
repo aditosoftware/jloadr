@@ -3,7 +3,6 @@ package de.adito.jloadr.repository.jlr;
 import de.adito.jloadr.api.*;
 import de.adito.jloadr.common.UrlUtil;
 
-import javax.annotation.*;
 import java.io.IOException;
 import java.net.URL;
 
@@ -14,9 +13,8 @@ public class JlrResourcePackFactory implements IResourcePackFactory
 {
   public static final String CONFIG_FILE_SUFIX = ".jlr.xml";
 
-  @Nullable
   @Override
-  public IResourcePack load(@Nonnull URL pUrl)
+  public IResourcePack load(URL pUrl)
   {
     String path = pUrl.getPath();
     if (path.endsWith(CONFIG_FILE_SUFIX)) {

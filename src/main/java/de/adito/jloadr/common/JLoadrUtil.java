@@ -1,6 +1,5 @@
 package de.adito.jloadr.common;
 
-import javax.annotation.*;
 import java.io.*;
 import java.nio.charset.Charset;
 import java.nio.file.*;
@@ -17,7 +16,7 @@ public class JLoadrUtil
   {
   }
 
-  public static String toSimpleInfo(@Nonnull Object pObject, @Nullable String pDetail)
+  public static String toSimpleInfo(Object pObject, String pDetail)
   {
     String identity = pObject.getClass().getSimpleName() + '@' + Integer.toHexString(System.identityHashCode(pObject));
     return identity + (pDetail == null || pDetail.isEmpty() ? "" : "(" + pDetail + ")");

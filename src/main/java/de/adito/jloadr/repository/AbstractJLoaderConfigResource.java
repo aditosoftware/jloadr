@@ -3,7 +3,6 @@ package de.adito.jloadr.repository;
 import de.adito.jloadr.api.*;
 import de.adito.jloadr.common.JLoadrUtil;
 
-import javax.annotation.*;
 import java.io.*;
 
 /**
@@ -13,14 +12,12 @@ public abstract class AbstractJLoaderConfigResource implements IResource
 {
   private byte[] config;
 
-  @Nonnull
   @Override
   public IResourceId getId()
   {
     return JLoaderConfig.CONFIG_ID;
   }
 
-  @Nonnull
   @Override
   public InputStream getInputStream() throws IOException
   {
@@ -33,7 +30,6 @@ public abstract class AbstractJLoaderConfigResource implements IResource
     return getBinaryConfig().length;
   }
 
-  @Nullable
   @Override
   public String getHash()
   {

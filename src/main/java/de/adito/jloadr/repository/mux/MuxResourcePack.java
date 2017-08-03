@@ -5,7 +5,6 @@ import de.adito.jloadr.common.*;
 import de.adito.jloadr.repository.*;
 import org.w3c.dom.Document;
 
-import javax.annotation.*;
 import java.io.*;
 import java.net.URL;
 import java.util.*;
@@ -48,23 +47,20 @@ public class MuxResourcePack implements IResourcePack
         .collect(Collectors.toList());
   }
 
-  @Nonnull
   @Override
   public String getId()
   {
     return JLoadrUtil.getHash(packUrl.toExternalForm());
   }
 
-  @Nonnull
   @Override
   public List<? extends IResource> getResources()
   {
     return new ArrayList<>(_getResourceMap().values());
   }
 
-  @Nullable
   @Override
-  public IResource getResource(@Nonnull IResourceId pId)
+  public IResource getResource(IResourceId pId)
   {
     return _getResourceMap().get(pId);
   }

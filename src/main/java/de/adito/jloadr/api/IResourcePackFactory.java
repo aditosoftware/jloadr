@@ -1,6 +1,5 @@
 package de.adito.jloadr.api;
 
-import javax.annotation.*;
 import java.net.URL;
 
 /**
@@ -9,7 +8,6 @@ import java.net.URL;
 public interface IResourcePackFactory
 {
 
-  @Nullable
-  IResourcePack load(@Nonnull URL pUrl);
+  IResourcePack load(URL pUrl);
 
 }

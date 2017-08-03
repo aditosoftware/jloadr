@@ -4,7 +4,6 @@ import de.adito.jloadr.api.*;
 import de.adito.jloadr.repository.*;
 import org.w3c.dom.Element;
 
-import javax.annotation.*;
 import java.io.*;
 import java.net.URL;
 import java.util.*;
@@ -22,7 +21,6 @@ class JnlpURLResource implements IResource
     jarJnlpReference = pJarJnlpReference;
   }
 
-  @Nonnull
   @Override
   public IResourceId getId()
   {
@@ -36,14 +34,12 @@ class JnlpURLResource implements IResource
     return id;
   }
 
-  @Nullable
   @Override
   public String getHash()
   {
     return _getResource().getHash();
   }
 
-  @Nonnull
   @Override
   public InputStream getInputStream() throws IOException
   {

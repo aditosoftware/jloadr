@@ -1,6 +1,5 @@
 package de.adito.jloadr.common;
 
-import javax.annotation.*;
 import java.net.*;
 
 /**
@@ -13,8 +12,7 @@ public class UrlUtil
   {
   }
 
-  @Nonnull
-  public static URL getRelative(@Nullable URL pParentUrl, @Nonnull String pUrlString) throws IllegalArgumentException
+  public static URL getRelative(URL pParentUrl, String pUrlString) throws IllegalArgumentException
   {
     try {
       URI uri = new URI(pUrlString);
@@ -31,8 +29,7 @@ public class UrlUtil
     }
   }
 
-  @Nonnull
-  public static URL getAtHost(@Nonnull URL pParentUrl, @Nonnull String pUrlString)
+  public static URL getAtHost(URL pParentUrl, String pUrlString)
   {
     try {
       return new URL(pParentUrl.getProtocol(), pParentUrl.getHost(), pParentUrl.getPort(), pUrlString);

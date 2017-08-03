@@ -2,7 +2,6 @@ package de.adito.jloadr.repository.local;
 
 import de.adito.jloadr.api.*;
 
-import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
@@ -34,7 +33,6 @@ public class LocalStore implements IStore
     }
   }
 
-  @Nonnull
   @Override
   public Set<String> getResourcePackIds()
   {
@@ -42,14 +40,13 @@ public class LocalStore implements IStore
   }
 
   @Override
-  public boolean containsResourcePack(@Nonnull String pId)
+  public boolean containsResourcePack(String pId)
   {
     return resourcePackMap.containsKey(pId);
   }
 
-  @Nonnull
   @Override
-  public IStoreResourcePack getResourcePack(@Nonnull String pId)
+  public IStoreResourcePack getResourcePack(String pId)
   {
     LocalStoreResourcePack localStoreResourcePack = resourcePackMap.get(pId);
     if (localStoreResourcePack != null)
@@ -58,7 +55,7 @@ public class LocalStore implements IStore
   }
 
   @Override
-  public IStoreResourcePack addResourcePack(@Nonnull String pId)
+  public IStoreResourcePack addResourcePack(String pId)
   {
     try {
       Path created = Files.createDirectories(directory.resolve(pId));
@@ -72,7 +69,7 @@ public class LocalStore implements IStore
   }
 
   @Override
-  public void removeResourcePack(@Nonnull String pId)
+  public void removeResourcePack(String pId)
   {
     LocalStoreResourcePack removed = resourcePackMap.remove(pId);
     if (removed == null)

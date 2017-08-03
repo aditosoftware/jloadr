@@ -2,7 +2,6 @@ package de.adito.jloadr.repository;
 
 import de.adito.jloadr.api.*;
 
-import javax.annotation.*;
 import java.net.URL;
 import java.util.ServiceLoader;
 
@@ -25,8 +24,7 @@ public class ResourcePackFactory implements IResourcePackFactory
     return INSTANCE;
   }
 
-  @Nonnull
-  public static IResourcePack get(@Nonnull URL pUrl) throws RuntimeException
+  public static IResourcePack get(URL pUrl) throws RuntimeException
   {
     IResourcePack pack = getInstance().load(pUrl);
     if (pack == null)
@@ -34,9 +32,8 @@ public class ResourcePackFactory implements IResourcePackFactory
     return pack;
   }
 
-  @Nullable
   @Override
-  public IResourcePack load(@Nonnull URL pUrl)
+  public IResourcePack load(URL pUrl)
   {
     for (IResourcePackFactory factory : factories) {
       IResourcePack pack = factory.load(pUrl);

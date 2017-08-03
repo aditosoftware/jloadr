@@ -1,6 +1,5 @@
 package de.adito.jloadr.api;
 
-import javax.annotation.*;
 import java.util.*;
 
 /**
@@ -9,16 +8,14 @@ import java.util.*;
 public interface IStore
 {
 
-  @Nonnull
   Set<String> getResourcePackIds();
 
-  boolean containsResourcePack(@Nonnull String pId);
+  boolean containsResourcePack(String pId);
 
-  @Nonnull
-  IStoreResourcePack getResourcePack(@Nonnull String pId);
+  IStoreResourcePack getResourcePack( String pId);
 
-  IStoreResourcePack addResourcePack(@Nonnull String pId);
+  IStoreResourcePack addResourcePack( String pId);
 
-  void removeResourcePack(@Nonnull String pId);
+  void removeResourcePack( String pId);
 
 }

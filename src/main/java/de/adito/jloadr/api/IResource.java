@@ -1,6 +1,5 @@
 package de.adito.jloadr.api;
 
-import javax.annotation.*;
 import java.io.*;
 
 /**
@@ -9,17 +8,14 @@ import java.io.*;
 public interface IResource
 {
 
-  @Nonnull
   IResourceId getId();
 
-  @Nonnull
   InputStream getInputStream() throws IOException;
 
   long getSize() throws IOException;
 
   long getLastModified() throws IOException;
 
-  @Nullable
   String getHash();
 
 }
