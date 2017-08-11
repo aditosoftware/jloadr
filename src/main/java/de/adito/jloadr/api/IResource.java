@@ -16,6 +16,10 @@ public interface IResource
 
   long getLastModified() throws IOException;
 
+  /**
+   * Liefert den Haswert der Datei zur Überprüfung auf Dateiänderungen
+   * @return Hashwert
+   */
   String getHash();
 
 }

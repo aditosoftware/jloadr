@@ -50,6 +50,7 @@ public class URLResource implements IResource
   public String getHash()
   {
     return null;
+    // TODO: Der Hash der Datei vom Server wird aus der "indexDatei" genommen, welche vom Server abegrufen werden können soll
   }
 
   @Override

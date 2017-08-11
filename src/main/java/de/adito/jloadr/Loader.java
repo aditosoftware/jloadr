@@ -67,7 +67,7 @@ public class Loader implements ILoader
         if (localResource == null)
           localResource = localResourcePack.createResource(localId);
 
-        if (localResource.getLastModified() != resource.getLastModified())
+        if (!localResource.getHash().equals(resource.getHash()))
         {
           _copy(localResource, resource);
         }
