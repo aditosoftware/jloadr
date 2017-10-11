@@ -25,8 +25,16 @@
 
   <modules>
     <module>jloadr</module>
-    <module>jloadr-jre</module>
   </modules>
+
+  <profiles>
+    <profile>
+      <id>jlink</id>
+      <modules>
+        <module>jloadr-jre</module>
+      </modules>
+    </profile>
+  </profiles>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
