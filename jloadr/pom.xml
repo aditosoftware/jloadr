@@ -11,6 +11,15 @@
   <artifactId>jloadr</artifactId>
   <packaging>multi-release-jar</packaging>
 
+  <dependencies>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>4.12</version>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+
   <build>
 
     <extensions>
@@ -22,6 +31,88 @@
     </extensions>
 
     <plugins>
+
+      <plugin>
+        <artifactId>maven-jar-plugin</artifactId>
+        <version>3.0.2</version>
+        <configuration>
+          <archive>
+            <manifest>
+              <mainClass>de.adito.jloadr.Main</mainClass>
+              <useUniqueVersions>true</useUniqueVersions>
+              <addClasspath>true</addClasspath>
+              <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+              <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
+            </manifest>
+            <addMavenDescriptor>false</addMavenDescriptor>
+          </archive>
+        </configuration>
+        <executions>
+          <execution>
+            <phase>process-test-classes</phase>
+            <goals>
+              <goal>test-jar</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
+      <plugin>
+        <artifactId>maven-install-plugin</artifactId>
+        <version>2.5.2</version>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.felix</groupId>
+        <artifactId>maven-bundle-plugin</artifactId>
+        <version>3.3.0</version>
+        <extensions>true</extensions>
+        <configuration>
+          <instructions>
+            <Bundle-SymbolicName>${project.groupId}.${project.artifactId}</Bundle-SymbolicName>
+            <Bundle-Name>${project.artifactId}</Bundle-Name>
+            <Bundle-Version>${project.version}</Bundle-Version>
+            <Export-Package>
+              de.adito.jloadr,
+              de.adito.jloadr.api,
+              de.adito.jloadr.common,
+              de.adito.jloadr.repository,
+              de.adito.jloadr.repository.jlr,
+              de.adito.jloadr.repository.jnlp,
+              de.adito.jloadr.repository.local,
+              de.adito.jloadr.repository.mux
+            </Export-Package>
+          </instructions>
+        </configuration>
+        <executions>
+          <execution>
+            <id>bundle-manifest</id>
+            <phase>process-classes</phase>
+            <goals>
+              <goal>manifest</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
+      <plugin>
+        <artifactId>maven-source-plugin</artifactId>
+        <version>3.0.1</version>
+        <executions>
+          <execution>
+            <id>attach-sources</id>
+            <phase>verify</phase>
+            <goals>
+              <goal>jar</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
+      <plugin>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <version>3.0.0-M1</version>
+      </plugin>
 
       <plugin>
         <groupId>pw.krejci</groupId>
@@ -39,7 +130,7 @@
           </archive>
         </configuration>
       </plugin>
-      
+
     </plugins>
 
   </build>
