@@ -20,4 +20,10 @@ public interface IStoreResourcePack extends IResourcePack
 
   void writeConfig();
 
+  /**
+   * Liefert die xml-Datei als String
+   * @return xml-Datei
+   */
+  String getConfig();
+
 }

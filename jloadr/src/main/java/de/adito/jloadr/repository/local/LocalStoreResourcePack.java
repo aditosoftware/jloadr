@@ -1,9 +1,12 @@
 package de.adito.jloadr.repository.local;
 
-import de.adito.jloadr.api.*;
+import de.adito.jloadr.api.IResourceId;
+import de.adito.jloadr.api.IStoreResource;
+import de.adito.jloadr.api.IStoreResourcePack;
+import de.adito.jloadr.repository.jlr.JlrEntry;
+import de.adito.jloadr.repository.jlr.JlrPack;
 import de.adito.jloadr.common.JLoadrUtil;
 import de.adito.jloadr.repository.ResourceId;
-import de.adito.jloadr.repository.jlr.*;
 
 import java.io.*;
 import java.nio.file.*;
@@ -21,11 +24,16 @@ public class LocalStoreResourcePack implements IStoreResourcePack
 
   public LocalStoreResourcePack(Path pRoot, Path pConfigPath)
   {
+    this(pRoot, pConfigPath, true);
+  }
+
+  public LocalStoreResourcePack(Path pRoot, Path pConfigPath, boolean pCreateFiles )
+  {
     root = pRoot;
     resourceMap = new HashMap<>();
     try
     {
-      if (!Files.exists(pConfigPath))
+      if (!Files.exists(pConfigPath) && pCreateFiles)
         Files.createFile(pConfigPath);
       jlrPack = new JlrPack(pConfigPath.toUri().toURL());
 
@@ -119,6 +127,12 @@ public class LocalStoreResourcePack implements IStoreResourcePack
   public void writeConfig()
   {
     jlrPack.writePack();
+  }
+
+  @Override
+  public String getConfig()
+  {
+    return jlrPack.getPack();
   }
 
   @Override

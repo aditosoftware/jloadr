@@ -1,6 +1,7 @@
 package de.adito.jloadr.repository.local;
 
-import de.adito.jloadr.api.*;
+import de.adito.jloadr.api.IResourceId;
+import de.adito.jloadr.api.IStoreResource;
 import de.adito.jloadr.common.JLoadrUtil;
 import de.adito.jloadr.repository.jlr.JlrEntry;
 
@@ -101,6 +102,10 @@ public class LocalStoreResource implements IStoreResource
       {
         hash = JLoadrUtil.getHash(inputStream);
         jlrEntry.setHash(hash);
+      }
+      catch (FileSystemException fse)
+      {
+        return null;  // Abbruch wegen Fehler
       }
       catch (IOException pE)
       {

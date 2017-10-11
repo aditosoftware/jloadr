@@ -1,6 +1,6 @@
 package de.adito.jloadr.api;
 
-import java.util.*;
+import java.util.Set;
 
 /**
  * @author j.boesl, 05.09.16

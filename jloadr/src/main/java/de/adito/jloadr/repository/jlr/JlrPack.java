@@ -4,6 +4,7 @@ import de.adito.jloadr.api.IResourceId;
 import de.adito.jloadr.common.XMLUtil;
 import org.w3c.dom.*;
 
+import java.io.*;
 import java.net.URL;
 import java.util.*;
 import java.util.function.Function;
@@ -66,6 +67,28 @@ public class JlrPack
   public synchronized void writePack()
   {
     XMLUtil.saveDocument(packUrl, this::appendToNode);
+  }
+
+  public synchronized String getPack()
+  {
+    OutputStream os = new OutputStream()
+    {
+      StringBuilder sbr = new StringBuilder();
+      @Override
+      public void write(int b) throws IOException
+      {
+        sbr.append((char)b);
+      }
+
+      @Override
+      public String toString()
+      {
+        return sbr.toString();
+      }
+    };
+
+    XMLUtil.saveDocument(os, this::appendToNode);
+    return os.toString();
   }
 
   protected synchronized Map<IResourceId, JlrEntry> getEntryMap()

@@ -30,12 +30,14 @@ public class MuxResourcePackFactory implements IResourcePackFactory
     if (!path.endsWith("/"))
       path += "/";
     path += DEFAULT_CONFIG_FILE;
-    try {
+    try
+    {
       pUrl = UrlUtil.getAtHost(pUrl, path);
       pUrl.openStream().close(); // check existence
       return pUrl;
     }
-    catch (IOException pE) {
+    catch (IOException pE)
+    {
       // ignore
     }
     return null;
