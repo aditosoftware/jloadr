@@ -3,6 +3,7 @@ package de.adito.jloadr;
 import de.adito.jloadr.api.*;
 import de.adito.jloadr.repository.*;
 import de.adito.jloadr.repository.local.LocalStore;
+import org.hamcrest.core.StringEndsWith;
 import org.junit.*;
 
 import java.io.*;
@@ -90,7 +91,7 @@ public class Test_Loader
     String serr = _readString(process.getErrorStream());
 
     Assert.assertEquals("arg1\ntrue\n", sout);
-    Assert.assertEquals("arg2\n", serr);
+    Assert.assertThat(serr, StringEndsWith.endsWith("arg2\n"));
   }
 
   private void _check(IResourcePack pRemoteResourcePack, IResourcePack pLocalResourcePack) throws IOException
