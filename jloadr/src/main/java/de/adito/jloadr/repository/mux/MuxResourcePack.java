@@ -7,6 +7,7 @@ import org.w3c.dom.Document;
 
 import java.io.*;
 import java.net.URL;
+import java.nio.file.*;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -16,7 +17,7 @@ import java.util.stream.Collectors;
 public class MuxResourcePack implements IResourcePack
 {
   private URL packUrl;
-  private List<IResourcePack> packs;
+  private Collection<_MuxPack> packs;
   private Map<IResourceId, IResource> resourceMap;
 
   protected MuxResourcePack(URL pUrl)
@@ -39,7 +40,10 @@ public class MuxResourcePack implements IResourcePack
         .map(element -> {
           try
           {
-            return ResourcePackFactory.get(UrlUtil.getRelative(packUrl, element.getTextContent().trim()));
+            String configPath = element.getTextContent().trim();
+            Path relativePath = Paths.get(configPath).getParent();
+            URL childPackUrl = UrlUtil.getRelative(packUrl, configPath);
+            return new _MuxPack(relativePath, ResourcePackFactory.get(childPackUrl));
           }
           catch (RuntimeException pE)
           {
@@ -76,9 +80,16 @@ public class MuxResourcePack implements IResourcePack
       _MuxedConfig muxedConfig = new _MuxedConfig(packs);
       resourceMap.put(muxedConfig.getId(), muxedConfig);
       packs.stream()
-          .flatMap(packs -> packs.getResources().stream())
+          .flatMap(pack -> pack.getResourcePack().getResources().stream()
+              .map(resource -> new WrappedResource(resource)
+              {
+                @Override
+                public IResourceId getId()
+                {
+                  return new ResourceId(Paths.get(pack.getRelativePath().toString(), resource.getId().toPath().toString()));
+                }
+              }))
           .forEach(resource -> resourceMap.putIfAbsent(resource.getId(), resource));
-
     }
     return resourceMap;
   }
@@ -90,16 +101,16 @@ public class MuxResourcePack implements IResourcePack
   {
     private List<IResource> configResources;
 
-    public _MuxedConfig(List<IResourcePack> pPacks)
+    _MuxedConfig(Collection<_MuxPack> pPacks)
     {
       configResources = pPacks.stream()
-          .map(pack -> pack.getResource(JLoaderConfig.CONFIG_ID))
+          .map(pack -> pack.getResourcePack().getResource(JLoaderConfig.CONFIG_ID))
           .filter(Objects::nonNull)
           .collect(Collectors.toList());
     }
 
     @Override
-    public long getLastModified() throws IOException
+    public long getLastModified()
     {
       return configResources.stream()
           .map(resource -> {
@@ -154,6 +165,31 @@ public class MuxResourcePack implements IResourcePack
     private boolean _isEmptyCollection(Collection<?> pCollection)
     {
       return pCollection == null || pCollection.isEmpty();
+    }
+  }
+
+  /**
+   * Mux element
+   */
+  private static class _MuxPack
+  {
+    private Path relativePath;
+    private IResourcePack resourcePack;
+
+    _MuxPack(Path pRelativePath, IResourcePack pResourcePack)
+    {
+      relativePath = pRelativePath;
+      resourcePack = pResourcePack;
+    }
+
+    public Path getRelativePath()
+    {
+      return relativePath;
+    }
+
+    public IResourcePack getResourcePack()
+    {
+      return resourcePack;
     }
   }
 }
