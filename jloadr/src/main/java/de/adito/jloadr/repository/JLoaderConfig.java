@@ -67,6 +67,10 @@ public class JLoaderConfig
 
   public String[] getStartCommands(Path pWorkingDirectory)
   {
+    String mainCls = getMainCls();
+    if (mainCls == null || mainCls.isEmpty())
+      throw new RuntimeException("Application can't be started. No main class provided.");
+
     List<String> parameters = new ArrayList<>();
     parameters.add(_getStartJavaCommand(pWorkingDirectory));
     getVmParameters().stream()
@@ -81,8 +85,8 @@ public class JLoaderConfig
       parameters.add("-cp");
       parameters.add(cp);
     }
-    parameters.add(getMainCls());
-    getArguments().forEach(parameters::add);
+    parameters.add(mainCls);
+    parameters.addAll(getArguments());
 
     return parameters.toArray(new String[parameters.size()]);
   }
