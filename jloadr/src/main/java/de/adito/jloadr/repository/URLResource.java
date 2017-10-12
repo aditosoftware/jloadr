@@ -4,7 +4,7 @@ import de.adito.jloadr.api.*;
 import de.adito.jloadr.common.JLoadrUtil;
 
 import java.io.*;
-import java.net.*;
+import java.net.URL;
 import java.util.Objects;
 
 /**
@@ -13,7 +13,6 @@ import java.util.Objects;
 public class URLResource implements IResource
 {
   private URL url;
-  private URLConnection urlConnection;
 
   public URLResource(URL pUrl)
   {
@@ -22,7 +21,8 @@ public class URLResource implements IResource
 
   public void checkAvailable() throws IOException
   {
-    _getUrlConnection().getInputStream();
+    InputStream inputStream = url.openStream();
+    inputStream.close();
   }
 
   @Override
@@ -37,13 +37,13 @@ public class URLResource implements IResource
   @Override
   public long getSize() throws IOException
   {
-    return _getUrlConnection().getContentLengthLong();
+    return url.openConnection().getContentLengthLong();
   }
 
   @Override
   public long getLastModified() throws IOException
   {
-    return _getUrlConnection().getLastModified();
+    return url.openConnection().getLastModified();
   }
 
   @Override
@@ -56,18 +56,7 @@ public class URLResource implements IResource
   @Override
   public InputStream getInputStream() throws IOException
   {
-    return _getUrlConnection().getInputStream();
-  }
-
-  private synchronized URLConnection _getUrlConnection() throws IOException
-  {
-    if (urlConnection == null)
-    {
-      urlConnection = url.openConnection();
-      urlConnection.setUseCaches(true);
-      urlConnection.connect();
-    }
-    return urlConnection;
+    return url.openStream();
   }
 
   @Override
