@@ -1,14 +1,11 @@
 package de.adito.jloadr.repository.local;
 
-import de.adito.jloadr.api.IResourceId;
-import de.adito.jloadr.api.IStoreResource;
-import de.adito.jloadr.api.IStoreResourcePack;
-import de.adito.jloadr.repository.jlr.JlrEntry;
-import de.adito.jloadr.repository.jlr.JlrPack;
+import de.adito.jloadr.api.*;
 import de.adito.jloadr.common.JLoadrUtil;
 import de.adito.jloadr.repository.ResourceId;
+import de.adito.jloadr.repository.jlr.*;
 
-import java.io.*;
+import java.io.IOException;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.*;
@@ -27,7 +24,7 @@ public class LocalStoreResourcePack implements IStoreResourcePack
     this(pRoot, pConfigPath, true);
   }
 
-  public LocalStoreResourcePack(Path pRoot, Path pConfigPath, boolean pCreateFiles )
+  public LocalStoreResourcePack(Path pRoot, Path pConfigPath, boolean pCreateFiles)
   {
     root = pRoot;
     resourceMap = new HashMap<>();
@@ -45,7 +42,7 @@ public class LocalStoreResourcePack implements IStoreResourcePack
         }};
 
         @Override
-        public FileVisitResult visitFile(Path pPath, BasicFileAttributes pAttrs) throws IOException
+        public FileVisitResult visitFile(Path pPath, BasicFileAttributes pAttrs)
         {
           IResourceId id = new ResourceId(root.relativize(pPath));
           JlrEntry entry = loadedPack.getEntry(id);

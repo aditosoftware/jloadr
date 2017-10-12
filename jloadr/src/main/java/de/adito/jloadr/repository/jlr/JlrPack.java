@@ -4,7 +4,7 @@ import de.adito.jloadr.api.IResourceId;
 import de.adito.jloadr.common.XMLUtil;
 import org.w3c.dom.*;
 
-import java.io.*;
+import java.io.OutputStream;
 import java.net.URL;
 import java.util.*;
 import java.util.function.Function;
@@ -73,11 +73,12 @@ public class JlrPack
   {
     OutputStream os = new OutputStream()
     {
-      StringBuilder sbr = new StringBuilder();
+      private StringBuilder sbr = new StringBuilder();
+
       @Override
-      public void write(int b) throws IOException
+      public void write(int b)
       {
-        sbr.append((char)b);
+        sbr.append((char) b);
       }
 
       @Override

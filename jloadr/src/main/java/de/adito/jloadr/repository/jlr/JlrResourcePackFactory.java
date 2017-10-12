@@ -3,7 +3,6 @@ package de.adito.jloadr.repository.jlr;
 import de.adito.jloadr.api.*;
 import de.adito.jloadr.common.UrlUtil;
 
-import java.io.IOException;
 import java.net.URL;
 
 /**
@@ -21,20 +20,6 @@ public class JlrResourcePackFactory implements IResourcePackFactory
     {
       URL resourcesUrl = UrlUtil.getAtHost(pUrl, path.substring(0, path.lastIndexOf(CONFIG_FILE_SUFIX)) + "/");
       return new JlrResourcePack(pUrl, resourcesUrl);
-    }
-
-    if (path.endsWith("/"))
-      path = path.substring(0, path.length() - 1);
-    path += CONFIG_FILE_SUFIX;
-    try
-    {
-      URL packUrl = UrlUtil.getAtHost(pUrl, path);
-      packUrl.openStream().close(); // check existence
-      return new JlrResourcePack(packUrl, pUrl);
-    }
-    catch (IOException pE)
-    {
-      // ignore
     }
     return null;
   }
