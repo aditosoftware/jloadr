@@ -7,7 +7,7 @@ import org.w3c.dom.Document;
 
 import java.io.*;
 import java.net.URL;
-import java.nio.file.*;
+import java.nio.file.Paths;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -41,7 +41,7 @@ public class MuxResourcePack implements IResourcePack
           try
           {
             String configPath = element.getTextContent().trim();
-            Path relativePath = Paths.get(configPath).getParent();
+            String relativePath = UrlUtil.getFolderPathForConfig(configPath);
             URL childPackUrl = UrlUtil.getRelative(packUrl, configPath);
             return new _MuxPack(relativePath, ResourcePackFactory.get(childPackUrl));
           }
@@ -86,7 +86,7 @@ public class MuxResourcePack implements IResourcePack
                 @Override
                 public IResourceId getId()
                 {
-                  return new ResourceId(Paths.get(pack.getRelativePath().toString(), resource.getId().toPath().toString()));
+                  return new ResourceId(Paths.get(pack.getRelativePath(), resource.getId().toPath().toString()));
                 }
               }))
           .forEach(resource -> resourceMap.putIfAbsent(resource.getId(), resource));
@@ -173,16 +173,16 @@ public class MuxResourcePack implements IResourcePack
    */
   private static class _MuxPack
   {
-    private Path relativePath;
+    private String relativePath;
     private IResourcePack resourcePack;
 
-    _MuxPack(Path pRelativePath, IResourcePack pResourcePack)
+    _MuxPack(String pRelativePath, IResourcePack pResourcePack)
     {
       relativePath = pRelativePath;
       resourcePack = pResourcePack;
     }
 
-    public Path getRelativePath()
+    public String getRelativePath()
     {
       return relativePath;
     }
