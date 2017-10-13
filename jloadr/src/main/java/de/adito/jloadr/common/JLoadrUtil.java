@@ -68,7 +68,7 @@ public class JLoadrUtil
   {
     try (OutputStream out = pOutputStream; InputStream in = pInputStream)
     {
-      byte[] buffer = new byte[256 * 1024];
+      byte[] buffer = new byte[8192];
       int len;
       while ((len = in.read(buffer)) != -1)
         out.write(buffer, 0, len);

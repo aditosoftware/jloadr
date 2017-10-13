@@ -1,7 +1,6 @@
 package de.adito.jloadr.repository.local;
 
-import de.adito.jloadr.api.IResourceId;
-import de.adito.jloadr.api.IStoreResource;
+import de.adito.jloadr.api.*;
 import de.adito.jloadr.common.JLoadrUtil;
 import de.adito.jloadr.repository.jlr.JlrEntry;
 
@@ -33,13 +32,24 @@ public class LocalStoreResource implements IStoreResource
       private MessageDigest md = JLoadrUtil.getMessageDigest();
 
       @Override
-      public synchronized void flush() throws IOException
+      public synchronized void write(int b) throws IOException
       {
-        if (count > 0)
-        {
-          md.update(buf, 0, count);
-        }
-        super.flush();
+        super.write(b);
+        md.update((byte)b);
+      }
+
+      @Override
+      public synchronized void write(byte[] b, int off, int len) throws IOException
+      {
+        super.write(b, off, len);
+        md.update(b, off, len);
+      }
+
+      @Override
+      public void write(byte[] b) throws IOException
+      {
+        super.write(b);
+        md.update(b);
       }
 
       @Override
