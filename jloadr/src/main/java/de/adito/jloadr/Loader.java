@@ -7,6 +7,7 @@ import de.adito.jloadr.repository.ResourceId;
 import java.io.*;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Predicate;
 import java.util.jar.*;
 import java.util.stream.Collectors;
 import java.util.zip.*;
@@ -17,6 +18,8 @@ import java.util.zip.*;
 public class Loader implements ILoader
 {
 
+  public static final Predicate<IResource> FILTER_IGNORE_RESOURCE_PREDICATE =
+      resource -> !resource.getId().toPath().subpath(0, 1).toString().startsWith(".");
   public static final ResourceId SPLASH_ID = new ResourceId("splash");
 
   @Override
@@ -54,34 +57,37 @@ public class Loader implements ILoader
         .map(resource -> _getLocalId(resource.getId()))
         .collect(Collectors.toSet());
     localResourcePack.getResources().stream()
+        .filter(FILTER_IGNORE_RESOURCE_PREDICATE)
         .map(IResource::getId)
         .filter(id -> !newLocalIdSet.contains(id))
         .forEach(localResourcePack::removeResource);
 
     // copy missing
-    remoteResources.parallelStream().forEach(resource -> {
-      try
-      {
-        IResourceId localId = _getLocalId(resource.getId());
-        IStoreResource localResource = localResourcePack.getResource(localId);
+    remoteResources.parallelStream()
+        .filter(FILTER_IGNORE_RESOURCE_PREDICATE)
+        .forEach(resource -> {
+          try
+          {
+            IResourceId localId = _getLocalId(resource.getId());
+            IStoreResource localResource = localResourcePack.getResource(localId);
 
-        if (localResource == null)
-          localResource = localResourcePack.createResource(localId);
+            if (localResource == null)
+              localResource = localResourcePack.createResource(localId);
 
-        if (!localResource.getHash().equals(resource.getHash()))
-        {
-          _copy(localResource, resource);
-        }
+            if (!localResource.getHash().equals(resource.getHash()))
+            {
+              _copy(localResource, resource);
+            }
 
-        if (pStateCallback != null)
-          pStateCallback.loaded(loadCount.incrementAndGet());
-      }
-      catch (Exception pE)
-      {
-        System.err.println("error loading: " + resource.getId());
-        pE.printStackTrace();
-      }
-    });
+            if (pStateCallback != null)
+              pStateCallback.loaded(loadCount.incrementAndGet());
+          }
+          catch (Exception pE)
+          {
+            System.err.println("error loading: " + resource.getId());
+            pE.printStackTrace();
+          }
+        });
 
     if (pStateCallback != null)
       pStateCallback.finished();
