@@ -18,7 +18,7 @@ public class JlrResourcePackFactory implements IResourcePackFactory
     String path = pUrl.getPath();
     if (path.endsWith(CONFIG_FILE_SUFIX))
     {
-      URL resourcesUrl = UrlUtil.getAtHost(pUrl, path.substring(0, path.lastIndexOf(CONFIG_FILE_SUFIX)) + "/");
+      URL resourcesUrl = UrlUtil.getAtHost(pUrl, UrlUtil.getFolderPathForConfig(path) + "/");
       return new JlrResourcePack(pUrl, resourcesUrl);
     }
     return null;

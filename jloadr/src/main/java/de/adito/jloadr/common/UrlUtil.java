@@ -1,5 +1,7 @@
 package de.adito.jloadr.common;
 
+import de.adito.jloadr.repository.jlr.JlrResourcePackFactory;
+
 import java.net.*;
 
 /**
@@ -41,6 +43,14 @@ public class UrlUtil
     {
       throw new IllegalArgumentException(pE);
     }
+  }
+
+  public static String getFolderPathForConfig(String pConfigPath)
+  {
+    if (!pConfigPath.endsWith(JlrResourcePackFactory.CONFIG_FILE_SUFIX))
+      throw new RuntimeException("not a config path");
+
+    return pConfigPath.substring(0, pConfigPath.lastIndexOf(JlrResourcePackFactory.CONFIG_FILE_SUFIX));
   }
 
 }
