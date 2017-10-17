@@ -17,6 +17,8 @@ import java.util.zip.*;
 public class Loader implements ILoader
 {
 
+  public static final ResourceId SPLASH_ID = new ResourceId("splash");
+
   @Override
   public IStoreResourcePack load(IStore pStore, IResourcePack pSource, IStateCallback pStateCallback)
   {
@@ -33,15 +35,14 @@ public class Loader implements ILoader
     if (pStateCallback != null)
     {
       IStoreResource localSplashResource = null;
-      ResourceId splashId = new ResourceId("splash");
-      IResource remoteSplashResource = pSource.getResource(splashId);
+      IResource remoteSplashResource = pSource.getResource(SPLASH_ID);
       // copy splash
       if (remoteSplashResource != null)
       {
         localSplashResource = localResourcePack.getResource(remoteSplashResource.getId());
         if (localSplashResource == null)
         {
-          localSplashResource = localResourcePack.createResource(splashId);
+          localSplashResource = localResourcePack.createResource(SPLASH_ID);
           _copy(localSplashResource, remoteSplashResource);
         }
       }

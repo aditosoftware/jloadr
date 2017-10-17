@@ -1,5 +1,6 @@
 package de.adito.jloadr.repository.jnlp;
 
+import de.adito.jloadr.Loader;
 import de.adito.jloadr.api.*;
 import de.adito.jloadr.common.JLoadrUtil;
 import de.adito.jloadr.repository.*;
@@ -79,7 +80,7 @@ public class JnlpResourcePack implements IResourcePack
     return _getJnlpUrls().stream()
         .flatMap(jnlpUrl -> jnlpUrl.findChildElementsByPath("information/icon").stream()
             .map(element -> new AbstractMap.SimpleImmutableEntry<>(jnlpUrl, element)))
-        .filter(entry -> entry.getValue().getAttribute("kind").equals("splash"))
+        .filter(entry -> entry.getValue().getAttribute("kind").equals(Loader.SPLASH_ID.toString()))
         .map(entry -> {
           try
           {
@@ -88,7 +89,7 @@ public class JnlpResourcePack implements IResourcePack
               @Override
               public IResourceId getId()
               {
-                return new ResourceId("splash");
+                return Loader.SPLASH_ID;
               }
             };
           }
