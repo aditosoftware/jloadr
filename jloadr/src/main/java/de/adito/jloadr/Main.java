@@ -65,17 +65,6 @@ public class Main
         }
 
         Path workingDirectory = Paths.get("jloadr").resolve(localResourcePack.getId()).toAbsolutePath();
-        if (Arrays.asList(OsUtil.EType.LINUX, OsUtil.EType.OSX).contains(OsUtil.getOsType()))
-        {
-          String javaCmd = loaderConfig.getJavaCmd();
-          if (javaCmd != null && Files.exists(workingDirectory.resolve(javaCmd)))
-          {
-            Process chmodProcess = new ProcessBuilder("chmod", "+x", javaCmd)
-                .directory(workingDirectory.toFile())
-                .start();
-            chmodProcess.waitFor(1, TimeUnit.SECONDS);
-          }
-        }
         Process javaProcess = new ProcessBuilder(loaderConfig.getStartCommands(workingDirectory))
             .directory(workingDirectory.toFile())
             .inheritIO()

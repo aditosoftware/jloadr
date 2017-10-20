@@ -132,8 +132,8 @@ public class MuxResourcePack implements IResourcePack
             }
           })
           .reduce(new JLoaderConfig(), (config1, config2) -> {
-            if (_isEmptyString(config1.getJavaCmd()))
-              config1.setJavaCmd(config2.getJavaCmd());
+            if (_isEmptyString(config1.getJavaHome()))
+              config1.setJavaHome(config2.getJavaHome());
             if (_isEmptyCollection(config1.getVmParameters()))
               config1.setVmParameters(config2.getVmParameters());
             if (_isEmptyCollection(config1.getClasspath()))

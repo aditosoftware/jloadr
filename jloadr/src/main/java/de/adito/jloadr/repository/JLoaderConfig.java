@@ -1,7 +1,7 @@
 package de.adito.jloadr.repository;
 
 import de.adito.jloadr.api.IResourceId;
-import de.adito.jloadr.common.XMLUtil;
+import de.adito.jloadr.common.*;
 import org.w3c.dom.*;
 
 import java.io.*;
@@ -16,13 +16,13 @@ public class JLoaderConfig
 {
   public static final IResourceId CONFIG_ID = new ResourceId("jloadrConfig.xml");
 
-  public static final String TAG_JAVA = "java";
+  public static final String TAG_JAVA = "javaHome";
   public static final String TAG_VM_PARAMETER = "vmParameter";
   public static final String TAG_CLASSPATH = "classpath";
   public static final String TAG_MAIN = "main";
   public static final String TAG_ARGUMENT = "argument";
 
-  private String javaCmd;
+  private String javaHome;
   private List<String> vmParameters;
   private List<String> classpath;
   private String mainCls;
@@ -34,7 +34,7 @@ public class JLoaderConfig
     Document document = XMLUtil.loadDocument(pInputStream);
     Element root = document.getDocumentElement();
 
-    javaCmd = XMLUtil.getChildText(root, TAG_JAVA);
+    javaHome = XMLUtil.getChildText(root, TAG_JAVA);
 
     vmParameters = XMLUtil.findChildElements(root, TAG_VM_PARAMETER).stream()
         .map(element -> element.getTextContent().trim())
@@ -57,7 +57,7 @@ public class JLoaderConfig
     XMLUtil.saveDocument(pOutputStream, pDocument -> {
       Element root = pDocument.createElement("jloadr");
       pDocument.appendChild(root);
-      _append(pDocument, root, TAG_JAVA, javaCmd);
+      _append(pDocument, root, TAG_JAVA, javaHome);
       _append(pDocument, root, TAG_VM_PARAMETER, vmParameters);
       _append(pDocument, root, TAG_CLASSPATH, classpath);
       _append(pDocument, root, TAG_MAIN, mainCls);
@@ -93,26 +93,18 @@ public class JLoaderConfig
 
   private String _getStartJavaCommand(Path pWorkingDirectory)
   {
-    String javaCmd = getJavaCmd();
-    if (javaCmd == null)
-      javaCmd = "java";
-    else
-    {
-      javaCmd = javaCmd.replace('/', File.separatorChar);
-      if (pWorkingDirectory != null)
-        javaCmd = pWorkingDirectory.resolve(javaCmd).toAbsolutePath().toString();
-    }
-    return javaCmd;
+    String javaHome = getJavaHome();
+    return ProcessUtil.findJavaCmd(pWorkingDirectory, javaHome);
   }
 
-  public String getJavaCmd()
+  public String getJavaHome()
   {
-    return javaCmd;
+    return javaHome;
   }
 
-  public void setJavaCmd(String pJavaCmd)
+  public void setJavaHome(String pJavaHome)
   {
-    javaCmd = pJavaCmd;
+    javaHome = pJavaHome;
   }
 
   public List<String> getVmParameters()
