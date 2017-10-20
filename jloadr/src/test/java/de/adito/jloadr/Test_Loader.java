@@ -80,7 +80,7 @@ public class Test_Loader
     }
 
     Path workingDirectory = store2Path.resolve(localResourcePack.getId()).toAbsolutePath();
-    Process process = new ProcessBuilder(loaderConfig.getStartCommands(workingDirectory))
+    Process process = new ProcessBuilder(loaderConfig.getStartCommands(workingDirectory, null))
         .directory(workingDirectory.toFile())
         .start();
 

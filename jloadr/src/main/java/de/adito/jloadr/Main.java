@@ -13,7 +13,6 @@ import java.awt.image.BufferedImage;
 import java.io.*;
 import java.net.URL;
 import java.nio.file.*;
-import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -65,7 +64,7 @@ public class Main
         }
 
         Path workingDirectory = Paths.get("jloadr").resolve(localResourcePack.getId()).toAbsolutePath();
-        Process javaProcess = new ProcessBuilder(loaderConfig.getStartCommands(workingDirectory))
+        Process javaProcess = new ProcessBuilder(loaderConfig.getStartCommands(workingDirectory, JLoadrUtil.getAdditionalVmParameters()))
             .directory(workingDirectory.toFile())
             .inheritIO()
             .start();
@@ -85,7 +84,7 @@ public class Main
     private int elementCount;
     private double loaded;
 
-    public Splash(String pIconPath, String pStartName) throws HeadlessException
+    Splash(String pIconPath, String pStartName) throws HeadlessException
     {
       if (pIconPath != null)
       {

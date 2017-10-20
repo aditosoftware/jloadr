@@ -4,7 +4,7 @@ import java.io.*;
 import java.nio.charset.Charset;
 import java.nio.file.*;
 import java.security.*;
-import java.util.Base64;
+import java.util.*;
 
 /**
  * @author j.boesl, 05.09.16
@@ -82,6 +82,28 @@ public class JLoadrUtil
       Files.delete(pPath);
       deleteEmptyDirectories(pPath.getParent());
     }
+  }
+
+  public static List<String> getAdditionalVmParameters()
+  {
+    List<String> additionalVmParameters = new ArrayList<>();
+    for (Map.Entry<Object, Object> entry : System.getProperties().entrySet())
+    {
+      String key = entry.getKey().toString();
+      String parameter = null;
+      if (key.startsWith("adito."))
+        parameter = key;
+      else if (key.startsWith("jloadr."))
+        parameter = key.substring("jloadr.".length());
+
+      if (parameter != null)
+      {
+        if (entry.getValue() != null && !entry.getValue().toString().isEmpty())
+          parameter += "=" + entry.getValue().toString();
+        additionalVmParameters.add(parameter);
+      }
+    }
+    return additionalVmParameters;
   }
 
 }

@@ -7,7 +7,7 @@ import org.w3c.dom.*;
 import java.io.*;
 import java.nio.file.Path;
 import java.util.*;
-import java.util.stream.Collectors;
+import java.util.stream.*;
 
 /**
  * @author j.boesl, 22.12.16
@@ -65,7 +65,7 @@ public class JLoaderConfig
     });
   }
 
-  public String[] getStartCommands(Path pWorkingDirectory)
+  public String[] getStartCommands(Path pWorkingDirectory, List<String> pAdditionalVmParameters)
   {
     String mainCls = getMainCls();
     if (mainCls == null || mainCls.isEmpty())
@@ -73,7 +73,7 @@ public class JLoaderConfig
 
     List<String> parameters = new ArrayList<>();
     parameters.add(_getStartJavaCommand(pWorkingDirectory));
-    getVmParameters().stream()
+    Stream.concat(getVmParameters().stream(), pAdditionalVmParameters == null ? Stream.empty() : pAdditionalVmParameters.stream())
         .map(param -> "-D" + param)
         .forEach(parameters::add);
 
