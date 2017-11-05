@@ -19,12 +19,14 @@ public class JLoaderConfig
   public static final String TAG_JAVA = "javaHome";
   public static final String TAG_VM_PARAMETER = "vmParameter";
   public static final String TAG_CLASSPATH = "classpath";
+  public static final String TAG_CLASSPATH_DIRECTORY = "classpathDirectory";
   public static final String TAG_MAIN = "main";
   public static final String TAG_ARGUMENT = "argument";
 
   private String javaHome;
   private List<String> vmParameters;
   private List<String> classpath;
+  private List<String> classpathDirectories;
   private String mainCls;
   private List<String> arguments;
 
@@ -44,6 +46,10 @@ public class JLoaderConfig
         .map(element -> element.getTextContent().trim())
         .collect(Collectors.toList());
 
+    classpathDirectories = XMLUtil.findChildElements(root, TAG_CLASSPATH_DIRECTORY).stream()
+        .map(element -> element.getTextContent().trim())
+        .collect(Collectors.toList());
+
     mainCls = XMLUtil.getChildText(root, TAG_MAIN);
     assert mainCls != null;
 
@@ -60,6 +66,7 @@ public class JLoaderConfig
       _append(pDocument, root, TAG_JAVA, javaHome);
       _append(pDocument, root, TAG_VM_PARAMETER, vmParameters);
       _append(pDocument, root, TAG_CLASSPATH, classpath);
+      _append(pDocument, root, TAG_CLASSPATH_DIRECTORY, classpathDirectories);
       _append(pDocument, root, TAG_MAIN, mainCls);
       _append(pDocument, root, TAG_ARGUMENT, arguments);
     });
@@ -77,7 +84,9 @@ public class JLoaderConfig
         .map(param -> "-D" + param)
         .forEach(parameters::add);
 
-    String cp = getClasspath().stream()
+    String cp = Stream.concat(getClasspathDirectories().stream()
+                                  .map(str -> str + (str.endsWith("/") ? "*" : "/*")),
+                              getClasspath().stream())
         .map(str -> str.replace('/', File.separatorChar))
         .collect(Collectors.joining(File.pathSeparator));
     if (!cp.isEmpty())
@@ -125,6 +134,16 @@ public class JLoaderConfig
   public void setClasspath(List<String> pClasspath)
   {
     classpath = pClasspath;
+  }
+
+  public List<String> getClasspathDirectories()
+  {
+    return classpathDirectories;
+  }
+
+  public void setClasspathDirectories(List<String> pClasspathDirectories)
+  {
+    classpathDirectories = pClasspathDirectories;
   }
 
   public String getMainCls()
