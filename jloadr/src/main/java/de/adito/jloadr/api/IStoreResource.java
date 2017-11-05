@@ -12,4 +12,6 @@ public interface IStoreResource extends IResource
 
   void setLastModified(long pTime);
 
+  void setHash(String pHash);
+
 }

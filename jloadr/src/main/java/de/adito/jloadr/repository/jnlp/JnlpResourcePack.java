@@ -28,7 +28,7 @@ public class JnlpResourcePack implements IResourcePack
   @Override
   public String getId()
   {
-    return JLoadrUtil.getHash(jnlpUrl.toExternalForm());
+    return JLoadrUtil.calculateHash(jnlpUrl.toExternalForm());
   }
 
   @Override

@@ -1,5 +1,7 @@
 package de.adito.jloadr.common;
 
+import de.adito.jloadr.api.IResource;
+
 import java.io.*;
 import java.nio.charset.Charset;
 import java.nio.file.*;
@@ -36,20 +38,14 @@ public class JLoadrUtil
 
   public static String getHash(InputStream pInputStream)
   {
-    try
+    try (InputStream inputStream = pInputStream;
+         DigestingInputStream digestingInputStream = new DigestingInputStream(inputStream))
     {
-      MessageDigest digest = getMessageDigest();
       int n = 0;
-      byte[] buffer = new byte[8192];
       while (n != -1)
-      {
-        n = pInputStream.read(buffer);
-        if (n > 0)
-        {
-          digest.update(buffer, 0, n);
-        }
-      }
-      return Base64.getEncoder().encodeToString(digest.digest());
+        n = digestingInputStream.read();
+
+      return digestingInputStream.getDigest();
     }
     catch (IOException pE)
     {
@@ -57,7 +53,19 @@ public class JLoadrUtil
     }
   }
 
-  public static String getHash(String pId)
+  public static String calculateHash(IResource pResource)
+  {
+    try (InputStream inputStream = pResource.getInputStream())
+    {
+      return getHash(inputStream);
+    }
+    catch (IOException pE)
+    {
+      throw new RuntimeException(pE);
+    }
+  }
+
+  public static String calculateHash(String pId)
   {
     byte[] idBytes = pId.getBytes(Charset.forName("utf-8"));
     byte[] digest = getMessageDigest().digest(idBytes);

@@ -7,8 +7,7 @@ import de.adito.jloadr.repository.jlr.JlrEntry;
 import java.io.*;
 import java.nio.file.*;
 import java.nio.file.attribute.FileTime;
-import java.security.MessageDigest;
-import java.util.*;
+import java.util.Objects;
 
 /**
  * @author j.boesl, 08.09.16
@@ -27,42 +26,7 @@ public class LocalStoreResource implements IStoreResource
   @Override
   public OutputStream getOutputStream() throws IOException
   {
-    return new BufferedOutputStream(Files.newOutputStream(path))
-    {
-      private MessageDigest md = JLoadrUtil.getMessageDigest();
-
-      @Override
-      public synchronized void write(int b) throws IOException
-      {
-        super.write(b);
-        md.update((byte)b);
-      }
-
-      @Override
-      public synchronized void write(byte[] b, int off, int len) throws IOException
-      {
-        super.write(b, off, len);
-        md.update(b, off, len);
-      }
-
-      @Override
-      public void write(byte[] b) throws IOException
-      {
-        super.write(b);
-        md.update(b);
-      }
-
-      @Override
-      public void close() throws IOException
-      {
-        super.close();
-        if (md != null)
-        {
-          jlrEntry.setHash(Base64.getEncoder().encodeToString(md.digest()));
-          md = null;
-        }
-      }
-    };
+    return Files.newOutputStream(path);
   }
 
   @Override
@@ -105,24 +69,13 @@ public class LocalStoreResource implements IStoreResource
   @Override
   public String getHash()
   {
-    String hash = jlrEntry.getHash();
-    if (hash == null)
-    {
-      try (InputStream inputStream = getInputStream())
-      {
-        hash = JLoadrUtil.getHash(inputStream);
-        jlrEntry.setHash(hash);
-      }
-      catch (FileSystemException fse)
-      {
-        return null;  // Abbruch wegen Fehler
-      }
-      catch (IOException pE)
-      {
-        throw new RuntimeException(pE);
-      }
-    }
-    return hash;
+    return jlrEntry.getHash();
+  }
+
+  @Override
+  public void setHash(String pHash)
+  {
+    jlrEntry.setHash(pHash);
   }
 
   @Override

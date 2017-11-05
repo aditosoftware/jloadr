@@ -1,7 +1,7 @@
 package de.adito.jloadr;
 
 import de.adito.jloadr.api.*;
-import de.adito.jloadr.common.JLoadrUtil;
+import de.adito.jloadr.common.*;
 import de.adito.jloadr.repository.ResourceId;
 
 import java.io.*;
@@ -63,7 +63,7 @@ public class Loader implements ILoader
         .forEach(localResourcePack::removeResource);
 
     // copy missing
-    remoteResources.parallelStream()
+    remoteResources.stream()
         .filter(FILTER_IGNORE_RESOURCE_PREDICATE)
         .forEach(resource -> {
           try
@@ -74,7 +74,8 @@ public class Loader implements ILoader
             if (localResource == null)
               localResource = localResourcePack.createResource(localId);
 
-            if (!localResource.getHash().equals(resource.getHash()))
+            String remoteHash = resource.getHash();
+            if (remoteHash == null || !Objects.equals(localResource.getHash(), remoteHash))
             {
               _copy(localResource, resource);
             }
@@ -98,13 +99,13 @@ public class Loader implements ILoader
 
   private void _copy(IStoreResource localResource, IResource pRemoteResource)
   {
-    try
+    try (InputStream inputStream = pRemoteResource.getInputStream();
+         DigestingInputStream digestingInputStream = new DigestingInputStream(inputStream))
     {
       boolean isPackGz = _isPackGz(pRemoteResource.getId());
       if (isPackGz)
       {
-        try (InputStream inputStream = pRemoteResource.getInputStream();
-             GZIPInputStream gzipInputStream = new GZIPInputStream(inputStream);
+        try (GZIPInputStream gzipInputStream = new GZIPInputStream(digestingInputStream);
              OutputStream outputStream = localResource.getOutputStream();
              JarOutputStream jarOutputStream = new JarOutputStream(outputStream)
              {
@@ -119,9 +120,10 @@ public class Loader implements ILoader
         }
       }
       else
-        JLoadrUtil.copy(pRemoteResource.getInputStream(), localResource.getOutputStream());
+        JLoadrUtil.copy(digestingInputStream, localResource.getOutputStream());
 
       localResource.setLastModified(pRemoteResource.getLastModified());
+      localResource.setHash(digestingInputStream.getDigest());
     }
     catch (IOException pE)
     {

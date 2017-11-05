@@ -53,7 +53,7 @@ public class MuxResourcePack implements IResourcePack
   @Override
   public String getId()
   {
-    return JLoadrUtil.getHash(packUrl.toExternalForm());
+    return JLoadrUtil.calculateHash(packUrl.toExternalForm());
   }
 
   @Override
