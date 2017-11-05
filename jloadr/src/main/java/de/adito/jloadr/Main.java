@@ -64,11 +64,12 @@ public class Main
         }
 
         Path workingDirectory = Paths.get("jloadr").resolve(localResourcePack.getId()).toAbsolutePath();
-        Process javaProcess = new ProcessBuilder(loaderConfig.getStartCommands(workingDirectory, JLoadrUtil.getAdditionalVmParameters()))
+        String[] command = loaderConfig.getStartCommands(workingDirectory, JLoadrUtil.getAdditionalVmParameters());
+        Process javaProcess = new ProcessBuilder(command)
             .directory(workingDirectory.toFile())
             .inheritIO()
             .start();
-        javaProcess.waitFor(4, TimeUnit.SECONDS);
+        javaProcess.waitFor(IOption.WAIT_FOR_START, TimeUnit.SECONDS);
       }
     }
     finally

@@ -5,7 +5,7 @@
   <parent>
     <groupId>de.adito.jloadr</groupId>
     <artifactId>jloadr-parent</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.1-SNAPSHOT</version>
   </parent>
 
   <artifactId>jloadr-jre</artifactId>
@@ -15,7 +15,7 @@
     <dependency>
       <groupId>de.adito.jloadr</groupId>
       <artifactId>jloadr</artifactId>
-      <version>1.0-SNAPSHOT</version>
+      <version>1.0.1-SNAPSHOT</version>
     </dependency>
   </dependencies>
 
