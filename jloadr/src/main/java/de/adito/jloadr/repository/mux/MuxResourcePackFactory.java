@@ -11,8 +11,8 @@ import java.net.URL;
  */
 public class MuxResourcePackFactory implements IResourcePackFactory
 {
-  public static final String CONFIG_FILE_SUFIX = ".mux.xml";
-  public static final String DEFAULT_CONFIG_FILE = "default" + CONFIG_FILE_SUFIX;
+  public static final String CONFIG_FILE_SUFFIX = ".mux.xml";
+  public static final String DEFAULT_CONFIG_FILE = "default" + CONFIG_FILE_SUFFIX;
 
   @Override
   public IResourcePack load(URL pUrl)
@@ -24,7 +24,7 @@ public class MuxResourcePackFactory implements IResourcePackFactory
   private URL _getConfigFileUrl(URL pUrl)
   {
     String path = pUrl.getPath();
-    if (path.endsWith(CONFIG_FILE_SUFIX))
+    if (path.endsWith(CONFIG_FILE_SUFFIX))
       return pUrl;
 
     if (!path.endsWith("/"))

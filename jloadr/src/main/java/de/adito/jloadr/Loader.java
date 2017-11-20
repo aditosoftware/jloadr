@@ -29,10 +29,11 @@ public class Loader implements ILoader
     IStoreResourcePack localResourcePack = pStore.containsResourcePack(sourceId) ?
         pStore.getResourcePack(sourceId) : pStore.addResourcePack(sourceId);
 
+    if (pStateCallback != null)
+      pStateCallback.setSplashResource(localResourcePack.getResource(SPLASH_ID));
+
     List<? extends IResource> remoteResources = pSource.getResources();
-
     AtomicInteger loadCount = new AtomicInteger();
-
 
     // init state callback
     if (pStateCallback != null)
@@ -49,7 +50,8 @@ public class Loader implements ILoader
           _copy(localSplashResource, remoteSplashResource);
         }
       }
-      pStateCallback.inited(localSplashResource, remoteResources.size());
+      pStateCallback.setElementCount(remoteResources.size());
+      pStateCallback.setSplashResource(localSplashResource);
     }
 
     // clean up

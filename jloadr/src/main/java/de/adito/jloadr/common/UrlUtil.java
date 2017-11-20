@@ -47,10 +47,10 @@ public class UrlUtil
 
   public static String getFolderPathForConfig(String pConfigPath)
   {
-    if (!pConfigPath.endsWith(JlrResourcePackFactory.CONFIG_FILE_SUFIX))
+    if (!pConfigPath.endsWith(JlrResourcePackFactory.CONFIG_FILE_SUFFIX))
       throw new RuntimeException("not a config path");
 
-    return pConfigPath.substring(0, pConfigPath.lastIndexOf(JlrResourcePackFactory.CONFIG_FILE_SUFIX));
+    return pConfigPath.substring(0, pConfigPath.lastIndexOf(JlrResourcePackFactory.CONFIG_FILE_SUFFIX));
   }
 
 }

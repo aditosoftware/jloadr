@@ -10,13 +10,13 @@ import java.net.URL;
  */
 public class JlrResourcePackFactory implements IResourcePackFactory
 {
-  public static final String CONFIG_FILE_SUFIX = ".jlr.xml";
+  public static final String CONFIG_FILE_SUFFIX = ".jlr.xml";
 
   @Override
   public IResourcePack load(URL pUrl)
   {
     String path = pUrl.getPath();
-    if (path.endsWith(CONFIG_FILE_SUFIX))
+    if (path.endsWith(CONFIG_FILE_SUFFIX))
     {
       URL resourcesUrl = UrlUtil.getAtHost(pUrl, UrlUtil.getFolderPathForConfig(path) + "/");
       return new JlrResourcePack(pUrl, resourcesUrl);

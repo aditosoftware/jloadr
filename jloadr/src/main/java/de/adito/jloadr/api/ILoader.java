@@ -14,7 +14,9 @@ public interface ILoader
 
   interface IStateCallback
   {
-    void inited(IResource pSplashResource, int pElementCount);
+    void setSplashResource(IResource pSplashResource);
+
+    void setElementCount(int pElementCount);
 
     void loaded(int pElementNumber);
 

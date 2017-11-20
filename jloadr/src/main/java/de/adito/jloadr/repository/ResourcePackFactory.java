@@ -2,8 +2,9 @@ package de.adito.jloadr.repository;
 
 import de.adito.jloadr.api.*;
 
-import java.net.URL;
-import java.util.ServiceLoader;
+import java.io.*;
+import java.net.*;
+import java.util.*;
 
 /**
  * @author j.boesl, 25.01.17
@@ -28,7 +29,17 @@ public class ResourcePackFactory implements IResourcePackFactory
   {
     IResourcePack pack = getInstance().load(pUrl);
     if (pack == null)
+    {
+      try (InputStream inputStream = pUrl.openConnection().getInputStream())
+      {
+        inputStream.read();
+      }
+      catch (IOException pE)
+      {
+        throw new RuntimeException(pE);
+      }
       throw new RuntimeException("resource not supported: " + pUrl.toExternalForm());
+    }
     return pack;
   }
 
