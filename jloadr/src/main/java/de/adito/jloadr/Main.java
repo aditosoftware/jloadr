@@ -2,6 +2,7 @@ package de.adito.jloadr;
 
 import de.adito.jloadr.api.*;
 import de.adito.jloadr.common.*;
+import de.adito.jloadr.gui.Splash;
 import de.adito.jloadr.repository.*;
 import de.adito.jloadr.repository.local.LocalStore;
 import org.w3c.dom.*;

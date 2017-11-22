@@ -1,4 +1,4 @@
-package de.adito.jloadr;
+package de.adito.jloadr.gui;
 
 import de.adito.jloadr.api.*;
 
@@ -12,7 +12,7 @@ import java.nio.file.*;
 /**
  * @author j.boesl, 17.11.17
  */
-class Splash extends JFrame implements ILoader.IStateCallback
+public class Splash extends JFrame implements ILoader.IStateCallback
 {
 
   private int elementCount;
@@ -20,7 +20,7 @@ class Splash extends JFrame implements ILoader.IStateCallback
   private JLabel splashLabel;
 
 
-  Splash(String pIconPath, String pStartName) throws HeadlessException
+  public Splash(String pIconPath, String pStartName) throws HeadlessException
   {
     if (pIconPath != null)
     {
@@ -63,6 +63,11 @@ class Splash extends JFrame implements ILoader.IStateCallback
           // no image
         }
       }
+
+      pack();
+      setLocationRelativeTo(null);
+      if (!isVisible())
+        setVisible(true);
     });
 
     _update();
@@ -91,10 +96,6 @@ class Splash extends JFrame implements ILoader.IStateCallback
   private void _update()
   {
     SwingUtilities.invokeLater(() -> {
-      pack();
-      setLocationRelativeTo(null);
-      setVisible(true);
-
       revalidate();
       repaint();
     });

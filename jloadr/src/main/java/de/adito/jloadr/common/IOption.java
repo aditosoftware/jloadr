@@ -9,7 +9,7 @@ public interface IOption
    * The time jloadr shall wait for the main application to start.
    */
   int WAIT_FOR_START = ((Supplier<Integer>) () -> {
-    String property = System.getProperty("jloadr.waitForStart");
+    String property = System.getProperty("jlr.waitForStart");
     if (property != null)
     {
       try
