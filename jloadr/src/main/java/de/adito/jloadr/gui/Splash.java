@@ -14,10 +14,11 @@ import java.nio.file.*;
  */
 public class Splash extends JFrame implements ILoader.IStateCallback
 {
+  private int absoluteProgress;
+  private double relativeProgress;
 
-  private int elementCount;
-  private int currentElement;
   private JLabel splashLabel;
+  private JLabel mbLoadedLabel;
 
 
   public Splash(String pIconPath, String pStartName) throws HeadlessException
@@ -32,19 +33,20 @@ public class Splash extends JFrame implements ILoader.IStateCallback
       setTitle(pStartName);
 
     setUndecorated(true);
+
+    splashLabel = new JLabel();
+    splashLabel.setHorizontalAlignment(SwingConstants.CENTER);
+    getContentPane().add(splashLabel);
+
+    mbLoadedLabel = new JLabel();
+    mbLoadedLabel.setForeground(Color.GRAY);
+    splashLabel.add(mbLoadedLabel);
   }
 
   @Override
   public void setSplashResource(IResource pSplashResource)
   {
     SwingUtilities.invokeLater(() -> {
-      if (splashLabel == null)
-      {
-        splashLabel = new JLabel();
-        splashLabel.setHorizontalAlignment(SwingConstants.CENTER);
-        getContentPane().add(splashLabel);
-      }
-
       if (pSplashResource == null)
       {
         splashLabel.setIcon(null);
@@ -74,22 +76,17 @@ public class Splash extends JFrame implements ILoader.IStateCallback
   }
 
   @Override
-  public void setElementCount(int pElementCount)
+  public void setProgress(int pAbsolute, double pRelative)
   {
-    elementCount = pElementCount;
-  }
-
-  @Override
-  public void loaded(int pElementNumber)
-  {
-    currentElement = pElementNumber;
+    absoluteProgress = pAbsolute;
+    relativeProgress = pRelative;
     _update();
   }
 
   @Override
   public void finished()
   {
-    currentElement = elementCount;
+    relativeProgress = 1;
     _update();
   }
 
@@ -104,13 +101,18 @@ public class Splash extends JFrame implements ILoader.IStateCallback
   @Override
   public void paint(Graphics g)
   {
-    super.paint(g);
-
-    double loaded = elementCount == 0 ? 0 : (double) currentElement / (double) elementCount;
-
     int w = getContentPane().getWidth();
     int h = getContentPane().getHeight();
+
+    String text = absoluteProgress / 1024 + " Mb";
+    mbLoadedLabel.setText(text);
+    mbLoadedLabel.setSize(mbLoadedLabel.getPreferredSize());
+    mbLoadedLabel.setLocation(w - 4 - mbLoadedLabel.getWidth(), getHeight() - 12 - mbLoadedLabel.getHeight());
+
+    super.paint(g);
+
     g.setColor(SystemColor.GRAY);
-    g.fillRect(4, h - 8, (int) Math.round((w - 8) * loaded), 4);
+    g.fillRect(4, h - 8, (int) Math.round((w - 8) * relativeProgress), 4);
   }
+
 }

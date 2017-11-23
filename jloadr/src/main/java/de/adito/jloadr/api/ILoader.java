@@ -16,9 +16,7 @@ public interface ILoader
   {
     void setSplashResource(IResource pSplashResource);
 
-    void setElementCount(int pElementCount);
-
-    void loaded(int pElementNumber);
+    void setProgress(int pAbsolute, double pRelative);
 
     void finished();
   }

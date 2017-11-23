@@ -33,6 +33,7 @@ public class Loader implements ILoader
       pStateCallback.setSplashResource(localResourcePack.getResource(SPLASH_ID));
 
     List<? extends IResource> remoteResources = pSource.getResources();
+    AtomicInteger loadSize = new AtomicInteger();
     AtomicInteger loadCount = new AtomicInteger();
 
     // init state callback
@@ -50,7 +51,6 @@ public class Loader implements ILoader
           _copy(localSplashResource, remoteSplashResource);
         }
       }
-      pStateCallback.setElementCount(remoteResources.size());
       pStateCallback.setSplashResource(localSplashResource);
     }
 
@@ -80,12 +80,16 @@ public class Loader implements ILoader
             if (remoteHash == null || !Objects.equals(localResource.getHash(), remoteHash))
             {
               _copy(localResource, resource);
+              loadSize.addAndGet(remoteResources.size());
             }
 
             if (pStateCallback != null)
-              pStateCallback.loaded(loadCount.incrementAndGet());
+            {
+              double relative = (double) loadCount.incrementAndGet() / (double) newLocalIdSet.size();
+              pStateCallback.setProgress(loadSize.get(), relative);
+            }
           }
-          catch (Exception pE)
+          catch (Throwable pE)
           {
             System.err.println("error loading: " + resource.getId());
             pE.printStackTrace();
