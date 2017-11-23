@@ -65,7 +65,7 @@ public class Loader implements ILoader
         .forEach(localResourcePack::removeResource);
 
     // copy missing
-    remoteResources.stream()
+    remoteResources.parallelStream().unordered()
         .filter(FILTER_IGNORE_RESOURCE_PREDICATE)
         .forEach(resource -> {
           try

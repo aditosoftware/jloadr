@@ -37,21 +37,13 @@ public class DigestingInputStream extends BufferedInputStream
     return read;
   }
 
-  @Override
-  public synchronized void close() throws IOException
+  public synchronized String getDigest()
   {
-    super.close();
     if (md != null)
     {
       digest = Base64.getEncoder().encodeToString(md.digest());
       md = null;
     }
-  }
-
-  public synchronized String getDigest() throws IOException
-  {
-    if (digest == null)
-      close();
     return digest;
   }
 }
