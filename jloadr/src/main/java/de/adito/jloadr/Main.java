@@ -27,24 +27,29 @@ public class Main
     String startName = null;
     if (args.length > 0)
       url = args[0];
-    else
+
+    Path configPath = Paths.get("config.xml");
+    if (Files.exists(configPath))
     {
-      Path configPath = Paths.get("config.xml");
-      if (Files.exists(configPath))
-      {
-        Document document = XMLUtil.loadDocument(configPath.toUri().toURL());
-        Element documentElement = document.getDocumentElement();
+      Document document = XMLUtil.loadDocument(configPath.toUri().toURL());
+      Element documentElement = document.getDocumentElement();
+      if (url == null)
         url = XMLUtil.getChildText(documentElement, "url");
-        iconPath = XMLUtil.getChildText(documentElement, "icon");
-        startName = XMLUtil.getChildText(documentElement, "name");
-      }
+      iconPath = XMLUtil.getChildText(documentElement, "icon");
+      startName = XMLUtil.getChildText(documentElement, "name");
     }
-    if (url == null)
-      throw new RuntimeException("a repository url must be specified.");
+    run(url, iconPath, startName);
+  }
 
-    IResourcePack remoteResourcePack = ResourcePackFactory.get(new URL(url));
+  public static void run(String pUrl, String pIconPath, String pStartName) throws IOException, InterruptedException
+  {
 
-    Splash splash = GraphicsEnvironment.isHeadless() ? null : new Splash(iconPath, startName);
+    if (pUrl == null)
+      throw new RuntimeException("a repository pUrl must be specified.");
+
+    IResourcePack remoteResourcePack = ResourcePackFactory.get(new URL(pUrl));
+
+    Splash splash = GraphicsEnvironment.isHeadless() ? null : new Splash(pIconPath, pStartName);
 
     try
     {
