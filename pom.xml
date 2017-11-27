@@ -25,6 +25,7 @@
 
   <modules>
     <module>jloadr</module>
+    <module>jloadr-bootstrap</module>
   </modules>
 
   <profiles>
