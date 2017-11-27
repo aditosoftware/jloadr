@@ -38,6 +38,7 @@
         <configuration>
           <archive>
             <manifest>
+              <mainClass>de.adito.jloadr.bootstrap.Starter</mainClass>
               <useUniqueVersions>true</useUniqueVersions>
               <addClasspath>true</addClasspath>
               <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
@@ -113,6 +114,7 @@
         <configuration>
           <archive>
             <manifest>
+              <mainClass>de.adito.jloadr.bootstrap.Starter</mainClass>
               <useUniqueVersions>true</useUniqueVersions>
               <addClasspath>true</addClasspath>
               <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
