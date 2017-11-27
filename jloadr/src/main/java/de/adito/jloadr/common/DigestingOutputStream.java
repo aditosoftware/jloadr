@@ -33,21 +33,13 @@ public class DigestingOutputStream extends BufferedOutputStream
     md.update(b, off, len);
   }
 
-  @Override
-  public synchronized void close() throws IOException
+  public synchronized String getDigest()
   {
-    super.close();
     if (md != null)
     {
       digest = Base64.getEncoder().encodeToString(md.digest());
       md = null;
     }
-  }
-
-  public synchronized String getDigest()
-  {
-    if (digest == null)
-      throw new IllegalStateException();
     return digest;
   }
 }
