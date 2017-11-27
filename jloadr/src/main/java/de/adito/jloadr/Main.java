@@ -73,6 +73,9 @@ public class Main
             .inheritIO()
             .start();
         javaProcess.waitFor(IOption.WAIT_FOR_START, TimeUnit.SECONDS);
+
+        if (!javaProcess.isAlive() && javaProcess.exitValue() != 0)
+          throw new RuntimeException("application exited with exit code " + javaProcess.exitValue());
       }
     }
     finally
