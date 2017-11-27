@@ -104,7 +104,7 @@ public class Splash extends JFrame implements ILoader.IStateCallback
     int w = getContentPane().getWidth();
     int h = getContentPane().getHeight();
 
-    String text = absoluteProgress / 1024 + " Mb";
+    String text = absoluteProgress == 0 ? "" : absoluteProgress / 1024 + " Mb";
     mbLoadedLabel.setText(text);
     mbLoadedLabel.setSize(mbLoadedLabel.getPreferredSize());
     mbLoadedLabel.setLocation(w - 4 - mbLoadedLabel.getWidth(), getHeight() - 12 - mbLoadedLabel.getHeight());
