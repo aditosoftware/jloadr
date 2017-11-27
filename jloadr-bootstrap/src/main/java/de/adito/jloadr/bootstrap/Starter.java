@@ -1,6 +1,7 @@
 package de.adito.jloadr.bootstrap;
 
 import javax.swing.*;
+import java.awt.*;
 import java.io.*;
 import java.lang.reflect.*;
 import java.net.*;
@@ -12,35 +13,40 @@ public class Starter
   private static final String JLOADR_JAR = "jloadr.jar";
   private static final String JLOADR_JAR_SHA1 = "jloadr.jar.sha1";
 
-  public static void main(String[] args) throws IOException
+  public static void main(String[] args) throws Throwable
   {
     if (args.length == 0)
       throw new RuntimeException("first parameter must be the repository url");
 
     String url = args[0];
 
+    Throwable loadError = null;
     try
     {
       _loadNewVersion(url);
     }
-    catch (IOException pE)
+    catch (Throwable pE)
     {
-      // ignore for now
+      loadError = pE;
     }
-
     try
     {
-      _runMain(Paths.get(JLOADR_JAR), "de.adito.jloadr.Main", url);
+      _runMain(Paths.get(JLOADR_JAR), "de.adito.jloadr.Main", args);
     }
     catch (Throwable pE)
     {
-      JOptionPane.showMessageDialog(null, BootstrapUtil.stackTraceToString(pE), UIManager.getString(
-          "OptionPane.messageDialogTitle", null), JOptionPane.ERROR_MESSAGE);
+      String exceptionMessage = "";
+      if (loadError != null)
+        exceptionMessage += BootstrapUtil.stackTraceToString(loadError) + "\n\n";
+      exceptionMessage += BootstrapUtil.stackTraceToString(pE);
+      _showError(exceptionMessage);
+      throw loadError == null ? pE : loadError;
     }
   }
 
   private static void _loadNewVersion(String pUrl) throws IOException
   {
+
     URL jloadrJarUrl = BootstrapUtil.getRelative(new URL(pUrl), JLOADR_JAR);
     URL jloadrJarChecksumUrl = BootstrapUtil.getRelative(new URL(pUrl), JLOADR_JAR_SHA1);
 
@@ -75,6 +81,17 @@ public class Starter
     Class<?> targetClass = Class.forName(pClassName, true, urlClassLoader);
     Method main = targetClass.getMethod("main", String[].class);
     main.invoke(null, (Object) pArgs);
+  }
+
+  private static void _showError(String pMessage)
+  {
+    String title = UIManager.getString("OptionPane.messageDialogTitle", null);
+    JTextArea textArea = new JTextArea(pMessage);
+    JScrollPane scrollPane = new JScrollPane(textArea);
+    textArea.setLineWrap(true);
+    textArea.setWrapStyleWord(true);
+    scrollPane.setPreferredSize( new Dimension(800, 400 ) );
+    JOptionPane.showMessageDialog(null, scrollPane, title, JOptionPane.ERROR_MESSAGE);
   }
 
 }
