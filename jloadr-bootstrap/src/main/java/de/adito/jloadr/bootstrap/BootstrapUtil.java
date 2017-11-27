@@ -41,8 +41,11 @@ public class BootstrapUtil
       if (pParentUrl == null)
         throw new IllegalArgumentException();
 
-      URI parentUri = pParentUrl.toURI();
-      return parentUri.resolve(pUrlString).toURL();
+      String target = pParentUrl.toExternalForm();
+      if (!target.endsWith("/"))
+        target += "/";
+      target += pUrlString;
+      return new URL(target);
     }
     catch (URISyntaxException | MalformedURLException pE)
     {
