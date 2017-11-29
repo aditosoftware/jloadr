@@ -44,13 +44,16 @@ public class LocalStoreResourcePack implements IStoreResourcePack
         @Override
         public FileVisitResult visitFile(Path pPath, BasicFileAttributes pAttrs)
         {
-          IResourceId id = new ResourceId(root.relativize(pPath));
-          JlrEntry entry = loadedPack.getEntry(id);
-          if (entry == null)
-            entry = new JlrEntry(id);
-          jlrPack.addEntry(entry);
-          LocalStoreResource resource = new LocalStoreResource(entry, pPath);
-          resourceMap.put(id, resource);
+          if (!Files.isSymbolicLink(pPath)) // we don't support symlinks
+          {
+            IResourceId id = new ResourceId(root.relativize(pPath));
+            JlrEntry entry = loadedPack.getEntry(id);
+            if (entry == null)
+              entry = new JlrEntry(id);
+            jlrPack.addEntry(entry);
+            LocalStoreResource resource = new LocalStoreResource(entry, pPath);
+            resourceMap.put(id, resource);
+          }
           return FileVisitResult.CONTINUE;
         }
       });
