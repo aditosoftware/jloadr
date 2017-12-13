@@ -33,7 +33,7 @@ public class MuxResourcePackFactory implements IResourcePackFactory
     try
     {
       pUrl = UrlUtil.getAtHost(pUrl, path);
-      pUrl.openStream().close(); // check existence
+      UrlUtil.checkAvailable(pUrl); // check existence
       return pUrl;
     }
     catch (IOException pE)

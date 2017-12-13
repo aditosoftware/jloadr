@@ -1,10 +1,10 @@
 package de.adito.jloadr.repository;
 
 import de.adito.jloadr.api.*;
-import de.adito.jloadr.common.JLoadrUtil;
+import de.adito.jloadr.common.*;
 
 import java.io.*;
-import java.net.URL;
+import java.net.*;
 import java.util.Objects;
 
 /**
@@ -21,8 +21,7 @@ public class URLResource implements IResource
 
   public void checkAvailable() throws IOException
   {
-    InputStream inputStream = url.openStream();
-    inputStream.close();
+    UrlUtil.checkAvailable(url);
   }
 
   @Override

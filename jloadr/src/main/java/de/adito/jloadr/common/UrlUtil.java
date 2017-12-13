@@ -2,6 +2,7 @@ package de.adito.jloadr.common;
 
 import de.adito.jloadr.repository.jlr.JlrResourcePackFactory;
 
+import java.io.*;
 import java.net.*;
 
 /**
@@ -51,6 +52,22 @@ public class UrlUtil
       throw new RuntimeException("not a config path");
 
     return pConfigPath.substring(0, pConfigPath.lastIndexOf(JlrResourcePackFactory.CONFIG_FILE_SUFFIX));
+  }
+
+  public static void checkAvailable(URL pUrl) throws IOException
+  {
+    URLConnection urlConnection = pUrl.openConnection();
+    if (urlConnection instanceof HttpURLConnection)
+    {
+      if (((HttpURLConnection) urlConnection).getResponseCode() != 200)
+        throw new RuntimeException("Error loading '" + pUrl.toExternalForm() + "': " +
+                                       ((HttpURLConnection) urlConnection).getResponseMessage());
+    }
+    else
+    {
+      InputStream inputStream = urlConnection.getInputStream();
+      inputStream.close();
+    }
   }
 
 }

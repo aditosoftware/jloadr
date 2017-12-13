@@ -63,7 +63,13 @@ public class Starter
     }
     if (differs)
     {
-      try (InputStream inputStream = jloadrJarUrl.openStream();
+
+      URLConnection urlConnection = jloadrJarUrl.openConnection();
+      if (urlConnection instanceof HttpURLConnection && ((HttpURLConnection) urlConnection).getResponseCode() != 200)
+        throw new RuntimeException("Error loading '" + jloadrJarUrl.toExternalForm() + "': " +
+                                       ((HttpURLConnection) urlConnection).getResponseMessage());
+
+      try (InputStream inputStream = urlConnection.getInputStream();
            OutputStream outputStream = Files.newOutputStream(localJarPath))
       {
         BootstrapUtil.copy(inputStream, outputStream);
@@ -90,7 +96,7 @@ public class Starter
     JScrollPane scrollPane = new JScrollPane(textArea);
     textArea.setLineWrap(true);
     textArea.setWrapStyleWord(true);
-    scrollPane.setPreferredSize( new Dimension(800, 400 ) );
+    scrollPane.setPreferredSize(new Dimension(800, 400));
     JOptionPane.showMessageDialog(null, scrollPane, title, JOptionPane.ERROR_MESSAGE);
   }
 
