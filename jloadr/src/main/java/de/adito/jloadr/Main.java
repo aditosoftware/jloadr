@@ -68,7 +68,7 @@ public class Main
 
         Path workingDirectory = Paths.get("jloadr").resolve(localResourcePack.getId()).toAbsolutePath();
         String[] command = loaderConfig.getStartCommands(workingDirectory, JLoadrUtil.getAdditionalSystemParameters());
-        Process javaProcess = new ProcessBuilder(command)
+        Process javaProcess  = new ProcessBuilder(command)
             .directory(workingDirectory.toFile())
             .inheritIO()
             .start();
@@ -76,6 +76,15 @@ public class Main
 
         if (!javaProcess.isAlive() && javaProcess.exitValue() != 0)
           throw new RuntimeException("application exited with exit code " + javaProcess.exitValue());
+
+        if (splash != null)
+        {
+          splash.dispose();
+          splash = null;
+        }
+
+        if (IOption.KEEP_ATTACHED)
+          System.exit(javaProcess.waitFor());
       }
     }
     finally
@@ -83,6 +92,8 @@ public class Main
       if (splash != null)
         SwingUtilities.invokeLater(splash::dispose);
     }
+
+
   }
 
 }
