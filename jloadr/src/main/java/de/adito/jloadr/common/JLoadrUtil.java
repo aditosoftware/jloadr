@@ -92,9 +92,9 @@ public class JLoadrUtil
     }
   }
 
-  public static List<String> getAdditionalVmParameters()
+  public static List<String> getAdditionalSystemParameters()
   {
-    List<String> additionalVmParameters = new ArrayList<>();
+    List<String> additionalSystemParameters = new ArrayList<>();
     for (Map.Entry<Object, Object> entry : System.getProperties().entrySet())
     {
       String key = entry.getKey().toString();
@@ -108,10 +108,10 @@ public class JLoadrUtil
       {
         if (entry.getValue() != null && !entry.getValue().toString().isEmpty())
           parameter += "=" + entry.getValue().toString();
-        additionalVmParameters.add(parameter);
+        additionalSystemParameters.add(parameter);
       }
     }
-    return additionalVmParameters;
+    return additionalSystemParameters;
   }
 
 }

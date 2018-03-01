@@ -67,7 +67,7 @@ public class Main
         }
 
         Path workingDirectory = Paths.get("jloadr").resolve(localResourcePack.getId()).toAbsolutePath();
-        String[] command = loaderConfig.getStartCommands(workingDirectory, JLoadrUtil.getAdditionalVmParameters());
+        String[] command = loaderConfig.getStartCommands(workingDirectory, JLoadrUtil.getAdditionalSystemParameters());
         Process javaProcess = new ProcessBuilder(command)
             .directory(workingDirectory.toFile())
             .inheritIO()

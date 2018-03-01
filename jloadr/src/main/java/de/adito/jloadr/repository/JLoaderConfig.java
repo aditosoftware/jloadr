@@ -17,13 +17,15 @@ public class JLoaderConfig
   public static final IResourceId CONFIG_ID = new ResourceId("jloadrConfig.xml");
 
   public static final String TAG_JAVA = "javaHome";
-  public static final String TAG_VM_PARAMETER = "vmParameter";
+  public static final String TAG_VM_OPTION = "vmOption";
+  public static final String TAG_SYSTEM_PROPERTY = "systemProperty";
   public static final String TAG_CLASSPATH = "classpath";
   public static final String TAG_MAIN = "main";
   public static final String TAG_ARGUMENT = "argument";
 
   private String javaHome;
   private List<String> vmParameters;
+  private List<String> systemParameters;
   private List<String> classpath;
   private String mainCls;
   private List<String> arguments;
@@ -36,7 +38,11 @@ public class JLoaderConfig
 
     javaHome = XMLUtil.getChildText(root, TAG_JAVA);
 
-    vmParameters = XMLUtil.findChildElements(root, TAG_VM_PARAMETER).stream()
+    vmParameters = XMLUtil.findChildElements(root, TAG_VM_OPTION).stream()
+        .map(element -> element.getTextContent().trim())
+        .collect(Collectors.toList());
+
+    systemParameters = XMLUtil.findChildElements(root, TAG_SYSTEM_PROPERTY).stream()
         .map(element -> element.getTextContent().trim())
         .collect(Collectors.toList());
 
@@ -58,14 +64,15 @@ public class JLoaderConfig
       Element root = pDocument.createElement("jloadr");
       pDocument.appendChild(root);
       _append(pDocument, root, TAG_JAVA, javaHome);
-      _append(pDocument, root, TAG_VM_PARAMETER, vmParameters);
+      _append(pDocument, root, TAG_VM_OPTION, vmParameters);
+      _append(pDocument, root, TAG_SYSTEM_PROPERTY, systemParameters);
       _append(pDocument, root, TAG_CLASSPATH, classpath);
       _append(pDocument, root, TAG_MAIN, mainCls);
       _append(pDocument, root, TAG_ARGUMENT, arguments);
     });
   }
 
-  public String[] getStartCommands(Path pWorkingDirectory, List<String> pAdditionalVmParameters)
+  public String[] getStartCommands(Path pWorkingDirectory, List<String> pAdditionalSystemParameters)
   {
     String mainCls = getMainCls();
     if (mainCls == null || mainCls.isEmpty())
@@ -73,8 +80,13 @@ public class JLoaderConfig
 
     List<String> parameters = new ArrayList<>();
     parameters.add(_getStartJavaCommand(pWorkingDirectory));
-    Stream.concat(getVmParameters().stream(), pAdditionalVmParameters == null ? Stream.empty() : pAdditionalVmParameters.stream())
-        .map(param -> "-D" + param)
+
+    getVmParameters().stream()
+        .map(param -> param.startsWith("-") ? param : "-" + param)
+        .forEach(parameters::add);
+
+    Stream.concat(getSystemParameters().stream(), pAdditionalSystemParameters == null ? Stream.empty() : pAdditionalSystemParameters.stream())
+        .map(param -> param.startsWith("-D") ? param : "-D" + param)
         .forEach(parameters::add);
 
     String cp = getClasspath().stream()
@@ -109,12 +121,22 @@ public class JLoaderConfig
 
   public List<String> getVmParameters()
   {
-    return vmParameters;
+    return vmParameters == null ? Collections.emptyList() : vmParameters;
   }
 
   public void setVmParameters(List<String> pVmParameters)
   {
     vmParameters = pVmParameters;
+  }
+
+  public List<String> getSystemParameters()
+  {
+    return systemParameters == null ? Collections.emptyList() : systemParameters;
+  }
+
+  public void setSystemParameters(List<String> pSystemParameters)
+  {
+    systemParameters = pSystemParameters;
   }
 
   public List<String> getClasspath()

@@ -117,7 +117,7 @@ public class JnlpResourcePack implements IResourcePack
     {
       Collection<JnlpUrl> jnlpUrls = _getJnlpUrls();
 
-      List<String> vmProperties = jnlpUrls.stream()
+      List<String> systemProperties = jnlpUrls.stream()
           .flatMap(jnlpUrl -> jnlpUrl.findChildElementsByPath("resources/property").stream())
           .map(element -> {
             String name = element.getAttribute("name").replace("jnlp.adito.", "adito.");
@@ -143,7 +143,7 @@ public class JnlpResourcePack implements IResourcePack
           .collect(Collectors.toList());
 
       JLoaderConfig jLoaderConfig = new JLoaderConfig();
-      jLoaderConfig.setVmParameters(vmProperties);
+      jLoaderConfig.setSystemParameters(systemProperties);
       jLoaderConfig.setClasspath(classpath);
       jLoaderConfig.setMainCls(mainClass);
       jLoaderConfig.setArguments(arguments);

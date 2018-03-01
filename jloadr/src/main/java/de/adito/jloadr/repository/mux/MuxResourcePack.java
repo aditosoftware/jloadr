@@ -136,6 +136,8 @@ public class MuxResourcePack implements IResourcePack
               config1.setJavaHome(config2.getJavaHome());
             if (_isEmptyCollection(config1.getVmParameters()))
               config1.setVmParameters(config2.getVmParameters());
+            if (_isEmptyCollection(config1.getSystemParameters()))
+              config1.setSystemParameters(config2.getSystemParameters());
             if (_isEmptyCollection(config1.getClasspath()))
               config1.setClasspath(config2.getClasspath());
             if (_isEmptyString(config1.getMainCls()))
