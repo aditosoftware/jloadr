@@ -5,7 +5,7 @@
   <parent>
     <groupId>de.adito.jloadr</groupId>
     <artifactId>jloadr-parent</artifactId>
-    <version>1.0.3</version>
+    <version>1.0.4</version>
   </parent>
 
   <artifactId>jloadr-jre</artifactId>
@@ -25,17 +25,16 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-jlink-plugin</artifactId>
-        <version>3.0.0-alpha-1</version>
+        <version>3.0.0-alpha-2-SNAPSHOT</version>
         <extensions>true</extensions>
         <configuration>
           <stripDebug>true</stripDebug>
-          <compression>2</compression>
+          <compress>2</compress>
           <noHeaderFiles>true</noHeaderFiles>
           <noManPages>true</noManPages>
           <addModules>
             <addModule>de.adito.jloadr</addModule>
           </addModules>
-          <verbose>true</verbose>
         </configuration>
       </plugin>
 
@@ -54,7 +53,6 @@
           <toolchains>
             <jdk>
               <version>1.9</version>
-              <bitness>32</bitness>
             </jdk>
           </toolchains>
         </configuration>
