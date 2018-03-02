@@ -14,6 +14,9 @@ import java.util.*;
 public class JLoadrUtil
 {
 
+  private static final String PREFIX_ADITO = "adito.";
+  private static final String PREFIX_JLOADR = "jloadr.";
+
   private JLoadrUtil()
   {
   }
@@ -99,10 +102,10 @@ public class JLoadrUtil
     {
       String key = entry.getKey().toString();
       String parameter = null;
-      if (key.startsWith("adito."))
+      if (key.startsWith(PREFIX_ADITO))
         parameter = key;
-      else if (key.startsWith("jloadr."))
-        parameter = key.substring("jloadr.".length());
+      else if (key.startsWith(PREFIX_JLOADR))
+        parameter = key.substring(PREFIX_JLOADR.length());
 
       if (parameter != null)
       {
