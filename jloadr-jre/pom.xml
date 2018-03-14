@@ -5,17 +5,18 @@
   <parent>
     <groupId>de.adito.jloadr</groupId>
     <artifactId>jloadr-parent</artifactId>
-    <version>1.0.4</version>
+    <version>1.0.5</version>
   </parent>
 
   <artifactId>jloadr-jre</artifactId>
   <packaging>jlink</packaging>
+  <version>1.0.5</version>
 
   <dependencies>
     <dependency>
       <groupId>de.adito.jloadr</groupId>
       <artifactId>jloadr</artifactId>
-      <version>1.0.4</version>
+      <version>1.0.5</version>
     </dependency>
   </dependencies>
 
@@ -34,6 +35,8 @@
           <noManPages>true</noManPages>
           <addModules>
             <addModule>de.adito.jloadr</addModule>
+            <addModule>java.logging</addModule>
+            <addModule>jdk.crypto.ec</addModule>
           </addModules>
         </configuration>
       </plugin>
