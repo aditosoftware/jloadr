@@ -68,31 +68,23 @@ public class Loader implements ILoader
     remoteResources.parallelStream().unordered()
         .filter(FILTER_IGNORE_RESOURCE_PREDICATE)
         .forEach(resource -> {
-          try
+          IResourceId localId = _getLocalId(resource.getId());
+          IStoreResource localResource = localResourcePack.getResource(localId);
+
+          if (localResource == null)
+            localResource = localResourcePack.createResource(localId);
+
+          String remoteHash = resource.getHash();
+          if (remoteHash == null || !Objects.equals(localResource.getHash(), remoteHash))
           {
-            IResourceId localId = _getLocalId(resource.getId());
-            IStoreResource localResource = localResourcePack.getResource(localId);
-
-            if (localResource == null)
-              localResource = localResourcePack.createResource(localId);
-
-            String remoteHash = resource.getHash();
-            if (remoteHash == null || !Objects.equals(localResource.getHash(), remoteHash))
-            {
-              _copy(localResource, resource);
-              loadSize.addAndGet(remoteResources.size());
-            }
-
-            if (pStateCallback != null)
-            {
-              double relative = (double) loadCount.incrementAndGet() / (double) newLocalIdSet.size();
-              pStateCallback.setProgress(loadSize.get(), relative);
-            }
+            _copy(localResource, resource);
+            loadSize.addAndGet(remoteResources.size());
           }
-          catch (Throwable pE)
+
+          if (pStateCallback != null)
           {
-            System.err.println("error loading: " + resource.getId());
-            pE.printStackTrace();
+            double relative = (double) loadCount.incrementAndGet() / (double) newLocalIdSet.size();
+            pStateCallback.setProgress(loadSize.get(), relative);
           }
         });
 

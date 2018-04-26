@@ -9,6 +9,7 @@
   </parent>
 
   <artifactId>jloadr</artifactId>
+  <version>1.0.6</version>
   <packaging>multi-release-jar</packaging>
 
   <dependencies>
