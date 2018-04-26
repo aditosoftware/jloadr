@@ -9,7 +9,7 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Predicate;
 import java.util.jar.*;
-import java.util.stream.Collectors;
+import java.util.stream.*;
 import java.util.zip.*;
 
 /**
@@ -65,8 +65,13 @@ public class Loader implements ILoader
         .forEach(localResourcePack::removeResource);
 
     // copy missing
-    remoteResources.parallelStream().unordered()
-        .filter(FILTER_IGNORE_RESOURCE_PREDICATE)
+    Stream<? extends IResource> resourceStream;
+    if (IOption.LOAD_SEQUENTIAL)
+      resourceStream = remoteResources.stream();
+    else
+      resourceStream = remoteResources.parallelStream().unordered();
+
+    resourceStream.filter(FILTER_IGNORE_RESOURCE_PREDICATE)
         .forEach(resource -> {
           IResourceId localId = _getLocalId(resource.getId());
           IStoreResource localResource = localResourcePack.getResource(localId);

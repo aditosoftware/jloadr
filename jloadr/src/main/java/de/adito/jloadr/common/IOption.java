@@ -25,4 +25,6 @@ public interface IOption
    */
   boolean KEEP_ATTACHED = System.getProperty("jlr.keepAttached") != null;
 
+  boolean LOAD_SEQUENTIAL = System.getProperty("jlr.loadSequential") != null;
+
 }
