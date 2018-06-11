@@ -18,6 +18,10 @@ public class Starter
     if (args.length == 0)
       throw new RuntimeException("first parameter must be the repository url");
 
+    String useSystemProxies = System.getProperty("java.net.useSystemProxies");
+    if (useSystemProxies == null)
+      System.setProperty("java.net.useSystemProxies", "true");
+
     String url = args[0];
 
     Throwable loadError = null;
