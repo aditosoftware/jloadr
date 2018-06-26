@@ -22,12 +22,12 @@ public class Starter
     if (useSystemProxies == null)
       System.setProperty("java.net.useSystemProxies", "true");
 
-    String url = args[0];
-
     Throwable loadError = null;
     try
     {
+      URL url = BootstrapUtil.getMoved(new URL(args[0]));
       _loadNewVersion(url);
+      args[0] = url.toExternalForm();
     }
     catch (Throwable pE)
     {
@@ -48,11 +48,10 @@ public class Starter
     }
   }
 
-  private static void _loadNewVersion(String pUrl) throws IOException
+  private static void _loadNewVersion(URL pUrl) throws IOException
   {
-
-    URL jloadrJarUrl = BootstrapUtil.getRelative(new URL(pUrl), JLOADR_JAR);
-    URL jloadrJarChecksumUrl = BootstrapUtil.getRelative(new URL(pUrl), JLOADR_JAR_SHA1);
+    URL jloadrJarUrl = BootstrapUtil.getRelative(pUrl, JLOADR_JAR);
+    URL jloadrJarChecksumUrl = BootstrapUtil.getRelative(pUrl, JLOADR_JAR_SHA1);
 
     String remoteHash = BootstrapUtil.readTextFromURL(jloadrJarChecksumUrl);
     boolean differs = true;
@@ -82,7 +81,7 @@ public class Starter
   }
 
   private static void _runMain(Path pLocalJar, String pClassName, String... pArgs)
-      throws InvocationTargetException, IllegalAccessException, NoSuchMethodException, ClassNotFoundException, MalformedURLException
+      throws Throwable
   {
     URLClassLoader urlClassLoader = new URLClassLoader(new URL[]{pLocalJar.toUri().toURL()});
     // required for ServiceLoader
@@ -90,7 +89,14 @@ public class Starter
 
     Class<?> targetClass = Class.forName(pClassName, true, urlClassLoader);
     Method main = targetClass.getMethod("main", String[].class);
-    main.invoke(null, (Object) pArgs);
+    try
+    {
+      main.invoke(null, (Object) pArgs);
+    }
+    catch (InvocationTargetException pE)
+    {
+      throw pE.getCause();
+    }
   }
 
   private static void _showError(String pMessage)

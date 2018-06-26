@@ -10,6 +10,24 @@ import java.nio.charset.StandardCharsets;
 public class BootstrapUtil
 {
 
+  public static URL getMoved(URL pURL) throws IOException
+  {
+    URLConnection connection = pURL.openConnection();
+    if (connection instanceof HttpURLConnection)
+    {
+      int responseCode = ((HttpURLConnection) connection).getResponseCode();
+      if (responseCode == HttpURLConnection.HTTP_MOVED_TEMP ||
+          responseCode == HttpURLConnection.HTTP_MOVED_PERM ||
+          responseCode == HttpURLConnection.HTTP_SEE_OTHER)
+      {
+        String newUrl = connection.getHeaderField("Location");
+        if (newUrl != null)
+          return new URL(newUrl);
+      }
+    }
+    return pURL;
+  }
+
   public static String readTextFromURL(URL pURL) throws IOException
   {
     try (InputStream inputStream = pURL.openStream();
