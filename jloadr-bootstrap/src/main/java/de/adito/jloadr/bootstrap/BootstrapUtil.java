@@ -9,6 +9,9 @@ import java.nio.charset.StandardCharsets;
  */
 public class BootstrapUtil
 {
+  private static final int HTTP_REDIRECT_TEMP = 307;
+  private static final int HTTP_REDIRECT_PERM = 308;
+
 
   public static URL getMoved(URL pURL) throws IOException
   {
@@ -18,6 +21,8 @@ public class BootstrapUtil
       int responseCode = ((HttpURLConnection) connection).getResponseCode();
       if (responseCode == HttpURLConnection.HTTP_MOVED_TEMP ||
           responseCode == HttpURLConnection.HTTP_MOVED_PERM ||
+          responseCode == HTTP_REDIRECT_TEMP||
+          responseCode == HTTP_REDIRECT_PERM ||
           responseCode == HttpURLConnection.HTTP_SEE_OTHER)
       {
         String newUrl = connection.getHeaderField("Location");
