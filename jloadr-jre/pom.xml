@@ -10,7 +10,7 @@
 
   <artifactId>jloadr-jre</artifactId>
   <packaging>jlink</packaging>
-  <version>1.0.5</version>
+  <version>1.0.8</version>
 
   <dependencies>
     <dependency>
@@ -37,6 +37,7 @@
             <addModule>de.adito.jloadr</addModule>
             <addModule>java.logging</addModule>
             <addModule>jdk.crypto.ec</addModule>
+            <addModule>jdk.crypto.mscapi</addModule>
           </addModules>
         </configuration>
       </plugin>
