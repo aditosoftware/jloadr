@@ -1,5 +1,8 @@
 package de.adito.jloadr.bootstrap;
 
+import de.adito.trustmanager.confirmingui.ConfirmingUITrustManager;
+
+import javax.net.ssl.SSLContext;
 import javax.swing.*;
 import java.awt.*;
 import java.io.*;
@@ -17,6 +20,8 @@ public class Starter
   {
     if (args.length == 0)
       throw new RuntimeException("first parameter must be the repository url");
+
+    SSLContext.setDefault(ConfirmingUITrustManager.createSslContext());
 
     String useSystemProxies = System.getProperty("java.net.useSystemProxies");
     if (useSystemProxies == null)
