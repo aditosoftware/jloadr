@@ -7,6 +7,7 @@ import org.hamcrest.core.StringEndsWith;
 import org.junit.*;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.text.MessageFormat;
@@ -18,6 +19,7 @@ import java.util.concurrent.TimeUnit;
  */
 public class Test_Loader
 {
+  private final static String LF = System.getProperty("line.separator");
   private File dir;
 
   @Before
@@ -30,22 +32,46 @@ public class Test_Loader
   @After
   public void cleanup() throws IOException
   {
+    // try cleanup - ignore if not possible
     Files.walkFileTree(dir.toPath(), new SimpleFileVisitor<Path>()
     {
       @Override
-      public FileVisitResult visitFile(Path pFile, BasicFileAttributes attrs) throws IOException
+      public FileVisitResult visitFile(Path pFile, BasicFileAttributes attrs)
       {
-        Files.delete(pFile);
+        _tryDelete(pFile);
         return FileVisitResult.CONTINUE;
       }
 
       @Override
-      public FileVisitResult postVisitDirectory(Path pDir, IOException exc) throws IOException
+      public FileVisitResult postVisitDirectory(Path pDir, IOException exc)
       {
-        Files.delete(pDir);
+        _tryDelete(pDir);
         return FileVisitResult.CONTINUE;
       }
     });
+  }
+
+  private void _tryDelete(Path pPath)
+  {
+    int limit = 5;
+    for (int i = 0; i <= limit; i++)
+    {
+      try
+      {
+        Files.deleteIfExists(pPath);
+      }
+      catch (Exception pE)
+      {
+        try
+        {
+          Thread.sleep(10);
+        }
+        catch (InterruptedException pInterruptedEx)
+        {
+          throw new RuntimeException(pInterruptedEx);
+        }
+      }
+    }
   }
 
   @Test
@@ -90,8 +116,8 @@ public class Test_Loader
     String sout = _readString(process.getInputStream());
     String serr = _readString(process.getErrorStream());
 
-    Assert.assertEquals("arg1\ntrue\n", sout);
-    Assert.assertThat(serr, StringEndsWith.endsWith("arg2\n"));
+    Assert.assertEquals("arg1" + LF + "true" + LF, sout);
+    Assert.assertThat(serr, StringEndsWith.endsWith("arg2" + LF));
   }
 
   private void _check(IResourcePack pRemoteResourcePack, IResourcePack pLocalResourcePack) throws IOException
@@ -166,7 +192,7 @@ public class Test_Loader
     File file = new File(pDir, pName);
     try (PrintStream printStream = new PrintStream(new FileOutputStream(file)))
     {
-      printStream.write(content.getBytes("utf-8"));
+      printStream.write(content.getBytes(StandardCharsets.UTF_8));
     }
     return file;
   }
