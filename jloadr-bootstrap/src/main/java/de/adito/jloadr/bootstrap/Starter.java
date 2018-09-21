@@ -1,8 +1,8 @@
 package de.adito.jloadr.bootstrap;
 
-import de.adito.trustmanager.confirmingui.ConfirmingUITrustManager;
+import de.adito.trustmanager.TrustManagerSslContext;
+import de.adito.trustmanager.store.JKSCustomTrustStore;
 
-import javax.net.ssl.SSLContext;
 import javax.swing.*;
 import java.awt.*;
 import java.io.*;
@@ -21,7 +21,10 @@ public class Starter
     if (args.length == 0)
       throw new RuntimeException("first parameter must be the repository url");
 
-    SSLContext.setDefault(ConfirmingUITrustManager.createSslContext());
+    Path trustStorePath = Paths.get(JKSCustomTrustStore.TRUST_STORE_PATH).toAbsolutePath();
+    System.setProperty(JKSCustomTrustStore.TURST_STORE_PATH_SYSTEM_PROPERTY, trustStorePath.toString());
+    System.setProperty("jloadr." + JKSCustomTrustStore.TURST_STORE_PATH_SYSTEM_PROPERTY, trustStorePath.toString());
+    TrustManagerSslContext.initSslContext();
 
     String useSystemProxies = System.getProperty("java.net.useSystemProxies");
     if (useSystemProxies == null)

@@ -9,14 +9,14 @@
   </parent>
 
   <artifactId>jloadr-bootstrap</artifactId>
-  <version>1.0.9</version>
+  <version>1.0.10</version>
   <packaging>multi-release-jar</packaging>
 
   <dependencies>
     <dependency>
       <groupId>de.adito</groupId>
       <artifactId>trustmanager</artifactId>
-      <version>1.0.0</version>
+      <version>1.0.1</version>
     </dependency>
     <dependency>
       <groupId>junit</groupId>
