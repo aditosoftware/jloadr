@@ -5,7 +5,7 @@ import de.adito.jloadr.common.*;
 import org.w3c.dom.*;
 
 import java.io.*;
-import java.nio.file.*;
+import java.nio.file.Path;
 import java.util.*;
 import java.util.stream.*;
 
@@ -85,9 +85,7 @@ public class JLoaderConfig
         .map(param -> param.startsWith("-") ? param : "-" + param)
         .forEach(parameters::add);
 
-    String trustManagerParameter = "adito.trustmanager.jks=" + Paths.get("trustStore.jks").toAbsolutePath();
-    Stream<String> minusDParameters = Stream.concat(getSystemParameters().stream(), Stream.of(trustManagerParameter));
-    Stream.concat(minusDParameters, pAdditionalSystemParameters == null ? Stream.empty() : pAdditionalSystemParameters.stream())
+    Stream.concat(getSystemParameters().stream(), pAdditionalSystemParameters == null ? Stream.empty() : pAdditionalSystemParameters.stream())
         .map(param -> param.startsWith("-D") ? param : "-D" + param)
         .forEach(parameters::add);
 
