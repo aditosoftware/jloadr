@@ -32,7 +32,7 @@ public class LocalStore implements IStore
     }
     catch (IOException pE)
     {
-      throw new RuntimeException(pE);
+      throw new RuntimeException("was not able to create the LocalStoreDirectory.", pE);
     }
   }
 
@@ -69,7 +69,7 @@ public class LocalStore implements IStore
     }
     catch (IOException pE)
     {
-      throw new RuntimeException(pE);
+      throw new RuntimeException("could not add resourcePack.", pE);
     }
   }
 
@@ -104,7 +104,7 @@ public class LocalStore implements IStore
     }
     catch (IOException pE)
     {
-      throw new RuntimeException(pE);
+      throw new RuntimeException("could not delete resourcePack.", pE);
     }
   }
 

@@ -105,7 +105,7 @@ public class JnlpResourcePack implements IResourcePack
   private class _ConfigResource extends AbstractJLoaderConfigResource
   {
     @Override
-    public long getLastModified() throws IOException
+    public long getLastModified()
     {
       return jnlpUrls.stream()
           .map(JnlpUrl::getLastModified)

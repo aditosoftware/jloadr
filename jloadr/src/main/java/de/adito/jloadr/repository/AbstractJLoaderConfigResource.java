@@ -19,13 +19,13 @@ public abstract class AbstractJLoaderConfigResource implements IResource
   }
 
   @Override
-  public InputStream getInputStream() throws IOException
+  public InputStream getInputStream()
   {
     return new ByteArrayInputStream(getBinaryConfig());
   }
 
   @Override
-  public long getSize() throws IOException
+  public long getSize()
   {
     return getBinaryConfig().length;
   }
@@ -39,7 +39,7 @@ public abstract class AbstractJLoaderConfigResource implements IResource
     }
     catch (IOException pE)
     {
-      throw new RuntimeException(pE);
+      throw new RuntimeException("hash of the resource could not be fetched.", pE);
     }
   }
 
@@ -54,7 +54,7 @@ public abstract class AbstractJLoaderConfigResource implements IResource
       }
       catch (IOException pE)
       {
-        throw new RuntimeException(pE);
+        throw new RuntimeException("binary config could not be created", pE);
       }
     }
     return config;

@@ -62,7 +62,7 @@ public class LocalStoreResource implements IStoreResource
     }
     catch (IOException pE)
     {
-      throw new RuntimeException(pE);
+      throw new RuntimeException("Could not update lastModifiedTime at " + path + ".", pE);
     }
   }
 

@@ -6,6 +6,7 @@ import de.adito.jloadr.repository.ResourceId;
 import de.adito.jloadr.repository.jlr.*;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.*;
@@ -57,10 +58,12 @@ public class LocalStoreResourcePack implements IStoreResourcePack
           return FileVisitResult.CONTINUE;
         }
       });
-    }
-    catch (IOException pE)
+    } catch (MalformedURLException pE)
     {
-      throw new RuntimeException(pE);
+      throw new RuntimeException(pConfigPath + " is no valid URL.", pE);
+    } catch (IOException pE)
+    {
+      throw new RuntimeException("Cannot create file at " + pConfigPath + ".", pE);
     }
   }
 
@@ -99,7 +102,7 @@ public class LocalStoreResourcePack implements IStoreResourcePack
     }
     catch (IOException pE)
     {
-      throw new RuntimeException(pE);
+      throw new RuntimeException("Could not create Resource or Directory at " + path + ".", pE);
     }
   }
 
@@ -118,7 +121,7 @@ public class LocalStoreResourcePack implements IStoreResourcePack
       }
       catch (IOException pE)
       {
-        throw new RuntimeException(pE);
+        throw new RuntimeException("Could not delete resource", pE);
       }
     }
   }

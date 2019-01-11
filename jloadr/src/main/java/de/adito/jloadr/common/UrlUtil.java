@@ -23,7 +23,7 @@ public class UrlUtil
       if (uri.isAbsolute())
         return uri.toURL();
       if (pParentUrl == null)
-        throw new IllegalArgumentException();
+        throw new IllegalArgumentException("pParentURL max not be null.");
 
       URI parentUri = pParentUrl.toURI();
       return parentUri.resolve(pUrlString).toURL();
@@ -42,7 +42,7 @@ public class UrlUtil
     }
     catch (MalformedURLException pE)
     {
-      throw new IllegalArgumentException(pE);
+      throw new IllegalArgumentException(pParentUrl + " could not be resolved correctly.", pE);
     }
   }
 

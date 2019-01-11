@@ -38,10 +38,10 @@ public class Main
       iconPath = XMLUtil.getChildText(documentElement, "icon");
       startName = XMLUtil.getChildText(documentElement, "name");
     }
-    run(url, iconPath, startName);
+    _run(url, iconPath, startName);
   }
 
-  public static void run(String pUrl, String pIconPath, String pStartName) throws IOException, InterruptedException
+  private static void _run(String pUrl, String pIconPath, String pStartName) throws IOException, InterruptedException
   {
 
     if (pUrl == null)
@@ -92,8 +92,5 @@ public class Main
       if (splash != null)
         SwingUtilities.invokeLater(splash::dispose);
     }
-
-
   }
-
 }
