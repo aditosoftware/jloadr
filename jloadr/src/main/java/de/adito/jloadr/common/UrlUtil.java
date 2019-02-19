@@ -23,7 +23,7 @@ public class UrlUtil
       if (uri.isAbsolute())
         return uri.toURL();
       if (pParentUrl == null)
-        throw new IllegalArgumentException("pParentURL max not be null.");
+        throw new IllegalArgumentException("URL may not be null.");
 
       URI parentUri = pParentUrl.toURI();
       return parentUri.resolve(pUrlString).toURL();

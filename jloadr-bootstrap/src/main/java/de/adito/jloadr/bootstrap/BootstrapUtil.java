@@ -62,7 +62,7 @@ public class BootstrapUtil
       if (uri.isAbsolute())
         return uri.toURL();
       if (pParentUrl == null)
-        throw new IllegalArgumentException("parentURL must not be null.");
+        throw new IllegalArgumentException("URL must not be null.");
 
       String target = pParentUrl.toExternalForm();
       if (!target.endsWith("/"))
@@ -89,7 +89,7 @@ public class BootstrapUtil
     }
     catch (IOException pE)
     {
-      throw new RuntimeException("Could not hash inputStream.", pE);
+      throw new RuntimeException("Could not hash correctly.", pE);
     }
   }
 

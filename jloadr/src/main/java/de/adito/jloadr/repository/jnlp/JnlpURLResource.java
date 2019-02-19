@@ -119,10 +119,6 @@ class JnlpURLResource implements IResource
         {
           throw new RuntimeException("Could not resolve URL.", pE);
         }
-        catch (IOException pE)
-        {
-          throw new RuntimeException("there is a problem with the URLResource.", pE);
-        }
       }
       throw new RuntimeException("resource could not be found: " + jarJnlpReference.getUrl());
     }
