@@ -7,8 +7,6 @@ import java.net.*;
 
 public class ShowErrorUtil
 {
-
-  private String specialExcM;
   /**
    * The ExceptionMessages are prepared to be displayed in a JDialog.
    * smallExceptionMessage will show the class name of the Throwable and the specified message, if existent or a customized message
@@ -19,11 +17,11 @@ public class ShowErrorUtil
   public ShowErrorUtil(Throwable loadError, Throwable pE) throws IOException
   {
     String exceptionMessage = "";
-    String smallExceptionMessage = _identifyException(pE) ? specialExcM : pE.toString();
+    String smallExceptionMessage = _identifyException(pE);
 
     if (loadError != null)
     {
-      smallExceptionMessage = _identifyException(loadError) ? specialExcM : loadError.toString();
+      smallExceptionMessage = _identifyException(loadError);
       exceptionMessage += BootstrapUtil.stackTraceToString(loadError) + "\n\n";
     }
     exceptionMessage += BootstrapUtil.stackTraceToString(pE);
@@ -37,7 +35,7 @@ public class ShowErrorUtil
   private void showError(String pSmallMessage, String pMessage)
   {
     String title = UIManager.getString("OptionPane.messageDialogTitle");
-    JTextArea textArea = new JTextArea("Something went wrong:\n\n" + pSmallMessage);
+    JTextArea textArea = new JTextArea(pSmallMessage);
     textArea.setEditable(false);
     textArea.setOpaque(false);
     textArea.setLineWrap(true);
@@ -45,7 +43,7 @@ public class ShowErrorUtil
 
     JScrollPane scrollPane = new JScrollPane(textArea);
     scrollPane.setBorder(null);
-    scrollPane.setPreferredSize(new Dimension(300, 70));
+    scrollPane.setPreferredSize(new Dimension(300, 50));
 
     String[] options = new String[]
         {
@@ -88,29 +86,31 @@ public class ShowErrorUtil
   /**
    * This method will try to identify the given Exception and make a more user friendly message for the dialog.
    */
-  private boolean _identifyException(Throwable pThrowable)
+  private String _identifyException(Throwable pThrowable)
   {
+    String specialExcM;
+
     if(pThrowable instanceof FileNotFoundException)
     {
       specialExcM = "Could not find file" + _getExcMessage(pThrowable);
-      return true;
     }
-    if(pThrowable instanceof MalformedURLException)
+    else if(pThrowable instanceof MalformedURLException)
     {
       specialExcM = "The given URL is malformed" + _getExcMessage(pThrowable);
-      return true;
     }
-    if(pThrowable instanceof ConnectException)
+    else if(pThrowable instanceof ConnectException)
     {
       specialExcM = "An error occurred while attempting to connect" + _getExcMessage(pThrowable);
-      return true;
     }
-    if(pThrowable instanceof RuntimeException)
+    else if(pThrowable instanceof RuntimeException)
     {
       specialExcM = "A problem occurred during runtime" + _getExcMessage(pThrowable);
-      return true;
     }
-    return false;
+    else
+    {
+      specialExcM = "A problem occurred.\n" + pThrowable.toString();
+    }
+    return specialExcM;
   }
 
   /**
