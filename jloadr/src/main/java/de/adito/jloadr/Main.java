@@ -35,6 +35,7 @@ public class Main
       Element documentElement = document.getDocumentElement();
       if (url == null)
         url = XMLUtil.getChildText(documentElement, "url");
+
       iconPath = XMLUtil.getChildText(documentElement, "icon");
       startName = XMLUtil.getChildText(documentElement, "name");
     }
@@ -66,6 +67,7 @@ public class Main
           loaderConfig.load(inputStream);
         }
 
+        //client wird ausgeführt
         Path workingDirectory = Paths.get("jloadr").resolve(localResourcePack.getId()).toAbsolutePath();
         String[] command = loaderConfig.getStartCommands(workingDirectory, JLoadrUtil.getAdditionalSystemParameters());
         Process javaProcess  = new ProcessBuilder(command)

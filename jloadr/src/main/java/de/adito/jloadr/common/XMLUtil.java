@@ -14,6 +14,7 @@ import java.util.*;
 import java.util.function.Consumer;
 
 /**
+ * XML-Documents can be loaded, saved provided with an URL. Furthermore it can fetch elements from the xml.
  * @author j.boesl, 19.12.16
  */
 public class XMLUtil

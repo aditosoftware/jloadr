@@ -109,7 +109,7 @@ public class MuxResourcePack implements IResourcePack
             }
             catch (IOException pE)
             {
-              throw new RuntimeException(pE);
+              throw new RuntimeException("could not get last modified resource in mux", pE);
             }
           })
           .reduce(0L, Math::max);
