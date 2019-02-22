@@ -50,7 +50,7 @@ public class DigestingInputStream extends BufferedInputStream
     }
     catch (NoSuchAlgorithmException pE)
     {
-      throw new RuntimeException("Was not able to digest message.");
+      throw new RuntimeException("Was not able to digest message.", pE);
     }
   }
 }

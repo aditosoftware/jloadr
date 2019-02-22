@@ -5,8 +5,16 @@ import java.awt.*;
 import java.io.*;
 import java.net.*;
 
+/**
+ * @author m.schindlbeck
+ */
+
 public class ShowErrorUtil
 {
+
+  private String exceptionMessage;
+  private  String smallExceptionMessage;
+
   /**
    * The ExceptionMessages are prepared to be displayed in a JDialog.
    * smallExceptionMessage will show the class name of the Throwable and the specified message, if existent or a customized message
@@ -16,8 +24,8 @@ public class ShowErrorUtil
    */
   public ShowErrorUtil(Throwable loadError, Throwable pE) throws IOException
   {
-    String exceptionMessage = "";
-    String smallExceptionMessage = _identifyException(pE);
+    exceptionMessage = "";
+    smallExceptionMessage = _identifyException(pE);
 
     if (loadError != null)
     {
@@ -26,16 +34,15 @@ public class ShowErrorUtil
     }
     exceptionMessage += BootstrapUtil.stackTraceToString(pE);
 
-    showError(smallExceptionMessage, exceptionMessage);
   }
 
   /**
    * Shows a dialog with a small error message as simple as possible
    */
-  private void showError(String pSmallMessage, String pMessage)
+  public void showError()
   {
     String title = UIManager.getString("OptionPane.messageDialogTitle");
-    JTextArea textArea = new JTextArea(pSmallMessage);
+    JTextArea textArea = new JTextArea(smallExceptionMessage);
     textArea.setEditable(false);
     textArea.setOpaque(false);
     textArea.setLineWrap(true);
@@ -61,7 +68,7 @@ public class ShowErrorUtil
 
     dialog.dispose();
     if (r == 1)
-      _extendedDialog(title, pMessage);
+      _extendedDialog(title, exceptionMessage);
   }
 
   /**

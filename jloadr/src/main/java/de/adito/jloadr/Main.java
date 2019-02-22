@@ -67,7 +67,7 @@ public class Main
           loaderConfig.load(inputStream);
         }
 
-        //client wird ausgeführt
+        //start client
         Path workingDirectory = Paths.get("jloadr").resolve(localResourcePack.getId()).toAbsolutePath();
         String[] command = loaderConfig.getStartCommands(workingDirectory, JLoadrUtil.getAdditionalSystemParameters());
         Process javaProcess  = new ProcessBuilder(command)

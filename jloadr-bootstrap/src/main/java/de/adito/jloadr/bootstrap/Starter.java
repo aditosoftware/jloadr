@@ -35,7 +35,7 @@ public class Starter
       _loadNewVersion(url);
       args[0] = url.toExternalForm();
     }
-    catch (IOException pE)
+    catch (Throwable pE)
     {
       loadError = pE;
     }
@@ -45,7 +45,7 @@ public class Starter
     }
     catch (Throwable pE)
     {
-      new ShowErrorUtil(loadError, pE);
+      new ShowErrorUtil(loadError, pE).showError();
       throw loadError == null ? pE : loadError;
     }
   }
