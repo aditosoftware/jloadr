@@ -3,8 +3,6 @@ package de.adito.jloadr.bootstrap;
 import de.adito.trustmanager.TrustManagerSslContext;
 import de.adito.trustmanager.store.JKSCustomTrustStore;
 
-import javax.swing.*;
-import java.awt.*;
 import java.io.*;
 import java.lang.reflect.*;
 import java.net.*;
@@ -47,11 +45,7 @@ public class Starter
     }
     catch (Throwable pE)
     {
-      String exceptionMessage = "";
-      if (loadError != null)
-        exceptionMessage += BootstrapUtil.stackTraceToString(loadError) + "\n\n";
-      exceptionMessage += BootstrapUtil.stackTraceToString(pE);
-      _showError(exceptionMessage);
+      new ShowErrorUtil(loadError, pE).showError();
       throw loadError == null ? pE : loadError;
     }
   }
@@ -88,17 +82,20 @@ public class Starter
     }
   }
 
-  private static void _runMain(Path pLocalJar, String pClassName, String... pArgs)
-      throws Throwable
+  private static void _runMain(Path pLocalJar, String pClassName, String... pArgs) throws Throwable
   {
+    //MalformedURLException
     URLClassLoader urlClassLoader = new URLClassLoader(new URL[]{pLocalJar.toUri().toURL()});
     // required for ServiceLoader
     Thread.currentThread().setContextClassLoader(urlClassLoader);
 
+    //ClassNotFoundException
     Class<?> targetClass = Class.forName(pClassName, true, urlClassLoader);
+    //NoSuchMethodException
     Method main = targetClass.getMethod("main", String[].class);
     try
     {
+      //IllegalAccessException, InvocationTargetException
       main.invoke(null, (Object) pArgs);
     }
     catch (InvocationTargetException pE)
@@ -106,16 +103,4 @@ public class Starter
       throw pE.getCause();
     }
   }
-
-  private static void _showError(String pMessage)
-  {
-    String title = UIManager.getString("OptionPane.messageDialogTitle", null);
-    JTextArea textArea = new JTextArea(pMessage);
-    JScrollPane scrollPane = new JScrollPane(textArea);
-    textArea.setLineWrap(true);
-    textArea.setWrapStyleWord(true);
-    scrollPane.setPreferredSize(new Dimension(800, 400));
-    JOptionPane.showMessageDialog(null, scrollPane, title, JOptionPane.ERROR_MESSAGE);
-  }
-
 }

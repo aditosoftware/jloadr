@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.Objects;
 
 /**
+ * A class to identify the operating system type and its bitness
  * @author j.boesl, 26.01.17
  */
 public class OsUtil

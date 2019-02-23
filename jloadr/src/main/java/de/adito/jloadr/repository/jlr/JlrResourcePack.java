@@ -58,7 +58,7 @@ public class JlrResourcePack implements IResourcePack
             }
             catch (MalformedURLException pE)
             {
-              throw new RuntimeException(pE);
+              throw new RuntimeException("Could not resolve " + resourcesUrl, pE);
             }
           })
           .collect(Collectors.toMap(URLResource::getId, Function.identity()));

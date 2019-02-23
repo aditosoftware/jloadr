@@ -62,7 +62,7 @@ public class BootstrapUtil
       if (uri.isAbsolute())
         return uri.toURL();
       if (pParentUrl == null)
-        throw new IllegalArgumentException();
+        throw new IllegalArgumentException("URL must not be null.");
 
       String target = pParentUrl.toExternalForm();
       if (!target.endsWith("/"))
@@ -72,7 +72,7 @@ public class BootstrapUtil
     }
     catch (URISyntaxException | MalformedURLException pE)
     {
-      throw new IllegalArgumentException(pE);
+      throw new IllegalArgumentException("URL could not be resolved.", pE);
     }
   }
 
@@ -89,7 +89,7 @@ public class BootstrapUtil
     }
     catch (IOException pE)
     {
-      throw new RuntimeException(pE);
+      throw new RuntimeException("Could not hash correctly.", pE);
     }
   }
 

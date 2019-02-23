@@ -18,7 +18,7 @@ import java.util.zip.*;
 public class Loader implements ILoader
 {
 
-  public static final Predicate<IResource> FILTER_IGNORE_RESOURCE_PREDICATE =
+  private static final Predicate<IResource> FILTER_IGNORE_RESOURCE_PREDICATE =
       resource -> !resource.getId().toPath().subpath(0, 1).toString().startsWith(".");
   public static final ResourceId SPLASH_ID = new ResourceId("splash");
 
@@ -130,7 +130,7 @@ public class Loader implements ILoader
     }
     catch (IOException pE)
     {
-      throw new RuntimeException(pE);
+      throw new RuntimeException("There was a problem with copying the resource", pE);
     }
   }
 

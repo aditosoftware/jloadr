@@ -16,12 +16,12 @@ public class JLoaderConfig
 {
   public static final IResourceId CONFIG_ID = new ResourceId("jloadrConfig.xml");
 
-  public static final String TAG_JAVA = "javaHome";
-  public static final String TAG_VM_OPTION = "vmOption";
-  public static final String TAG_SYSTEM_PROPERTY = "systemProperty";
-  public static final String TAG_CLASSPATH = "classpath";
-  public static final String TAG_MAIN = "main";
-  public static final String TAG_ARGUMENT = "argument";
+  private static final String TAG_JAVA = "javaHome";
+  private static final String TAG_VM_OPTION = "vmOption";
+  private static final String TAG_SYSTEM_PROPERTY = "systemProperty";
+  private static final String TAG_CLASSPATH = "classpath";
+  private static final String TAG_MAIN = "main";
+  private static final String TAG_ARGUMENT = "argument";
 
   private String javaHome;
   private List<String> vmParameters;

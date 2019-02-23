@@ -4,6 +4,7 @@ import java.io.*;
 import java.nio.file.*;
 
 /**
+ * A class to fetch run and java commands
  * @author j.boesl, 26.01.17
  */
 public class ProcessUtil

@@ -5,7 +5,7 @@ import de.adito.jloadr.repository.*;
 import org.w3c.dom.Element;
 
 import java.io.*;
-import java.net.URL;
+import java.net.*;
 import java.util.*;
 
 /**
@@ -115,9 +115,9 @@ class JnlpURLResource implements IResource
             // ignore
           }
         }
-        catch (IOException pE)
+        catch (MalformedURLException pE)
         {
-          throw new RuntimeException(pE);
+          throw new RuntimeException("Could not resolve URL.", pE);
         }
       }
       throw new RuntimeException("resource could not be found: " + jarJnlpReference.getUrl());

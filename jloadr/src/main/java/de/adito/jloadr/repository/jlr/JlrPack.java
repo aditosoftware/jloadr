@@ -49,7 +49,7 @@ public class JlrPack
     getEntryMap().remove(pId);
   }
 
-  public synchronized void loadPack()
+  protected synchronized void loadPack()
   {
     try
     {

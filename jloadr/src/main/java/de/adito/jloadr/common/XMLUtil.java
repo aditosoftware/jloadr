@@ -14,6 +14,7 @@ import java.util.*;
 import java.util.function.Consumer;
 
 /**
+ * XML-Documents can be loaded, saved provided with an URL. Furthermore it can fetch elements from the xml.
  * @author j.boesl, 19.12.16
  */
 public class XMLUtil
@@ -29,7 +30,7 @@ public class XMLUtil
     {
       URLConnection urlConnection = pDocumentUrl.openConnection();
       if (urlConnection.getContentLengthLong() == 0)
-        throw new RuntimeException();
+        throw new RuntimeException("the content length of the URLConnection may not be 0.");
       try (InputStream in = urlConnection.getInputStream())
       {
         return loadDocument(in);
@@ -37,7 +38,7 @@ public class XMLUtil
     }
     catch (IOException pE)
     {
-      throw new RuntimeException(pE);
+      throw new RuntimeException("there was a problem while loading the document.", pE);
     }
   }
 
@@ -49,7 +50,7 @@ public class XMLUtil
     }
     catch (SAXException | IOException | ParserConfigurationException pE)
     {
-      throw new RuntimeException(pE);
+      throw new RuntimeException("there was a problem while loading the document.", pE);
     }
   }
 
@@ -61,7 +62,7 @@ public class XMLUtil
     }
     catch (URISyntaxException | IOException pE)
     {
-      throw new RuntimeException(pE);
+      throw new RuntimeException("document " + pDocumentUrl + " could not be fetched.", pE);
     }
   }
 
@@ -88,7 +89,7 @@ public class XMLUtil
     }
     catch (TransformerException | ParserConfigurationException | IOException pE)
     {
-      throw new RuntimeException(pE);
+      throw new RuntimeException("document could not be saved.", pE);
     }
   }
 

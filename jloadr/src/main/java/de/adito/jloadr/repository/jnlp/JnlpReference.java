@@ -28,7 +28,7 @@ class JnlpReference
     }
     catch (MalformedURLException pE)
     {
-      throw new RuntimeException(pE);
+      throw new RuntimeException("Could not resolve the URL: " +  codebase, pE);
     }
   }
 

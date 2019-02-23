@@ -36,7 +36,7 @@ public class ResourcePackFactory implements IResourcePackFactory
       }
       catch (IOException pE)
       {
-        throw new RuntimeException(pE);
+        throw new RuntimeException("was not able to read inputStream.", pE);
       }
       throw new RuntimeException("resource not supported: " + pUrl.toExternalForm());
     }

@@ -35,7 +35,7 @@ public class JLoadrUtil
     }
     catch (NoSuchAlgorithmException pE)
     {
-      throw new RuntimeException();
+      throw new RuntimeException("Could not digest the message.");
     }
   }
 
@@ -52,7 +52,7 @@ public class JLoadrUtil
     }
     catch (IOException pE)
     {
-      throw new RuntimeException(pE);
+      throw new RuntimeException("Could not fetch hash of InputStream." , pE);
     }
   }
 
@@ -64,7 +64,7 @@ public class JLoadrUtil
     }
     catch (IOException pE)
     {
-      throw new RuntimeException(pE);
+      throw new RuntimeException("Could not calculate hash", pE);
     }
   }
 
