@@ -14,6 +14,9 @@ public class Starter
   private static final String JLOADR_JAR = "jloadr.jar";
   private static final String JLOADR_JAR_SHA1 = "jloadr.jar.sha1";
 
+  private static final String MIN_JAVA_VERSION = "1.9";
+  public static boolean CHECK_JAVA_VERSION = true;
+
   public static void main(String[] args) throws Throwable
   {
     if (args.length == 0)
@@ -31,6 +34,9 @@ public class Starter
     Throwable loadError = null;
     try
     {
+      if(CHECK_JAVA_VERSION)
+        _checkJavaVersion(MIN_JAVA_VERSION, System.getProperty("java.version"));
+
       URL url = BootstrapUtil.getMoved(new URL(args[0]));
       _loadNewVersion(url);
       args[0] = url.toExternalForm();
@@ -102,5 +108,25 @@ public class Starter
     {
       throw pE.getCause();
     }
+  }
+
+  /**
+   * This method checks if the used Java version is at least the minimum version. It only uses the first two instances
+   * of the version number to compare the versions
+   */
+
+  private static void _checkJavaVersion(String pMinimal, String pCurrent)
+  {
+    String[] minimalArray = pMinimal.split("\\.", 3);
+    String[] currentArray = pCurrent.split("\\.", 3);
+
+    int current = (Integer.parseInt(currentArray[0]) * 10) +
+        (currentArray.length < 2 ? 0 : Integer.parseInt(currentArray[1]));
+
+    int minimal = (Integer.parseInt(minimalArray[0]) * 10) +
+        (minimalArray.length < 2 ? 0 : Integer.parseInt(minimalArray[1]));
+
+    if(current < minimal)
+      throw new RuntimeException("Your Java is outdated, please use at least Java " + MIN_JAVA_VERSION);
   }
 }
