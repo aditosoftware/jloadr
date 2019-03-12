@@ -14,8 +14,7 @@ public class Starter
   private static final String JLOADR_JAR = "jloadr.jar";
   private static final String JLOADR_JAR_SHA1 = "jloadr.jar.sha1";
 
-  private static final String MIN_JAVA_VERSION = "1.9";
-  public static boolean CHECK_JAVA_VERSION = true;
+  private static final String DEFAULT_MIN_JAVA_VERSION = "9";
 
   public static void main(String[] args) throws Throwable
   {
@@ -34,8 +33,9 @@ public class Starter
     Throwable loadError = null;
     try
     {
-      if(CHECK_JAVA_VERSION)
-        _checkJavaVersion(MIN_JAVA_VERSION, System.getProperty("java.version"));
+      if(!(new File(System.getProperty("user.dir") + File.separator + "jre")
+          .exists()))
+        _checkJavaVersion(System.getProperty("java.version"));
 
       URL url = BootstrapUtil.getMoved(new URL(args[0]));
       _loadNewVersion(url);
@@ -90,18 +90,14 @@ public class Starter
 
   private static void _runMain(Path pLocalJar, String pClassName, String... pArgs) throws Throwable
   {
-    //MalformedURLException
     URLClassLoader urlClassLoader = new URLClassLoader(new URL[]{pLocalJar.toUri().toURL()});
     // required for ServiceLoader
     Thread.currentThread().setContextClassLoader(urlClassLoader);
 
-    //ClassNotFoundException
     Class<?> targetClass = Class.forName(pClassName, true, urlClassLoader);
-    //NoSuchMethodException
     Method main = targetClass.getMethod("main", String[].class);
     try
     {
-      //IllegalAccessException, InvocationTargetException
       main.invoke(null, (Object) pArgs);
     }
     catch (InvocationTargetException pE)
@@ -112,12 +108,13 @@ public class Starter
 
   /**
    * This method checks if the used Java version is at least the minimum version. It only uses the first two instances
-   * of the version number to compare the versions
+   * of the version number to compare the version.
    */
 
-  private static void _checkJavaVersion(String pMinimal, String pCurrent)
+  private static void _checkJavaVersion(String pCurrent)
   {
-    String[] minimalArray = pMinimal.split("\\.", 3);
+    String minimalVersion = _testValidJavaFormat(System.getProperty("min.java"));
+    String[] minimalArray = minimalVersion.split("\\.", 3);
     String[] currentArray = pCurrent.split("\\.", 3);
 
     int current = (Integer.parseInt(currentArray[0]) * 10) +
@@ -127,6 +124,33 @@ public class Starter
         (minimalArray.length < 2 ? 0 : Integer.parseInt(minimalArray[1]));
 
     if(current < minimal)
-      throw new RuntimeException("Your Java is outdated, please use at least Java " + MIN_JAVA_VERSION);
+      throw new RuntimeException("Your Java is outdated, please use at least Java " + minimalVersion);
+  }
+
+  /**
+   * This method validates the given version number. Numbers that start with '-' or a number between '2' and '8' will
+   * throw a RuntimeException. Versions like '1.8', '10', '10.2' etc are expected.
+   * @return a String with a valid version number
+   */
+  private static String _testValidJavaFormat(String pVersion)
+  {
+    if (pVersion == null)
+      return DEFAULT_MIN_JAVA_VERSION;
+
+    String[] versionArray = pVersion.split("\\.", 3);
+    int firstNumb;
+    try
+    {
+      firstNumb = Integer.parseInt(versionArray[0]);
+    }
+    catch(NumberFormatException pE)
+    {
+      throw new RuntimeException("The VM parameter 'min.java' must be a valid version number.");
+    }
+
+    if(firstNumb > 1 && firstNumb < 9 || firstNumb <= 0)
+      throw new RuntimeException("The VM parameter 'min.java' must be a valid version number.");
+
+    return pVersion;
   }
 }
