@@ -5,20 +5,26 @@ import java.io.File;
 /**
  * @author m.schindlbeck, 12.03.19
  */
-
-public class VersionUtil
+class VersionUtil
 {
-  private final static String DEFAULT_MIN_JAVA_VERSION = "9";
+  private static final String DEFAULT_MIN_JAVA_VERSION = "9";
+
+  /**
+   * Prevent instantiation
+   */
+  private VersionUtil()
+  {
+  }
 
   /**
    * The versions will be compared to determine that pCurrentVersion is at least pMinimalVersion. The check will be
    * ignored if a 'jre' folder is included in the working directory.
    */
-  public static boolean validateJavaVersion(String pCurrentVersion, String pMinimalVersion)
+  static boolean validateJavaVersion(String pCurrentVersion, String pMinimalVersion)
   {
-    VersionUtil vu = new VersionUtil();
-    String minimalVersion = vu._validateVersionFormat(pMinimalVersion);
-    return vu._isExpectedJavaVersion(pCurrentVersion, minimalVersion);
+    String minimalVersion = _validateVersionFormat(pMinimalVersion);
+    String currentVersion = _validateVersionFormat(pCurrentVersion);
+    return _isExpectedJavaVersion(currentVersion, minimalVersion);
   }
 
   /**
@@ -26,7 +32,7 @@ public class VersionUtil
    * of the version number to compare the version. If the folder 'jre' exists, the check will be ignored.
    */
 
-  private boolean _isExpectedJavaVersion(String pCurrent, String pMinimal)
+  private static boolean _isExpectedJavaVersion(String pCurrent, String pMinimal)
   {
     if(new File(System.getProperty("user.dir") + File.separator + "jre").exists())
       return true;
@@ -51,7 +57,7 @@ public class VersionUtil
    * throw a RuntimeException. Versions like '1.8', '10', '10.2' etc are expected.
    * @return a String with a valid version number
    */
-  private String _validateVersionFormat(String pVersion)
+  private static String _validateVersionFormat(String pVersion)
   {
     if (pVersion == null)
       return DEFAULT_MIN_JAVA_VERSION;
@@ -73,7 +79,7 @@ public class VersionUtil
     return pVersion;
   }
 
-  public static String getDefaultVersion()
+  static String getDefaultVersion()
   {
     return DEFAULT_MIN_JAVA_VERSION;
   }
