@@ -29,10 +29,10 @@ public class Starter
     Throwable loadError = null;
     try
     {
-      if(!(VersionUtil.validateJavaVersion(System.getProperty("java.version"),
-          System.getProperty("min.java"))))
+      String minimalVersion = System.getProperty("min.java");
+      if(!(VersionUtil.validateJavaVersion(System.getProperty("java.version"), minimalVersion)))
         throw new RuntimeException("Your Java is outdated, please use at least Java " +
-            (System.getProperty("min.java") == null ? VersionUtil.getDefaultVersion() : System.getProperty("min.java")));
+            (minimalVersion == null ? VersionUtil.getDefaultVersion() : minimalVersion));
 
       URL url = BootstrapUtil.getMoved(new URL(args[0]));
       _loadNewVersion(url);
