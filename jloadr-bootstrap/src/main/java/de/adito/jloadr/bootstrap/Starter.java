@@ -7,10 +7,11 @@ import java.io.*;
 import java.lang.reflect.*;
 import java.net.*;
 import java.nio.file.*;
+import java.security.*;
+import java.security.cert.CertificateException;
 
 public class Starter
 {
-
   private static final String JLOADR_JAR = "jloadr.jar";
   private static final String JLOADR_JAR_SHA1 = "jloadr.jar.sha1";
 
@@ -19,10 +20,16 @@ public class Starter
     if (args.length == 0)
       throw new RuntimeException("first parameter must be the repository url");
 
-    Path trustStorePath = Paths.get(JKSCustomTrustStore.TRUST_STORE_PATH).toAbsolutePath();
-    System.setProperty(JKSCustomTrustStore.TURST_STORE_PATH_SYSTEM_PROPERTY, trustStorePath.toString());
-    System.setProperty("jloadr." + JKSCustomTrustStore.TURST_STORE_PATH_SYSTEM_PROPERTY, trustStorePath.toString());
-    TrustManagerSslContext.initSslContext();
+    String minimalVersion = System.getProperty("min.java");
+    if(!(VersionUtil.validateJavaVersion(System.getProperty("java.version"), minimalVersion)))
+    {
+      String msg = "Your Java is outdated, please use at least Java " +
+          (minimalVersion == null ? VersionUtil.getDefaultVersion() : minimalVersion);
+      ShowErrorUtil.showStartError(msg);
+      throw new RuntimeException(msg);
+    }
+
+    _initTrustManager();
 
     String useSystemProxies = System.getProperty("java.net.useSystemProxies");
     if (useSystemProxies == null)
@@ -84,18 +91,14 @@ public class Starter
 
   private static void _runMain(Path pLocalJar, String pClassName, String... pArgs) throws Throwable
   {
-    //MalformedURLException
     URLClassLoader urlClassLoader = new URLClassLoader(new URL[]{pLocalJar.toUri().toURL()});
     // required for ServiceLoader
     Thread.currentThread().setContextClassLoader(urlClassLoader);
 
-    //ClassNotFoundException
     Class<?> targetClass = Class.forName(pClassName, true, urlClassLoader);
-    //NoSuchMethodException
     Method main = targetClass.getMethod("main", String[].class);
     try
     {
-      //IllegalAccessException, InvocationTargetException
       main.invoke(null, (Object) pArgs);
     }
     catch (InvocationTargetException pE)
@@ -103,4 +106,17 @@ public class Starter
       throw pE.getCause();
     }
   }
+
+  /**
+   * Initialises a trustManager to validate certificates and starts a SSLContext
+   */
+  private static void _initTrustManager() throws CertificateException, NoSuchAlgorithmException, KeyStoreException,
+      KeyManagementException, InvalidAlgorithmParameterException, IOException
+  {
+    Path trustStorePath = Paths.get(JKSCustomTrustStore.TRUST_STORE_PATH).toAbsolutePath();
+    System.setProperty(JKSCustomTrustStore.TURST_STORE_PATH_SYSTEM_PROPERTY, trustStorePath.toString());
+    System.setProperty("jloadr." + JKSCustomTrustStore.TURST_STORE_PATH_SYSTEM_PROPERTY, trustStorePath.toString());
+    TrustManagerSslContext.initSslContext();
+  }
+
 }

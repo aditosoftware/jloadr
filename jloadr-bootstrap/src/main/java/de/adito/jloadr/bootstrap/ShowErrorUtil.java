@@ -36,6 +36,22 @@ public class ShowErrorUtil
 
   }
 
+  public static void showStartError(String pSimpleMsg)
+  {
+    String title = UIManager.getString("OptionPane.messageDialogTitle");
+    JTextArea textArea = new JTextArea(pSimpleMsg);
+    textArea.setEditable(false);
+    textArea.setOpaque(false);
+    textArea.setLineWrap(true);
+    textArea.setWrapStyleWord(true);
+
+    JScrollPane scrollPane = new JScrollPane(textArea);
+    scrollPane.setBorder(null);
+    scrollPane.setPreferredSize(new Dimension(300, 50));
+
+    JOptionPane.showMessageDialog(null, scrollPane, title, JOptionPane.WARNING_MESSAGE);
+  }
+
   /**
    * Shows a dialog with a small error message as simple as possible
    */
