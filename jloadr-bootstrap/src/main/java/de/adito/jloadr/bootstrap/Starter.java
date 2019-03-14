@@ -20,6 +20,11 @@ public class Starter
     if (args.length == 0)
       throw new RuntimeException("first parameter must be the repository url");
 
+    String minimalVersion = System.getProperty("min.java");
+    if(!(VersionUtil.validateJavaVersion(System.getProperty("java.version"), minimalVersion)))
+      throw new RuntimeException("Your Java is outdated, please use at least Java " +
+          (minimalVersion == null ? VersionUtil.getDefaultVersion() : minimalVersion));
+
     _initTrustManager();
 
     String useSystemProxies = System.getProperty("java.net.useSystemProxies");
@@ -29,11 +34,6 @@ public class Starter
     Throwable loadError = null;
     try
     {
-      String minimalVersion = System.getProperty("min.java");
-      if(!(VersionUtil.validateJavaVersion(System.getProperty("java.version"), minimalVersion)))
-        throw new RuntimeException("Your Java is outdated, please use at least Java " +
-            (minimalVersion == null ? VersionUtil.getDefaultVersion() : minimalVersion));
-
       URL url = BootstrapUtil.getMoved(new URL(args[0]));
       _loadNewVersion(url);
       args[0] = url.toExternalForm();
