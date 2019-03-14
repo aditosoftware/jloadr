@@ -22,8 +22,12 @@ public class Starter
 
     String minimalVersion = System.getProperty("min.java");
     if(!(VersionUtil.validateJavaVersion(System.getProperty("java.version"), minimalVersion)))
-      throw new RuntimeException("Your Java is outdated, please use at least Java " +
-          (minimalVersion == null ? VersionUtil.getDefaultVersion() : minimalVersion));
+    {
+      String msg = "Your Java is outdated, please use at least Java " +
+          (minimalVersion == null ? VersionUtil.getDefaultVersion() : minimalVersion);
+      ShowErrorUtil.showStartError(msg);
+      throw new RuntimeException(msg);
+    }
 
     _initTrustManager();
 
