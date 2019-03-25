@@ -7,7 +7,7 @@ import java.io.File;
  */
 class VersionUtil
 {
-  private static final String DEFAULT_MIN_JAVA_VERSION = "9";
+  private static final String DEFAULT_MIN_JAVA_VERSION = "1.8";
 
   /**
    * Prevent instantiation
