@@ -23,6 +23,10 @@ public class JLoaderConfig
   private static final String TAG_MAIN = "main";
   private static final String TAG_ARGUMENT = "argument";
 
+  private static final String TAG_USEJAVACLIENT = "usejavaclient";
+  private static final String TAG_EXECPATH = "execpath";
+  private static final String TAG_DEFAULTSERVER = "defaultserver";
+
   private String javaHome;
   private List<String> vmParameters;
   private List<String> systemParameters;
@@ -30,32 +34,42 @@ public class JLoaderConfig
   private String mainCls;
   private List<String> arguments;
 
+  private String useJavaClient;
+  private String execPath;
+  private String defaultServer;
+
 
   public void load(InputStream pInputStream)
   {
     Document document = XMLUtil.loadDocument(pInputStream);
     Element root = document.getDocumentElement();
 
+    useJavaClient = XMLUtil.getChildText(root, TAG_USEJAVACLIENT);
+
     javaHome = XMLUtil.getChildText(root, TAG_JAVA);
 
     vmParameters = XMLUtil.findChildElements(root, TAG_VM_OPTION).stream()
-        .map(element -> element.getTextContent().trim())
-        .collect(Collectors.toList());
+          .map(element -> element.getTextContent().trim())
+          .collect(Collectors.toList());
 
     systemParameters = XMLUtil.findChildElements(root, TAG_SYSTEM_PROPERTY).stream()
-        .map(element -> element.getTextContent().trim())
-        .collect(Collectors.toList());
+          .map(element -> element.getTextContent().trim())
+          .collect(Collectors.toList());
 
     classpath = XMLUtil.findChildElements(root, TAG_CLASSPATH).stream()
-        .map(element -> element.getTextContent().trim())
-        .collect(Collectors.toList());
+          .map(element -> element.getTextContent().trim())
+          .collect(Collectors.toList());
 
     mainCls = XMLUtil.getChildText(root, TAG_MAIN);
     assert mainCls != null;
 
     arguments = XMLUtil.findChildElements(root, TAG_ARGUMENT).stream()
-        .map(element -> element.getTextContent().trim())
-        .collect(Collectors.toList());
+          .map(element -> element.getTextContent().trim())
+          .collect(Collectors.toList());
+
+
+    execPath = XMLUtil.getChildText(root, TAG_EXECPATH);
+    defaultServer = XMLUtil.getChildText(root, TAG_DEFAULTSERVER);
   }
 
   public void save(OutputStream pOutputStream)
@@ -63,13 +77,29 @@ public class JLoaderConfig
     XMLUtil.saveDocument(pOutputStream, pDocument -> {
       Element root = pDocument.createElement("jloadr");
       pDocument.appendChild(root);
+      _append(pDocument, root, TAG_USEJAVACLIENT, useJavaClient);
       _append(pDocument, root, TAG_JAVA, javaHome);
       _append(pDocument, root, TAG_VM_OPTION, vmParameters);
       _append(pDocument, root, TAG_SYSTEM_PROPERTY, systemParameters);
       _append(pDocument, root, TAG_CLASSPATH, classpath);
       _append(pDocument, root, TAG_MAIN, mainCls);
       _append(pDocument, root, TAG_ARGUMENT, arguments);
+      _append(pDocument, root, TAG_EXECPATH, execPath);
+      _append(pDocument, root, TAG_DEFAULTSERVER, defaultServer);
     });
+  }
+
+  public String[] getExecStartCommands(Path pWorkingDirectory)
+  {
+    String execFile = String.valueOf(pWorkingDirectory) + File.separatorChar + getExecPath();
+    //try java client if not available
+    if(execFile == null || execFile.isEmpty())
+      getStartCommands(pWorkingDirectory, JLoadrUtil.getAdditionalSystemParameters());
+    List <String> parameters = new ArrayList<>();
+    parameters.add(execFile);
+    parameters.add(getDefaultServer());
+
+    return parameters.toArray(new String[parameters.size()]);
   }
 
   public String[] getStartCommands(Path pWorkingDirectory, List<String> pAdditionalSystemParameters)
@@ -113,7 +143,6 @@ public class JLoaderConfig
   {
     return javaHome;
   }
-
   public void setJavaHome(String pJavaHome)
   {
     javaHome = pJavaHome;
@@ -123,7 +152,6 @@ public class JLoaderConfig
   {
     return vmParameters == null ? Collections.emptyList() : vmParameters;
   }
-
   public void setVmParameters(List<String> pVmParameters)
   {
     vmParameters = pVmParameters;
@@ -133,7 +161,6 @@ public class JLoaderConfig
   {
     return systemParameters == null ? Collections.emptyList() : systemParameters;
   }
-
   public void setSystemParameters(List<String> pSystemParameters)
   {
     systemParameters = pSystemParameters;
@@ -143,7 +170,6 @@ public class JLoaderConfig
   {
     return classpath;
   }
-
   public void setClasspath(List<String> pClasspath)
   {
     classpath = pClasspath;
@@ -153,7 +179,6 @@ public class JLoaderConfig
   {
     return mainCls;
   }
-
   public void setMainCls(String pMainCls)
   {
     mainCls = pMainCls;
@@ -163,10 +188,36 @@ public class JLoaderConfig
   {
     return arguments;
   }
-
   public void setArguments(List<String> pArguments)
   {
     arguments = pArguments;
+  }
+
+  public String getUseJavaClient()
+  {
+    return useJavaClient;
+  }
+  public void setUseJavaClient(String pUseJavaClient)
+  {
+    useJavaClient = pUseJavaClient;
+  }
+
+  public String getExecPath()
+  {
+    return execPath;
+  }
+  public void setExecPath(String pExecPath)
+  {
+    execPath = pExecPath;
+  }
+
+  public String getDefaultServer()
+  {
+    return defaultServer;
+  }
+  public void setDefaultServer(String pDefaultServer)
+  {
+    defaultServer = pDefaultServer;
   }
 
   private void _append(Document pDocument, Element pAppendTo, String pTag, String pValue)
