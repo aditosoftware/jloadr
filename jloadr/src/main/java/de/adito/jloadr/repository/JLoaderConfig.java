@@ -23,7 +23,7 @@ public class JLoaderConfig
   private static final String TAG_MAIN = "main";
   private static final String TAG_ARGUMENT = "argument";
 
-  private static final String TAG_USEJAVACLIENT = "usejavaclient";
+  private static final String TAG_CLIENT_TYPE = "usejavaclient";
   private static final String TAG_EXECPATH = "execpath";
   private static final String TAG_DEFAULTSERVER = "defaultserver";
 
@@ -34,7 +34,7 @@ public class JLoaderConfig
   private String mainCls;
   private List<String> arguments;
 
-  private String useJavaClient;
+  private String clientType;
   private String execPath;
   private String defaultServer;
 
@@ -44,7 +44,7 @@ public class JLoaderConfig
     Document document = XMLUtil.loadDocument(pInputStream);
     Element root = document.getDocumentElement();
 
-    useJavaClient = XMLUtil.getChildText(root, TAG_USEJAVACLIENT);
+    clientType = XMLUtil.getChildText(root, TAG_CLIENT_TYPE);
 
     javaHome = XMLUtil.getChildText(root, TAG_JAVA);
 
@@ -77,7 +77,7 @@ public class JLoaderConfig
     XMLUtil.saveDocument(pOutputStream, pDocument -> {
       Element root = pDocument.createElement("jloadr");
       pDocument.appendChild(root);
-      _append(pDocument, root, TAG_USEJAVACLIENT, useJavaClient);
+      _append(pDocument, root, TAG_CLIENT_TYPE, clientType);
       _append(pDocument, root, TAG_JAVA, javaHome);
       _append(pDocument, root, TAG_VM_OPTION, vmParameters);
       _append(pDocument, root, TAG_SYSTEM_PROPERTY, systemParameters);
@@ -193,13 +193,13 @@ public class JLoaderConfig
     arguments = pArguments;
   }
 
-  public String getUseJavaClient()
+  public String getClientType()
   {
-    return useJavaClient;
+    return clientType;
   }
-  public void setUseJavaClient(String pUseJavaClient)
+  public void setClientType(String pClientType)
   {
-    useJavaClient = pUseJavaClient;
+    clientType = pClientType;
   }
 
   public String getExecPath()
