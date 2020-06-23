@@ -130,7 +130,7 @@ public class Loader implements ILoader
     }
     catch (IOException pE)
     {
-      throw new RuntimeException("There was a problem with copying the resource", pE);
+      throw new RuntimeException("There was a problem with copying the resource " + localResource.toString(), pE);
     }
   }
 
