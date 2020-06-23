@@ -150,8 +150,8 @@ public class MuxResourcePack implements IResourcePack
             if (_isEmptyCollection(config1.getArguments()))
               config1.setArguments(config2.getArguments());
 
-            if(_isEmptyString(config1.getUseJavaClient()))
-              config1.setUseJavaClient(config2.getUseJavaClient());
+            if(_isEmptyString(config1.getClientType()))
+              config1.setClientType(config2.getClientType());
 
             if(_isEmptyString(config1.getExecPath()))
               config1.setExecPath(config2.getExecPath());
