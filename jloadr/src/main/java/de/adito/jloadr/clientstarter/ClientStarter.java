@@ -24,14 +24,12 @@ public class ClientStarter
   private final String startName;
   private Path workingDirectory = null;
   private String[] commands = null;
-  private boolean useJava;
 
   public ClientStarter(String pUrl, String pIconPath, String pStartName)
   {
     this.url = pUrl;
     this.iconPath = pIconPath;
     this.startName = pStartName;
-    this.useJava = true;
   }
 
   public void start() throws IOException, InterruptedException
@@ -50,10 +48,8 @@ public class ClientStarter
       //should be the actual loading part
       IStoreResourcePack localResourcePack = new Loader().load(localStore,remoteResourcePack,splash);
 
-      //todo add switch case here and make several functions
-      //todo fallback to javaclient
-      _loadConfig(localResourcePack);
-      Process clientProcess = _startClientProcess();
+      String clientType = _loadConfig(localResourcePack);
+      Process clientProcess = _startClientProcess(clientType);
 
       //show a loading picture
       if(splash!=null)
@@ -73,9 +69,11 @@ public class ClientStarter
     }
   }
 
-  private void _loadConfig(IStoreResourcePack pLocalResourcePack) throws IOException
+  private String _loadConfig(IStoreResourcePack pLocalResourcePack) throws IOException
   {
+    String clientType = null;
     IStoreResource configResource = pLocalResourcePack.getResource(JLoaderConfig.CONFIG_ID);
+
     if (configResource != null)
     {
       JLoaderConfig loaderConfig = new JLoaderConfig();
@@ -86,37 +84,29 @@ public class ClientStarter
 
       workingDirectory = Paths.get("jloadr").resolve(pLocalResourcePack.getId()).toAbsolutePath();
 
-      String useJavaClient = loaderConfig.getUseJavaClient();
-      if(useJavaClient == null || useJavaClient.contentEquals("true"))
-      {
-        useJava = true;
-        commands = loaderConfig.getStartCommands(workingDirectory, JLoadrUtil.getAdditionalSystemParameters());
-      }
-      else
-      {
-        useJava = false;
+      clientType = loaderConfig.getClientType();
+      if (clientType.contentEquals("electron"))
         commands = loaderConfig.getExecStartCommands(workingDirectory);
 
-      }
+      else //Java
+        commands = loaderConfig.getStartCommands(workingDirectory, JLoadrUtil.getAdditionalSystemParameters());
+
     }
+    return clientType;
   }
 
-  private Process _startClientProcess() throws IOException, InterruptedException
+  private Process _startClientProcess(String pClientType) throws IOException, InterruptedException
   {
     Process process;
-    if(useJava)
-    {
+    if (pClientType.equals("electron"))
+      process = new ProcessBuilder(commands)
+          .inheritIO()
+          .start();
+    else
       process = new ProcessBuilder(commands)
           .directory(workingDirectory.toFile())
           .inheritIO()
           .start();
-    }
-    else
-    {
-      process = new ProcessBuilder(commands)
-          .inheritIO()
-          .start();
-    }
 
     process.waitFor(IOption.WAIT_FOR_START,TimeUnit.SECONDS);
 
