@@ -15,6 +15,7 @@ import java.nio.file.*;
 import java.util.concurrent.TimeUnit;
 
 /**
+ * Loads clients provided by the server and chooses the correct ProcessBuilder to start the loaded application with its configurations.
  * @author m.schindlbeck, 05.05.2020
  */
 public class ClientStarter
@@ -32,10 +33,15 @@ public class ClientStarter
     this.startName = pStartName;
   }
 
+  /**
+   * Loads the client and the splash image for showing the loading progress
+   * @throws IOException
+   * @throws InterruptedException
+   */
   public void start() throws IOException, InterruptedException
   {
     if(url == null)
-      throw new RuntimeException("a repository url must be specified.");
+      throw new RuntimeException("The server url is missing. Please ask your administrator for help.");
 
     IResourcePack remoteResourcePack = ResourcePackFactory.get(new URL(url));
 
@@ -45,11 +51,11 @@ public class ClientStarter
     {
       LocalStore localStore = new LocalStore(Paths.get("jloadr"));
 
-      //should be the actual loading part
+      //actual loading part
       IStoreResourcePack localResourcePack = new Loader().load(localStore,remoteResourcePack,splash);
 
-      String clientType = _loadConfig(localResourcePack);
-      Process clientProcess = _startClientProcess(clientType);
+      _loadConfig(localResourcePack);
+      Process clientProcess = _startClientProcess();
 
       //show a loading picture
       if(splash!=null)
@@ -69,41 +75,56 @@ public class ClientStarter
     }
   }
 
-  private String _loadConfig(IStoreResourcePack pLocalResourcePack) throws IOException
+  /**
+   * Loads the jLoadrConfig and prepares additional start commands for the processBuilder if providedand according to the
+   * specified <clientType>.
+   * @param pLocalResourcePack
+   * @return
+   * @throws IOException
+   */
+  private JLoaderConfig _loadConfig(IStoreResourcePack pLocalResourcePack) throws IOException
   {
     String clientType = null;
     IStoreResource configResource = pLocalResourcePack.getResource(JLoaderConfig.CONFIG_ID);
+    JLoaderConfig loaderConfig = new JLoaderConfig();
 
     if (configResource != null)
     {
-      JLoaderConfig loaderConfig = new JLoaderConfig();
+
       try (InputStream inputStream = configResource.getInputStream())
       {
-        loaderConfig.load(inputStream);
+        loaderConfig.loadConfigTags(inputStream);
       }
 
       workingDirectory = Paths.get("jloadr").resolve(pLocalResourcePack.getId()).toAbsolutePath();
 
       clientType = loaderConfig.getClientType();
-      if (clientType.contentEquals("electron"))
-        commands = loaderConfig.getExecStartCommands(workingDirectory);
+      switch (clientType.toLowerCase())
+      {
+        case "electron":
+          commands = loaderConfig.getElectronStartCommands(workingDirectory);
+          break;
 
-      else //Java
-        commands = loaderConfig.getStartCommands(workingDirectory, JLoadrUtil.getAdditionalSystemParameters());
+        case "java":
+          commands = loaderConfig.getStartCommands(workingDirectory, JLoadrUtil.getAdditionalSystemParameters());
+          break;
 
+        default:
+          throw new RuntimeException("No client for starting found. Check your jloadrConfig.xml.");
+      }
     }
-    return clientType;
+    return loaderConfig;
   }
 
-  private Process _startClientProcess(String pClientType) throws IOException, InterruptedException
+  /**
+   * Starts the actual client with the prepared commands
+   * @return The running client process
+   * @throws IOException
+   * @throws InterruptedException
+   */
+  private Process _startClientProcess() throws IOException, InterruptedException
   {
-    Process process;
-    if (pClientType.equals("electron"))
-      process = new ProcessBuilder(commands)
-          .inheritIO()
-          .start();
-    else
-      process = new ProcessBuilder(commands)
+    Process process = new ProcessBuilder(commands)
           .directory(workingDirectory.toFile())
           .inheritIO()
           .start();
@@ -115,6 +136,7 @@ public class ClientStarter
 
     return process;
   }
+  //TODO Mac: Desktop.getDesktop().open(new File("MyLineInInput.app"));
 }
 
 
