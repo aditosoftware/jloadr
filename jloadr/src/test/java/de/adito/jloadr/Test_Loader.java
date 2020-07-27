@@ -102,7 +102,7 @@ public class Test_Loader
     Assert.assertNotNull(configResource);
     try (InputStream inputStream = configResource.getInputStream())
     {
-      loaderConfig.load(inputStream);
+      loaderConfig.loadConfigTags(inputStream);
     }
 
     Path workingDirectory = store2Path.resolve(localResourcePack.getId()).toAbsolutePath();

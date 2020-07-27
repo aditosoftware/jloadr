@@ -49,7 +49,7 @@ public abstract class AbstractJLoaderConfigResource implements IResource
     {
       try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream())
       {
-        createConfig().save(outputStream);
+        createConfig().saveTagsAsXml(outputStream);
         config = outputStream.toByteArray();
       }
       catch (IOException pE)

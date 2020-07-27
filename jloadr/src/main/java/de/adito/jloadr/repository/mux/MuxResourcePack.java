@@ -109,7 +109,7 @@ public class MuxResourcePack implements IResourcePack
             }
             catch (IOException pE)
             {
-              throw new RuntimeException("could not get last modified resource in mux", pE);
+              throw new RuntimeException("could not get last modified resource. \n Please try again.", pE);
             }
           })
           .reduce(0L, Math::max);
@@ -123,7 +123,7 @@ public class MuxResourcePack implements IResourcePack
             JLoaderConfig config = new JLoaderConfig();
             try (InputStream inputStream = resource.getInputStream())
             {
-              config.load(inputStream);
+              config.loadConfigTags(inputStream);
               return config;
             }
             catch (IOException pE)
@@ -153,11 +153,11 @@ public class MuxResourcePack implements IResourcePack
             if(_isEmptyString(config1.getClientType()))
               config1.setClientType(config2.getClientType());
 
-            if(_isEmptyString(config1.getExecPath()))
-              config1.setExecPath(config2.getExecPath());
+            if(_isEmptyString(config1.getExecName()))
+              config1.setExecName(config2.getExecName());
 
-            if(_isEmptyString(config1.getDefaultServer()))
-              config1.setDefaultServer(config2.getDefaultServer());
+            if(_isEmptyString(config1.getExecCommands()))
+              config1.setExecCommands(config2.getExecCommands());
 
             return config1;
           });
