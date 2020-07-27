@@ -5,11 +5,12 @@ import de.adito.jloadr.common.*;
 import org.w3c.dom.*;
 
 import java.io.*;
-import java.nio.file.Path;
+import java.nio.file.*;
 import java.util.*;
 import java.util.stream.*;
 
 /**
+ * A Class for creating and handling the jloadrConfig.xml. As well as preparing the starting commands for the used client.
  * @author j.boesl, 22.12.16
  */
 public class JLoaderConfig
@@ -23,9 +24,9 @@ public class JLoaderConfig
   private static final String TAG_MAIN = "main";
   private static final String TAG_ARGUMENT = "argument";
 
-  private static final String TAG_CLIENT_TYPE = "usejavaclient";
-  private static final String TAG_EXECPATH = "execpath";
-  private static final String TAG_DEFAULTSERVER = "defaultserver";
+  private static final String TAG_CLIENT_TYPE = "clienttype";
+  private static final String TAG_EXECNAME = "execname";
+  private static final String TAG_EXEC_COMMANDS = "execcommands";
 
   private String javaHome;
   private List<String> vmParameters;
@@ -35,16 +36,18 @@ public class JLoaderConfig
   private List<String> arguments;
 
   private String clientType;
-  private String execPath;
-  private String defaultServer;
+  private String execName;
+  private String execCommands;
 
 
-  public void load(InputStream pInputStream)
+  public void loadConfigTags(InputStream pInputStream)
   {
     Document document = XMLUtil.loadDocument(pInputStream);
     Element root = document.getDocumentElement();
 
     clientType = XMLUtil.getChildText(root, TAG_CLIENT_TYPE);
+    if (clientType == null)
+      clientType = "java";
 
     javaHome = XMLUtil.getChildText(root, TAG_JAVA);
 
@@ -68,11 +71,15 @@ public class JLoaderConfig
           .collect(Collectors.toList());
 
 
-    execPath = XMLUtil.getChildText(root, TAG_EXECPATH);
-    defaultServer = XMLUtil.getChildText(root, TAG_DEFAULTSERVER);
+    execName = XMLUtil.getChildText(root, TAG_EXECNAME);
+    execCommands = XMLUtil.getChildText(root, TAG_EXEC_COMMANDS);
   }
 
-  public void save(OutputStream pOutputStream)
+  /**
+   * Saves all tags with their content in a xml document
+   * @param pOutputStream
+   */
+  public void saveTagsAsXml(OutputStream pOutputStream)
   {
     XMLUtil.saveDocument(pOutputStream, pDocument -> {
       Element root = pDocument.createElement("jloadr");
@@ -84,29 +91,71 @@ public class JLoaderConfig
       _append(pDocument, root, TAG_CLASSPATH, classpath);
       _append(pDocument, root, TAG_MAIN, mainCls);
       _append(pDocument, root, TAG_ARGUMENT, arguments);
-      _append(pDocument, root, TAG_EXECPATH, execPath);
-      _append(pDocument, root, TAG_DEFAULTSERVER, defaultServer);
+      _append(pDocument, root, TAG_EXECNAME, execName);
+      _append(pDocument, root, TAG_EXEC_COMMANDS, execCommands);
     });
   }
 
-  public String[] getExecStartCommands(Path pWorkingDirectory)
+  /**
+   * Creates start parameters for starting an electron application
+   * @param pWorkingDirectory
+   * @return Start parameters for ProcessBuilder
+   */
+  public String[] getElectronStartCommands(Path pWorkingDirectory)
   {
-    String execFile = String.valueOf(pWorkingDirectory) + File.separatorChar + getExecPath();
-    //try java client if not available
-    if(execFile == null || execFile.isEmpty())
-      getStartCommands(pWorkingDirectory, JLoadrUtil.getAdditionalSystemParameters());
+    if(execName == null || execName.isEmpty())
+      throw new RuntimeException("An executable name must be specified. Please check your jloadrConfig.xml");
+
+    String execFilePath = _createElectronPath(pWorkingDirectory);
+
     List <String> parameters = new ArrayList<>();
-    parameters.add(execFile);
-    parameters.add(getDefaultServer());
+    parameters.add(execFilePath);
+
+    if(execCommands == null)
+      execCommands = "";
+    parameters.add(getExecCommands());
 
     return parameters.toArray(new String[parameters.size()]);
   }
 
+  /**
+   * Chooses the correct electron directory for the current operating system
+   * @param pWorkingDirectory
+   * @return path of the executable file
+   */
+  private String _createElectronPath(Path pWorkingDirectory)
+  {
+    String os = System.getProperty("os.name").toLowerCase();
+
+    File workingDir = new File(String.valueOf(pWorkingDirectory));
+    File[] fileList = workingDir.listFiles();
+    if(fileList.length == 0)
+      throw new RuntimeException("No client directory found in " + pWorkingDirectory + ". Please contact your administrator.");
+
+    for (File directory: fileList)
+    {
+      if(directory.isDirectory() && directory.getName().contains(getExecName()))
+      {
+        if(os.contains("win") && directory.getName().contains("win") ||
+            os.contains("linux") && directory.getName().contains("linux"))
+          return directory + File.separator + getExecName();
+      }
+    }
+
+    return null;
+  }
+
+  /**
+   * Creates start parameters for starting a java application
+   * @param pWorkingDirectory
+   * @param pAdditionalSystemParameters
+   * @return Start parameters for ProcessBuilder
+   */
   public String[] getStartCommands(Path pWorkingDirectory, List<String> pAdditionalSystemParameters)
   {
     String mainCls = getMainCls();
     if (mainCls == null || mainCls.isEmpty())
-      throw new RuntimeException("Application can't be started. No main class provided.");
+      throw new RuntimeException("Application can't be started. No main class provided. Please add a correct main class to your startup config.");
 
     List<String> parameters = new ArrayList<>();
     parameters.add(_getStartJavaCommand(pWorkingDirectory));
@@ -133,11 +182,54 @@ public class JLoaderConfig
     return parameters.toArray(new String[parameters.size()]);
   }
 
+  /**
+   * Adds a Tag with its value to the document
+   * @param pDocument
+   * @param pAppendTo
+   * @param pTag
+   * @param pValue
+   */
+  private void _append(Document pDocument, Element pAppendTo, String pTag, String pValue)
+  {
+    if (pValue != null)
+    {
+      Element element = pDocument.createElement(pTag);
+      element.setTextContent(pValue);
+      pAppendTo.appendChild(element);
+    }
+  }
+
+  /**
+   * Adds a Tag with its values to the document
+   * @param pDocument
+   * @param pAppendTo
+   * @param pTag
+   * @param pValues
+   */
+  private void _append(Document pDocument, Element pAppendTo, String pTag, List<String> pValues)
+  {
+    if (pValues != null)
+    {
+      for (String value : pValues)
+      {
+        Element element = pDocument.createElement(pTag);
+        element.setTextContent(value);
+        pAppendTo.appendChild(element);
+      }
+    }
+  }
+
+  /**
+   * Prepares the command for starting jars by fetching the jre
+   * @param pWorkingDirectory
+   */
   private String _getStartJavaCommand(Path pWorkingDirectory)
   {
     String javaHome = getJavaHome();
     return ProcessUtil.findJavaCmd(pWorkingDirectory, javaHome);
   }
+
+  //getter and setter for all tags
 
   public String getJavaHome()
   {
@@ -202,45 +294,22 @@ public class JLoaderConfig
     clientType = pClientType;
   }
 
-  public String getExecPath()
+  public String getExecName()
   {
-    return execPath;
+    return execName;
   }
-  public void setExecPath(String pExecPath)
+  public void setExecName(String pExecName)
   {
-    execPath = pExecPath;
-  }
-
-  public String getDefaultServer()
-  {
-    return defaultServer;
-  }
-  public void setDefaultServer(String pDefaultServer)
-  {
-    defaultServer = pDefaultServer;
+    execName = pExecName;
   }
 
-  private void _append(Document pDocument, Element pAppendTo, String pTag, String pValue)
+  public String getExecCommands()
   {
-    if (pValue != null)
-    {
-      Element element = pDocument.createElement(pTag);
-      element.setTextContent(pValue);
-      pAppendTo.appendChild(element);
-    }
+    return execCommands;
   }
-
-  private void _append(Document pDocument, Element pAppendTo, String pTag, List<String> pValues)
+  public void setExecCommands(String pExecCommands)
   {
-    if (pValues != null)
-    {
-      for (String value : pValues)
-      {
-        Element element = pDocument.createElement(pTag);
-        element.setTextContent(value);
-        pAppendTo.appendChild(element);
-      }
-    }
+    execCommands = pExecCommands;
   }
 
 }
