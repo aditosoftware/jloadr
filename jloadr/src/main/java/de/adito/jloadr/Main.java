@@ -7,6 +7,7 @@ import java.io.*;
 import java.nio.file.*;
 
 /**
+ * Is run by jloadr-bootstrap after the jloadr got updated
  * @author j.boesl, 05.09.16
  */
 public class Main

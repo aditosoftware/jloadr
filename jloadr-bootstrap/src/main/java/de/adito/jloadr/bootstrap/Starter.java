@@ -10,6 +10,9 @@ import java.nio.file.*;
 import java.security.*;
 import java.security.cert.CertificateException;
 
+/**
+ * Updates the jloadr before starting it
+ */
 public class Starter
 {
   private static final String JLOADR_JAR = "jloadr.jar";
@@ -57,6 +60,11 @@ public class Starter
     }
   }
 
+  /**
+   * Loads the newest jloadr Version from the connected server
+   * @param pUrl server url
+   * @throws IOException
+   */
   private static void _loadNewVersion(URL pUrl) throws IOException
   {
     URL jloadrJarUrl = BootstrapUtil.getRelative(pUrl, JLOADR_JAR);
@@ -89,6 +97,13 @@ public class Starter
     }
   }
 
+  /**
+   * Starts the actual jloadr after it was updated
+   * @param pLocalJar jloadr.jar
+   * @param pClassName main class of jloadr
+   * @param pArgs arguments for the jloadr, eg. the server url
+   * @throws Throwable
+   */
   private static void _runMain(Path pLocalJar, String pClassName, String... pArgs) throws Throwable
   {
     URLClassLoader urlClassLoader = new URLClassLoader(new URL[]{pLocalJar.toUri().toURL()});

@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.nio.file.*;
 
 /**
+ * Visualises the client loading process
  * @author j.boesl, 17.11.17
  */
 public class Splash extends JFrame implements ILoader.IStateCallback

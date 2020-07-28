@@ -1,6 +1,5 @@
 package de.adito.jloadr;
 
-import de.adito.jloadr.Loader;
 import de.adito.jloadr.api.*;
 import de.adito.jloadr.common.*;
 import de.adito.jloadr.gui.Splash;
@@ -35,8 +34,8 @@ public class ClientStarter
 
   /**
    * Loads the client and the splash image for showing the loading progress
-   * @throws IOException
-   * @throws InterruptedException
+   * @throws IOException when the loading part fails
+   * @throws InterruptedException when starting the client fails
    */
   public void start() throws IOException, InterruptedException
   {
@@ -78,8 +77,7 @@ public class ClientStarter
   /**
    * Loads the jLoadrConfig and prepares additional start commands for the processBuilder if providedand according to the
    * specified <clientType>.
-   * @param pLocalResourcePack
-   * @return
+   * @return the loaded config
    * @throws IOException
    */
   private JLoaderConfig _loadConfig(IStoreResourcePack pLocalResourcePack) throws IOException
@@ -117,10 +115,10 @@ public class ClientStarter
   }
 
   /**
-   * Starts the actual client with the prepared commands
+   * Starts the actual client as a process with the prepared commands
    * @return The running client process
-   * @throws IOException
-   * @throws InterruptedException
+   * @throws IOException if the exitValue is not 0
+   * @throws InterruptedException if the client process gets interrupted
    */
   private Process _startClientProcess() throws IOException, InterruptedException
   {
@@ -136,7 +134,6 @@ public class ClientStarter
 
     return process;
   }
-  //TODO Mac: Desktop.getDesktop().open(new File("MyLineInInput.app"));
 }
 
 

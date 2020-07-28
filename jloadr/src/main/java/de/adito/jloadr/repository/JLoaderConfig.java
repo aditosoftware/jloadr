@@ -40,6 +40,10 @@ public class JLoaderConfig
   private String execCommands;
 
 
+  /**
+   * Loads values from the jloadrConfig.xml
+   * @param pInputStream
+   */
   public void loadConfigTags(InputStream pInputStream)
   {
     Document document = XMLUtil.loadDocument(pInputStream);
