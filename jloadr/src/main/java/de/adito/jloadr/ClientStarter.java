@@ -97,6 +97,9 @@ public class ClientStarter
       workingDirectory = Paths.get("jloadr").resolve(pLocalResourcePack.getId()).toAbsolutePath();
 
       clientType = loaderConfig.getClientType();
+      if (clientType.isEmpty())
+        clientType = "java";
+
       switch (clientType.toLowerCase())
       {
         case "electron":
@@ -108,7 +111,7 @@ public class ClientStarter
           break;
 
         default:
-          throw new RuntimeException("No client for starting found. Check your jloadrConfig.xml.");
+          throw new RuntimeException("No valid client for starting found. Check the tag <clienttype> in your jloadrConfig.xml .");
       }
     }
     return loaderConfig;
