@@ -1,4 +1,4 @@
-package de.adito.jloadr.clientstarter;
+package de.adito.jloadr;
 
 import de.adito.jloadr.Loader;
 import de.adito.jloadr.api.*;

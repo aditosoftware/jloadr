@@ -1,6 +1,5 @@
 package de.adito.jloadr;
 
-import de.adito.jloadr.clientstarter.*;
 import de.adito.jloadr.common.*;
 import org.w3c.dom.*;
 
